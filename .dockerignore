@@ -1,0 +1,8 @@
+node_modules
+.next
+out
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml # se você não usa pnpm, remova
+.git
+.DS_Store
