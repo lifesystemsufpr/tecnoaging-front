@@ -16,8 +16,8 @@ export interface SensorData {
   evaluationId: string;
 }
 
-export interface Evaluation {
-  id: string;
+export interface EvaluationRaw {
+  id?: string;
   type: EvaluationType;
 
   patientId: string;
@@ -33,6 +33,8 @@ export interface Evaluation {
   time_end: string; // ISO
   totalTime: string; // seconds
   updatedAt: string; // ISO
+}
 
-  sensorData?: SensorData[];
+export interface Evaluation extends EvaluationRaw {
+  sensorData: SensorData[];
 }

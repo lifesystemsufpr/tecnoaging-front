@@ -2,6 +2,10 @@ import { Evaluation } from "@/types/domain/Evaluation";
 import { Patient } from "@/types/domain/Patient";
 import { HealthProfessional } from "@/types/domain/Health-professional";
 import { API_ROUTES } from "./Routes";
+import {
+  EvaluationResponse,
+  ListEvaluationsResponse,
+} from "@/types/api/Evaluation";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ?? "https://api.seuservidor.com";
@@ -35,7 +39,7 @@ function qs(params: Record<string, string | number | undefined | null>) {
 export async function fetchEvaluations(
   token: string,
   filters?: ListFilters
-): Promise<Evaluation[]> {
+): Promise<ListEvaluationsResponse> {
   const query = qs({
     patientId: filters?.patientId ?? undefined,
     healthProfessionalId: filters?.healthProfessionalId ?? undefined,
@@ -63,7 +67,7 @@ export async function fetchEvaluations(
 export async function fetchEvaluationById(
   id: string,
   token: string
-): Promise<Evaluation> {
+): Promise<EvaluationResponse> {
   const res = await fetch(API_ROUTES.EVALUATION_BY_ID(id), {
     method: "GET",
     headers: authHeaders(token),

@@ -18,17 +18,8 @@ import {
 } from "@/components/datatable/GenericTable";
 import { deleteEvaluation, fetchEvaluations } from "@/services/api-evaluation";
 import { Evaluation } from "@/types/domain/Evaluation";
-import { Patient } from "@/types/domain/Patient";
-import { HealthProfessional } from "@/types/domain/Health-professional";
-import {
-  formatDate,
-  formatDateTime,
-  toISODateEnd,
-  toISODateStart,
-} from "@/utils/dates";
+import { formatDateTime, toISODateEnd, toISODateStart } from "@/utils/dates";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { fetchPatients } from "@/services/api-patient";
-import { fetchHealthProfessionals } from "@/services/api-health-professional";
 
 type Option = { id: string; name: string };
 
@@ -61,25 +52,12 @@ export default function TestsPage() {
   const [professionalOptions, setProfessionalOptions] = useState<Option[]>([]);
 
   // Mapeamentos para exibir nome em vez de id
-  const patientNameById = useMemo(() => {
-    const map = new Map<string, string>();
-    patientOptions.forEach((p) => map.set(p.id, p.name));
-    if (patient) map.set(patient.id, patient.name);
-    return map;
-  }, [patientOptions, patient]);
-
-  const professionalNameById = useMemo(() => {
-    const map = new Map<string, string>();
-    professionalOptions.forEach((p) => map.set(p.id, p.name));
-    if (professional) map.set(professional.id, professional.name);
-    return map;
-  }, [professionalOptions, professional]);
 
   const loadEvaluations = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const data = await fetchEvaluations(token, {
+      const { data } = await fetchEvaluations(token, {
         patientId: patient?.id ?? null,
         healthProfessionalId: professional?.id ?? null,
         dateFrom: dateFrom ? toISODateStart(dateFrom) : null,
@@ -88,23 +66,15 @@ export default function TestsPage() {
         page: 1,
         pageSize: 100,
       });
-      const patientMap = new Map(patientOptions.map((p) => [p.id, p.name]));
-      const professionalMap = new Map(
-        professionalOptions.map((p) => [p.id, p.name])
-      );
 
-      const withNames = data.map((ev) => ({
-        ...ev,
-        patientName:
-          ev.patient?.fullName ??
-          patientMap.get(String(ev.patientId)) ??
-          String(ev.patientId ?? "—"),
-        professionalName:
-          ev.healthProfessional?.fullName ??
-          professionalMap.get(String(ev.healthProfessionalId)) ??
-          String(ev.healthProfessionalId ?? "—"),
-      }));
-      setRows(withNames);
+      setRows(
+        data.map((ev) => ({
+          ...ev,
+          patientName: ev.patient?.fullName,
+          professionalName: ev.healthProfessional?.fullName,
+          healthUnitName: ev.healthcareUnit?.name,
+        }))
+      );
     } catch (e: any) {
       console.error(e);
       toast.error("Erro ao carregar testes.");
@@ -127,67 +97,22 @@ export default function TestsPage() {
     if (token) loadEvaluations();
   }, [token, loadEvaluations]);
 
-  // Carrega opções de paciente
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      if (!token) return;
-      try {
-        const result = await fetchPatients(token);
-        if ((result as any).error) {
-          throw new Error(
-            `${(result as any).message} (Status: ${(result as any).statusCode})`
-          );
-        }
-        const items: Patient[] = result as Patient[];
-        if (items && items instanceof Error) {
-          throw new Error(items.message);
-        }
-        if (!active) return;
-        setPatientOptions(items.map((p) => ({ id: p.id, name: p.fullName })));
-      } catch (error) {
-        toast.error("Erro ao carregar pacientes: " + error.message);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [token, debouncedPatientQuery]);
-
-  // Carrega opções de profissional
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      if (!token) return;
-      try {
-        const items: HealthProfessional[] = await fetchHealthProfessionals({
-          accessToken: token,
-        });
-        if (!active) return;
-        setProfessionalOptions(
-          items.map((hp) => ({ id: hp.id, name: hp.fullName }))
-        );
-      } catch {
-        // silencioso
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [token, debouncedProfessionalQuery]);
-
   // Enquanto carrega sessão
   if (status === "loading") return <div>Carregando…</div>;
   if (!token)
     return <div>Você precisa estar logado para acessar essa página.</div>;
 
   const columns: ColumnConfig<
-    Evaluation & { patientName?: string; professionalName?: string }
+    Evaluation & {
+      patientName?: string;
+      professionalName?: string;
+      healthUnitName?: string;
+    }
   >[] = [
     { key: "type", header: "Tipo", width: 110 },
     { key: "patientName", header: "Paciente", flex: 1.2 },
     { key: "professionalName", header: "Profissional", flex: 1.2 },
-    { key: "healthcareUnitId", header: "Unidade", width: 220, flex: 1.1 },
+    { key: "healthUnitName", header: "Unidade", width: 220, flex: 1.1 },
     {
       key: "time_init",
       header: "Início",

@@ -24,7 +24,6 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { Evaluation } from "@/types/domain/Evaluation";
-import { evaluationsApi } from "@/types/api/Eveluation";
 import { InfoItem } from "@/components/evaluations/InfoItem";
 import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
@@ -76,13 +75,12 @@ export default function Page({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [details, all] = await Promise.all([
+        const [details] = await Promise.all([
           fetchEvaluationById(id, session?.accessToken),
-          evaluationsApi.getAllEvaluations(),
         ]);
         console.log(details);
         setEvaluationDetails(details);
-        setAllEvaluations(all);
+        setAllEvaluations([]);
       } catch (err) {
         console.error(err);
       } finally {
