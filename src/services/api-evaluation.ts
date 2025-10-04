@@ -7,8 +7,7 @@ import {
   ListEvaluationsResponse,
 } from "@/types/api/Evaluation";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.seuservidor.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '/backend';
 
 type ListFilters = {
   patientId?: string | null;

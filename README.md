@@ -223,3 +223,39 @@ Para rodar o projeto localmente, siga os passos abaixo:
 * Conta de Paciente: CPF: 00011122237 | Senha: 123456
 * Conta de Profissional: CPF: 12312312311 | Senha: 123456
 * Conta de Pesquisador: CPF 00011122233 | Senha: 1234
+
+## Proxy no Vercel (HTTPS)
+
+Para evitar Mixed Content quando o backend está em HTTP e o frontend em HTTPS, configuramos um proxy via rewrites no Next.js/Vercel.
+
+Como funciona:
+- O navegador sempre chama rotas relativas `/backend/...` no mesmo domínio do app.
+- A Vercel reescreve e proxia essas requisições para a origem configurada em `API_ORIGIN`.
+
+Configuração:
+- `next.config.js` define uma regra de rewrite `/backend/:path* -> ${API_ORIGIN}/backend/:path*`.
+- `API_ORIGIN` pode ser definido por ambiente. Em produção na Vercel, se não definido, cai no IP atual.
+- `NEXT_PUBLIC_API_BASE_URL` deve ser `/backend` para que o cliente use o proxy.
+
+Variáveis de ambiente (exemplo em `.env.local`):
+
+```
+API_ORIGIN=http://localhost:3333
+NEXT_PUBLIC_API_BASE_URL=/backend
+```
+
+Desenvolvimento local:
+
+```
+API_ORIGIN=http://localhost:3333 npm run dev
+```
+
+Uso no cliente HTTP:
+- Centralizamos o cliente em `src/lib/api.ts` com `baseURL=/backend` e `withCredentials: true` quando necessário.
+- `src/services/Routes.ts` define `API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/backend'` e todas as rotas usam essa base.
+
+Critérios de aceitação:
+- Nenhuma URL absoluta HTTP para o backend no código.
+- Todas as chamadas usam `/backend/...` (ou o cliente centralizado).
+- Projeto compila com `next.config.js` incluindo `rewrites`.
+- Em produção (Vercel), as requisições aparecem como HTTPS no domínio do app.

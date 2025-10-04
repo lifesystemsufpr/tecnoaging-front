@@ -1,3 +1,4 @@
+const API_ORIGIN = process.env.API_ORIGIN || 'http://20.201.114.238';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
@@ -17,6 +18,11 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true,
+  },
+  async rewrites() {
+    return [
+      { source: '/backend/:path*', destination: `${API_ORIGIN}/backend/:path*` },
+    ];
   },
 };
 
