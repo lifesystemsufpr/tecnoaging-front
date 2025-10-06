@@ -1,4 +1,4 @@
-const API_ORIGIN = process.env.API_ORIGIN || 'http://20.201.114.238';
+const API_ORIGIN = process.env.API_ORIGIN || 'https://20.201.114.238';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
@@ -16,12 +16,26 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   async rewrites() {
     return [
-      { source: '/backend/:path*', destination: `${API_ORIGIN}/backend/:path*` },
+      { 
+        source: '/backend/:path*', 
+        destination: `${API_ORIGIN}/backend/:path*`,
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
+          },
+        ],
+      },
     ];
   },
 };
