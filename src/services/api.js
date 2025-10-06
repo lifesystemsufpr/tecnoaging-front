@@ -1,3 +1,3 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/backend';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default API_BASE_URL;
