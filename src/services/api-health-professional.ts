@@ -8,16 +8,28 @@ export async function fetchHealthProfessionals({
   accessToken,
   page = 1,
   pageSize,
+  query,
 }: {
   accessToken: string;
   page?: number;
   pageSize?: number;
+  query?: string;
 }): Promise<HealthProfessionalPaginatedResponse> {
-  let url = API_ROUTES.HEALTH_PROFESSIONALS;
-
+  const searchParams = new URLSearchParams();
   if (pageSize) {
-    url += `?page=${page}&pageSize=${pageSize}`;
+    searchParams.set("page", String(page));
+    searchParams.set("pageSize", String(pageSize));
+  } else if (page && page !== 1) {
+    searchParams.set("page", String(page));
   }
+  if (query && query.trim()) {
+    searchParams.set("search", query.trim());
+  }
+
+  const qs = searchParams.toString();
+  const url = qs
+    ? `${API_ROUTES.HEALTH_PROFESSIONALS}?${qs}`
+    : API_ROUTES.HEALTH_PROFESSIONALS;
 
   const res = await fetch(url, {
     headers: {
