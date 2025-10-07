@@ -45,22 +45,35 @@ const roleAccess = {
   PATIENT: ["/home", "/evaluations"],
 };
 
-export async function middleware(request) {
-  const token = parseJwt(
-    (
-      await getToken({
-        req: request,
-        secret: process.env.NEXTAUTH_SECRET,
-      })
-    )?.accessToken || ""
-  );
+function getUserFromToken(nextAuthToken) {
+  if (!nextAuthToken) return null;
 
+  if (nextAuthToken.user && typeof nextAuthToken.user === "object") {
+    return nextAuthToken.user;
+  }
+
+  if (nextAuthToken.accessToken) {
+    return parseJwt(String(nextAuthToken.accessToken));
+  }
+
+  return null;
+}
+
+export async function middleware(request) {
+  const nextAuthToken = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+
+  const user = getUserFromToken(nextAuthToken);
+  const userRole = user?.role;
+  const isAuthenticated = Boolean(nextAuthToken);
   const { pathname } = request.nextUrl;
 
   // Redirecionamento da raiz
   if (pathname === "/") {
-    if (token?.role) {
-      switch (token.role) {
+    if (userRole) {
+      switch (userRole) {
         case "MANAGER":
           return NextResponse.redirect(
             new URL("/users/researchers", request.url)
@@ -79,25 +92,31 @@ export async function middleware(request) {
     }
   }
 
+  const isPublic = PUBLIC_PATHS.includes(pathname);
+
   // Usuário autenticado acessando rota pública? PERMITIDO
-  if (token && PUBLIC_PATHS.includes(pathname)) {
+  if (isAuthenticated && isPublic) {
     return NextResponse.next();
   }
 
   // Rota protegida e usuário não autenticado? Redireciona
-  const isPublic = PUBLIC_PATHS.includes(pathname);
-  if (!isPublic && !token) {
+  if (!isPublic && !isAuthenticated) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Verificação de permissões
-  if (token) {
-    const userRole = token?.role;
+  if (userRole) {
     const allowedPaths = roleAccess[userRole] || [];
 
     const isAllowed =
       allowedPaths.includes("*") ||
-      allowedPaths.some((allowedPath) => pathname.startsWith(allowedPath));
+      allowedPaths.some((allowedPath) => {
+        if (allowedPath.endsWith("/*")) {
+          const basePath = allowedPath.slice(0, -2);
+          return pathname.startsWith(basePath);
+        }
+        return pathname === allowedPath || pathname.startsWith(`${allowedPath}/`);
+      });
 
     if (!isAllowed) {
       return NextResponse.redirect(new URL("/unauthorized", request.url));
