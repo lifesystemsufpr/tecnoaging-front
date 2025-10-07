@@ -9,7 +9,7 @@ import {
   GridRowId,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { IconButton, Stack, Box } from "@mui/material";
+import { IconButton, Stack, Box, Skeleton, Typography } from "@mui/material";
 import {
   PageSizeOption,
   pageSizeOptions,
@@ -41,6 +41,8 @@ export type GenericTableProps<T> = {
   loading?: boolean;
   density?: "compact" | "standard" | "comfortable";
   toolbar?: React.ReactNode;
+  skeletonRowCount?: number;
+  noRowsLabel?: string;
   /** Se fornecido, habilita cursor de link e abre o href no duplo clique */
   rowHref?: (row: T) => string;
   totalRows?: number;
@@ -138,6 +140,77 @@ export const colsFromKeys = <T, K extends KeyOf<T>>(
   defaults?: Pick<ColumnConfig<T>, "width" | "flex">
 ): ColumnConfig<T>[] => keys.map((k) => ({ key: k, ...defaults }));
 
+const DEFAULT_SKELETON_ROWS = 6;
+const DEFAULT_NO_ROWS_LABEL = "Nenhum registro encontrado";
+
+const LoadingSkeletonOverlay = React.memo(
+  ({
+    columnCount = 1,
+    rowCount = DEFAULT_SKELETON_ROWS,
+    ...other
+  }: {
+    columnCount?: number;
+    rowCount?: number;
+  }) => {
+    const safeColumnCount = Math.max(1, columnCount);
+    const safeRowCount = Math.max(1, rowCount);
+
+    return (
+      <Box
+        {...other}
+        sx={{
+          width: "100%",
+          py: 3,
+          px: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 1.5,
+        }}
+      >
+        {Array.from({ length: safeRowCount }).map((_, rowIdx) => (
+          <Box
+            key={rowIdx}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: `repeat(${safeColumnCount}, minmax(80px, 1fr))`,
+              gap: 1,
+            }}
+          >
+            {Array.from({ length: safeColumnCount }).map((__, colIdx) => (
+              <Skeleton key={colIdx} variant="rounded" height={28} />
+            ))}
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+);
+
+LoadingSkeletonOverlay.displayName = "LoadingSkeletonOverlay";
+
+const EmptyStateOverlay = React.memo(
+  ({ label, ...other }: { label?: string }) => (
+    <Box
+      {...other}
+      role="presentation"
+      sx={{
+        width: "100%",
+        py: 4,
+        px: 2,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Typography variant="body2" color="text.secondary">
+        {label || DEFAULT_NO_ROWS_LABEL}
+      </Typography>
+    </Box>
+  )
+);
+
+EmptyStateOverlay.displayName = "EmptyStateOverlay";
+
 export function GenericTable<T>(props: GenericTableProps<T>) {
   const {
     rows,
@@ -157,6 +230,8 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     totalRows,
     paginationModel,
     setPaginationModel,
+    skeletonRowCount = DEFAULT_SKELETON_ROWS,
+    noRowsLabel = DEFAULT_NO_ROWS_LABEL,
   } = props;
 
   const gridColumns = React.useMemo(() => {
@@ -216,6 +291,19 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
           ...(rowHref && {
             "& .MuiDataGrid-row": { cursor: "pointer" },
           }),
+        }}
+        slots={{
+          loadingOverlay: LoadingSkeletonOverlay,
+          noRowsOverlay: EmptyStateOverlay,
+        }}
+        slotProps={{
+          loadingOverlay: {
+            columnCount: gridColumns.length,
+            rowCount: skeletonRowCount,
+          },
+          noRowsOverlay: {
+            label: noRowsLabel,
+          },
         }}
         paginationMode="server"
         rowCount={props.totalRows ?? rows.length}

@@ -1,7 +1,7 @@
 "use client";
 
 import { GenericTable } from "@/components/datatable/GenericTable";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { Box, Button, Modal, Skeleton, TextField } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { deleteResearcher, fetchResearchers } from "@/services/api-researcher";
@@ -131,7 +131,16 @@ export default function ResearcherCRUDPage() {
       </Box>
 
       {loading ? (
-        <div>Loading...</div>
+        <Box>
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={300}
+            sx={{
+              borderRadius: 1,
+            }}
+          />
+        </Box>
       ) : (
         <GenericTable<Researcher>
           rows={filteredResearchers ?? researchersList}
@@ -146,7 +155,7 @@ export default function ResearcherCRUDPage() {
             {
               key: "institution",
               header: "Instituição",
-              render: (p) => <>{p.row.institution?.title ?? "—"}</>,
+              render: (p) => <>{p.row?.institutionName ?? "—"}</>,
             },
             {
               key: "fieldOfStudy",

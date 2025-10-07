@@ -46,6 +46,7 @@ export function mapEntityToFormDefaults(
   switch (role) {
     case SystemRoles.RESEARCHER: {
       const r = entity as Researcher;
+      console.log(r);
       return {
         role: SystemRoles.RESEARCHER,
         fullName: r.fullName,
@@ -53,7 +54,7 @@ export function mapEntityToFormDefaults(
         password: "",
         email: r.email,
         phone: r.phone ?? "",
-        institution: r.institution.id ?? "",
+        institution: r.institutionId ?? "",
         fieldOfStudy: r.fieldOfStudy ?? "",
         gender: r.gender ?? "OTHER",
       };
