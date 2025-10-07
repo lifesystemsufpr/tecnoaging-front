@@ -1,7 +1,15 @@
 "use client";
 
 import { GenericTable } from "@/components/datatable/GenericTable";
-import { Box, Button, Modal, Skeleton, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Skeleton,
+  TextField,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { deleteResearcher, fetchResearchers } from "@/services/api-researcher";
@@ -10,6 +18,7 @@ import { UserCreateForm } from "@/components/form/user-create";
 import { SystemRoles } from "@/types/enums/system-roles";
 import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
+import { toast } from "sonner";
 
 export default function ResearcherCRUDPage() {
   const [researchersList, setResearchersList] = useState<Researcher[]>([]);
@@ -34,6 +43,8 @@ export default function ResearcherCRUDPage() {
 
   const router = useRouter();
   const { data: session, status } = useSession();
+  const theme = useTheme();
+  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
   const mountedRef = useRef(false);
   useEffect(() => {
@@ -100,9 +111,10 @@ export default function ResearcherCRUDPage() {
       deleteResearcher({
         id,
         access_token: session?.accessToken ?? "",
-      }).then(() => {
-        loadResearchers();
+      }).then(async () => {
+        await loadResearchers();
         setSelectedResearcher(null);
+        toast.success("Pesquisador deletado com sucesso.");
       });
     } catch (error) {
       console.error("Error deleting researcher:", error);
@@ -194,7 +206,7 @@ export default function ResearcherCRUDPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "50vw",
+            width: isNotebook ? "90%" : "50%",
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,

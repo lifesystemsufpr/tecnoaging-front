@@ -108,5 +108,8 @@ export async function deleteHealthProfessional({
       "Content-Type": "application/json",
     },
   });
+  if (!res.ok) {
+    throw new Error(`Failed to delete health professional with id ${id}`);
+  }
   return res.ok;
 }

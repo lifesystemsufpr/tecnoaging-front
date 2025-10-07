@@ -9,7 +9,19 @@ import {
   GridRowId,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { IconButton, Stack, Box, Skeleton, Typography } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  Box,
+  Skeleton,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import {
   PageSizeOption,
   pageSizeOptions,
@@ -34,7 +46,7 @@ export type GenericTableProps<T> = {
   showActions?: boolean;
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
-  onDelete?: (row: T) => void;
+  onDelete?: (row: T) => void | Promise<void>;
   pageSize?: number;
   checkboxSelection?: boolean;
   autoHeight?: boolean;
@@ -43,6 +55,13 @@ export type GenericTableProps<T> = {
   toolbar?: React.ReactNode;
   skeletonRowCount?: number;
   noRowsLabel?: string;
+  deleteConfirmTitle?: string;
+  deleteConfirmMessage?:
+    | React.ReactNode
+    | ((row: T) => React.ReactNode | string);
+  deleteConfirmConfirmLabel?: string;
+  deleteConfirmCancelLabel?: string;
+  deleteConfirmLoadingLabel?: string;
   /** Se fornecido, habilita cursor de link e abre o href no duplo clique */
   rowHref?: (row: T) => string;
   totalRows?: number;
@@ -142,6 +161,12 @@ export const colsFromKeys = <T, K extends KeyOf<T>>(
 
 const DEFAULT_SKELETON_ROWS = 6;
 const DEFAULT_NO_ROWS_LABEL = "Nenhum registro encontrado";
+const DEFAULT_DELETE_TITLE = "Confirmar exclusão";
+const DEFAULT_DELETE_MESSAGE =
+  "Tem certeza de que deseja excluir este registro?";
+const DEFAULT_DELETE_CONFIRM_LABEL = "Excluir";
+const DEFAULT_DELETE_CANCEL_LABEL = "Cancelar";
+const DEFAULT_DELETE_LOADING_LABEL = "Excluindo...";
 
 const LoadingSkeletonOverlay = React.memo(
   ({
@@ -189,7 +214,7 @@ const LoadingSkeletonOverlay = React.memo(
 LoadingSkeletonOverlay.displayName = "LoadingSkeletonOverlay";
 
 const EmptyStateOverlay = React.memo(
-  ({ label, ...other }: { label?: string }) => (
+  ({ children, ...other }: { children?: React.ReactNode }) => (
     <Box
       {...other}
       role="presentation"
@@ -203,7 +228,7 @@ const EmptyStateOverlay = React.memo(
       }}
     >
       <Typography variant="body2" color="text.secondary">
-        {label || DEFAULT_NO_ROWS_LABEL}
+        {children || DEFAULT_NO_ROWS_LABEL}
       </Typography>
     </Box>
   )
@@ -232,15 +257,42 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     setPaginationModel,
     skeletonRowCount = DEFAULT_SKELETON_ROWS,
     noRowsLabel = DEFAULT_NO_ROWS_LABEL,
+    deleteConfirmTitle = DEFAULT_DELETE_TITLE,
+    deleteConfirmMessage = DEFAULT_DELETE_MESSAGE,
+    deleteConfirmConfirmLabel = DEFAULT_DELETE_CONFIRM_LABEL,
+    deleteConfirmCancelLabel = DEFAULT_DELETE_CANCEL_LABEL,
+    deleteConfirmLoadingLabel = DEFAULT_DELETE_LOADING_LABEL,
   } = props;
+
+  const [rowPendingDeletion, setRowPendingDeletion] = React.useState<T | null>(
+    null
+  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [deleteDialogLoading, setDeleteDialogLoading] = React.useState(false);
+
+  const handleDeleteRequest = React.useCallback(
+    (row: T) => {
+      if (!onDelete) return;
+      setRowPendingDeletion(row);
+      setDeleteDialogLoading(false);
+      setDeleteDialogOpen(true);
+    },
+    [onDelete]
+  );
 
   const gridColumns = React.useMemo(() => {
     const cols = toGridColumns(columns);
     if (showActions && (onView || onEdit || onDelete)) {
-      cols.push(actionsColumn<T>({ onView, onEdit, onDelete }));
+      cols.push(
+        actionsColumn<T>({
+          onView,
+          onEdit,
+          onDelete: onDelete ? handleDeleteRequest : undefined,
+        })
+      );
     }
     return cols;
-  }, [columns, showActions, onView, onEdit, onDelete]);
+  }, [columns, showActions, onView, onEdit, onDelete, handleDeleteRequest]);
 
   const resolvedGetRowId = React.useMemo(() => {
     if (getRowId) return getRowId;
@@ -267,6 +319,35 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     },
     [rowHref]
   );
+
+  const handleCloseDeleteDialog = React.useCallback(() => {
+    if (deleteDialogLoading) return;
+    setDeleteDialogOpen(false);
+    setRowPendingDeletion(null);
+  }, [deleteDialogLoading]);
+
+  const handleConfirmDelete = React.useCallback(async () => {
+    if (!onDelete || !rowPendingDeletion) return;
+    try {
+      setDeleteDialogLoading(true);
+      await Promise.resolve(onDelete(rowPendingDeletion));
+      setDeleteDialogOpen(false);
+      setRowPendingDeletion(null);
+    } catch (error) {
+      console.error("[GenericTable] Erro ao excluir linha:", error);
+    } finally {
+      setDeleteDialogLoading(false);
+    }
+  }, [onDelete, rowPendingDeletion]);
+
+  const deleteDialogMessageContent = React.useMemo<React.ReactNode>(() => {
+    if (typeof deleteConfirmMessage === "function") {
+      return rowPendingDeletion
+        ? deleteConfirmMessage(rowPendingDeletion)
+        : DEFAULT_DELETE_MESSAGE;
+    }
+    return deleteConfirmMessage;
+  }, [deleteConfirmMessage, rowPendingDeletion]);
 
   return (
     <Box>
@@ -300,9 +381,9 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
           loadingOverlay: {
             columnCount: gridColumns.length,
             rowCount: skeletonRowCount,
-          },
+          } as any,
           noRowsOverlay: {
-            label: noRowsLabel,
+            children: noRowsLabel,
           },
         }}
         paginationMode="server"
@@ -310,6 +391,40 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
       />
+      {onDelete && (
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleCloseDeleteDialog}
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle>{deleteConfirmTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText component="div">
+              {deleteDialogMessageContent}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseDeleteDialog}
+              disabled={deleteDialogLoading}
+            >
+              {deleteConfirmCancelLabel}
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              variant="contained"
+              color="error"
+              disabled={deleteDialogLoading}
+              autoFocus
+            >
+              {deleteDialogLoading
+                ? deleteConfirmLoadingLabel
+                : deleteConfirmConfirmLabel}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 }

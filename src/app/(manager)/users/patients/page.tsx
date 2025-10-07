@@ -1,7 +1,15 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Patient } from "@/types/domain/Patient";
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { GenericTable } from "@/components/datatable/GenericTable";
 import { UserCreateForm } from "@/components/form/user-create";
 import { SystemRoles } from "@/types/enums/system-roles";
@@ -21,6 +29,8 @@ export default function PatientsCRUDPage() {
 
   const router = useRouter();
   const { data: session, status } = useSession();
+  const theme = useTheme();
+  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
   const [paginationModel, setPaginationModel] = useState<{
     pageSize: PageSizeOption;
@@ -161,7 +171,7 @@ export default function PatientsCRUDPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "50vw",
+            width: isNotebook ? "90%" : "50%",
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,

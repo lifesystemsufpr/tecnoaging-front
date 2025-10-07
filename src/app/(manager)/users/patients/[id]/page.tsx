@@ -198,7 +198,12 @@ export default function Page() {
         </Paper>
       ) : data ? (
         <Paper sx={{ p: 3 }}>
-          <UserDetailHeader active={true} name={name} updatedAt={updatedAt} />
+          <UserDetailHeader
+            active={true}
+            name={name}
+            updatedAt={updatedAt}
+            entity="Paciente"
+          />
 
           <Divider sx={{ my: 3 }} />
 

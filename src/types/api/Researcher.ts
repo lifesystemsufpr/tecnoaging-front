@@ -14,5 +14,4 @@ export interface ResearcherRequest {
   email: string;
   institutionId: string;
   fieldOfStudy: string;
-  specialityId: string;
 }

@@ -36,7 +36,6 @@ export const researcherCreateSchema = baseCreate.extend({
   email: z.string().email("Email inválido"),
   institution: z.string().min(1, "Required"),
   fieldOfStudy: z.string().optional().nullable(),
-  specialization: z.string().optional(),
 });
 
 export const patientCreateSchema = baseCreate.extend({

@@ -346,23 +346,34 @@ export default function PatientForm({ isEdit }: PatientFormProps) {
             }}
           />
 
-          <TextField
-            select
-            label="UF"
-            margin="normal"
-            required
-            fullWidth
-            error={!!errors.state}
-            helperText={errors.state?.message}
-            InputLabelProps={{ shrink: true }}
-            {...register("state")}
-          >
-            {UF_LIST.map((uf) => (
-              <MenuItem key={uf} value={uf}>
-                {uf}
-              </MenuItem>
-            ))}
-          </TextField>
+          <Controller
+            name="state"
+            control={control}
+            rules={{ required: "UF é obrigatória" }}
+            render={({ field }) => (
+              <TextField
+                select
+                label="UF"
+                margin="normal"
+                required
+                fullWidth
+                error={!!errors.state}
+                helperText={errors.state?.message}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                inputRef={field.ref}
+                InputLabelProps={{ shrink: true }}
+                {...register("state")}
+              >
+                {UF_LIST.map((uf) => (
+                  <MenuItem key={uf} value={uf}>
+                    {uf}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+          />
         </Box>
 
         <Box

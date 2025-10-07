@@ -8,9 +8,9 @@ import { SocioEconomicLevel } from "@/types/enums/socio-economic-level";
 import { ScholarShip } from "@/types/enums/scholar-ship";
 import { HealthProfessionalRequest } from "@/types/api/Health-professional";
 import { Patient } from "@/types/domain/Patient";
-import { UF_LIST } from "../validators/health-unit";
 import { sanatizeCPF, sanatizePhone } from "@/utils/sanatize";
 import { formatCpf } from "@/utils/format";
+import { UF_LIST } from "@/types/enums/uf-list";
 
 type HealthProfessional = any;
 
@@ -18,13 +18,8 @@ type AnyUserEntity = (Researcher | Patient | HealthProfessional) & {
   role: SystemRoles;
 };
 
-type UF = (typeof UF_LIST)[number];
-
 const toDateInput = (iso?: string | null) =>
   iso ? new Date(iso).toISOString().slice(0, 10) : "";
-
-const isUF = (v: string): v is UF =>
-  typeof v === "string" && (UF_LIST as readonly string[]).includes(v);
 
 const normalizeEnumKey = <E extends Record<string, string>>(
   enumObj: E,
@@ -46,7 +41,6 @@ export function mapEntityToFormDefaults(
   switch (role) {
     case SystemRoles.RESEARCHER: {
       const r = entity as Researcher;
-      console.log(r);
       return {
         role: SystemRoles.RESEARCHER,
         fullName: r.fullName,
@@ -66,6 +60,7 @@ export function mapEntityToFormDefaults(
         fullName: p.fullName ?? "",
         cpf: formatCpf(p.cpf) ?? "",
         password: "",
+        confirmPassword: "",
         gender: (p.gender ?? p.gender ?? "OTHER") as
           | "MALE"
           | "FEMALE"
@@ -86,7 +81,7 @@ export function mapEntityToFormDefaults(
 
         // endereço
         zipCode: p.zipCode ?? "",
-        state: isUF(p.state) ? p.state : "",
+        state: normalizeEnumKey(UF_LIST, p.state) ?? "",
         city: p.city ?? "",
         neighborhood: p.neighborhood ?? "",
         street: p.street ?? "",
@@ -101,6 +96,7 @@ export function mapEntityToFormDefaults(
         fullName: hp.fullName,
         cpf: formatCpf(hp.cpf),
         password: "",
+        confirmPassword: "",
         gender: hp.gender ?? "OTHER",
         phone: hp.phone ?? "",
         email: hp.email,
@@ -127,7 +123,6 @@ export function mapResearcherCreate(data: UserFormData) {
     email: data.email,
     institutionId: data.institution,
     fieldOfStudy: data.fieldOfStudy ?? "Sem campo",
-    specialityId: data.specialization ?? "",
   };
 }
 
@@ -231,6 +226,7 @@ export function mapHealthProCreate(
       cpf: sanatizeCPF(data.cpf),
       gender: GENDER[data.gender],
       phone: sanatizePhone(data.phone) || "",
+      password: data.password,
     },
     email: data.email,
     speciality: data.specialization,

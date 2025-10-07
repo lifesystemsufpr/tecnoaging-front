@@ -111,22 +111,6 @@ export default function ResearcherForm({
             />
           )}
         />
-
-        <Controller
-          name={"specialization" as any}
-          control={control}
-          render={({ field, fieldState }) => (
-            <TextField
-              label="Especialização"
-              margin="normal"
-              error={!!fieldState.error}
-              helperText={fieldState.error?.message}
-              fullWidth
-              value={field.value || ""}
-              onChange={(e) => field.onChange(e.target.value)}
-            />
-          )}
-        />
       </Box>
     </Box>
   );

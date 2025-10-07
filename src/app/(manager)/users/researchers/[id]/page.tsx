@@ -178,6 +178,7 @@ export default function Page() {
           <UserDetailHeader
             active={!!active}
             name={name}
+            entity="Pesquisador"
             updatedAt={updatedAt}
           />
 

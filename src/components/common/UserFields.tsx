@@ -1,10 +1,18 @@
 "use client";
 
-import { Box, MenuItem, TextField } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import type { UserFormData } from "@/lib/validators/user";
-// import { CPFMask } de antes, se quiser máscara
 import { GENDER } from "@/types/enums/gender";
+import { useState } from "react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const onlyDigits = (v: string) => v.replace(/\D/g, "");
 
@@ -19,7 +27,7 @@ const maskCPF = (v: string) => {
   return out;
 };
 
-/** Telefone BR celular -> (00) 90000-0000 (11 dígitos) */
+/** Telefone BR celular -> (00) 90000-0000 (11 digitos) */
 const maskPhoneBR = (v: string) => {
   const d = onlyDigits(v).slice(0, 11);
   let out = d.replace(/^(\d{2})(\d)/, "($1) $2");
@@ -50,6 +58,7 @@ export default function UserFields({ isEdit = false }) {
 
   const cpfReg = register("cpf");
   const phoneReg = register("phone");
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <Box>
@@ -85,11 +94,28 @@ export default function UserFields({ isEdit = false }) {
         />
         <TextField
           label="Senha"
-          type="password"
+          type={showPassword ? "text" : "password"}
           fullWidth
           margin="normal"
           error={!!errors.password}
           helperText={errors.password?.message}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {showPassword ? (
+                    <VisibilityOffIcon fontSize="small" />
+                  ) : (
+                    <VisibilityIcon fontSize="small" />
+                  )}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           {...register("password")}
           required={!isEdit}
         />
@@ -118,7 +144,7 @@ export default function UserFields({ isEdit = false }) {
           control={control}
           render={({ field }) => (
             <TextField
-              label="Gênero"
+              label="Genero"
               select
               fullWidth
               margin="normal"

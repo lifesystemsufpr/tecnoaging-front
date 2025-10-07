@@ -8,10 +8,19 @@ import {
 import { HealthProfessional } from "@/types/domain/Health-professional";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { SystemRoles } from "@/types/enums/system-roles";
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function HealthProfessionalsCRUDPage() {
   const [HealthProfessionalsList, setHealthProfessionalsList] = useState<
@@ -37,6 +46,8 @@ export default function HealthProfessionalsCRUDPage() {
   const router = useRouter();
 
   const { data: session } = useSession();
+  const theme = useTheme();
+  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
   if (!session) {
     return (
@@ -73,18 +84,28 @@ export default function HealthProfessionalsCRUDPage() {
       accessToken: session.accessToken,
       page: paginationModel.page + 1,
       pageSize: paginationModel.pageSize,
-    }).then((response) => {
-      const { data, meta } = response;
-      setHealthProfessionalsList(data);
-      setTotalRows(meta.total);
-    });
+    })
+      .then((response) => {
+        const { data, meta } = response;
+        setHealthProfessionalsList(data);
+        setTotalRows(meta.total);
+      })
+      .catch((error) => {
+        console.error("Error fetching health professionals:", error);
+        toast.error("Erro ao carregar profissionais de saúde.");
+      });
   }, [session, paginationModel]);
 
   const handleDeleteHealthProfessional = async (id: string) => {
-    await deleteHealthProfessional({
-      accessToken: session.accessToken,
-      id,
-    }).then(() => loadHealthProfessionals());
+    try {
+      await deleteHealthProfessional({
+        accessToken: session.accessToken,
+        id,
+      }).then(() => loadHealthProfessionals());
+    } catch (error) {
+      console.error("Error deleting health professional:", error);
+      toast.error("Erro ao deletar profissional de saúde.");
+    }
   };
 
   const handleUpdateHealthProfessional = (id: string) => {
@@ -182,7 +203,7 @@ export default function HealthProfessionalsCRUDPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "50vw",
+            width: isNotebook ? "90%" : "50%",
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
