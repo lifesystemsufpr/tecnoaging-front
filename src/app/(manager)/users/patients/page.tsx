@@ -51,10 +51,12 @@ export default function PatientsCRUDPage() {
           paginationModel.pageSize,
           query
         );
+        console.log("Fetched patients:", data, meta);
         setPatientsList(data);
         setTotalRows(meta.total);
       } catch (e) {
         console.error(e);
+        console.log(e);
       }
     },
     [paginationModel]
@@ -71,7 +73,7 @@ export default function PatientsCRUDPage() {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (!searchQuery) {
-        setPatientFilter(patientsList);
+        loadPatients(session.accessToken);
         setTotalRows(patientsList.length);
         return;
       }
@@ -81,12 +83,8 @@ export default function PatientsCRUDPage() {
 
       if (onlyLetters || onlyNumbers) {
         loadPatients(session.accessToken, searchQuery);
-      } else {
-        setPatientFilter([]);
-        setTotalRows(0);
       }
     }, DEBOUNCE_DELAY);
-
     return () => clearTimeout(handler);
   }, [searchQuery, session.accessToken, patientsList]);
 
