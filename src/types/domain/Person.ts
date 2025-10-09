@@ -8,4 +8,6 @@ export interface User {
   phone?: string;
   role?: string;
   password?: string;
+  active?: boolean;
+  updatedAt?: string;
 }

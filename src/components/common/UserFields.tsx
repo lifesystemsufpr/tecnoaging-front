@@ -144,7 +144,7 @@ export default function UserFields({ isEdit = false }) {
           control={control}
           render={({ field }) => (
             <TextField
-              label="Genero"
+              label="Genero Biológico"
               select
               fullWidth
               margin="normal"

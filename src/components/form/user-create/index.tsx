@@ -94,7 +94,7 @@ export function UserCreateForm({
           email: "",
           institution: "",
           fieldOfStudy: "",
-          gender: "OTHER",
+          gender: "MALE",
           specialization: "",
         },
     mode: "onBlur",
