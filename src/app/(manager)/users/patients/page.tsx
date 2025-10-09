@@ -51,12 +51,10 @@ export default function PatientsCRUDPage() {
           paginationModel.pageSize,
           query
         );
-        console.log("Fetched patients:", data, meta);
         setPatientsList(data);
         setTotalRows(meta.total);
       } catch (e) {
         console.error(e);
-        console.log(e);
       }
     },
     [paginationModel]

@@ -134,7 +134,7 @@ export function UserCreateForm({
             break;
           }
           case SystemRoles.HEALTH_PROFESSIONAL: {
-            const payload = mapHealthProUpdate(data as UserFormData);
+            const payload = mapHealthProUpdate(data as UserUpdateFormData);
             await updateHealthProfessional({
               id: (editUser as HealthProfessional).id,
               data: payload,
@@ -179,7 +179,7 @@ export function UserCreateForm({
       } else {
         toast.error(`${(err as any).message || err}`);
       }
-      console.log("Submission error:", err);
+      console.error("Submission error:", err);
       setErrors(err);
     } finally {
       if (errors) {

@@ -234,20 +234,26 @@ export function mapHealthProCreate(
 }
 
 export function mapHealthProUpdate(
-  data: UserFormData
-): HealthProfessionalRequest {
+  data: UserUpdateFormData
+): Partial<HealthProfessionalRequest> {
   if (data.role !== SystemRoles.HEALTH_PROFESSIONAL) {
     throw new Error("Invalid role for health professional update");
   }
-  return {
+  const payload: Partial<HealthProfessionalRequest> = {
     user: {
       fullName: data.fullName,
       cpf: sanatizeCPF(data.cpf),
       phone: data.phone ? sanatizePhone(data.phone) : "",
       gender: GENDER[data.gender],
-      password: data.password,
     },
     email: data.email,
     speciality: data.specialization,
   };
+  if (data.password && data.password.trim().length > 0) {
+    payload.user = {
+      ...payload.user,
+      password: data.password,
+    };
+  }
+  return payload;
 }

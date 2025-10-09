@@ -56,7 +56,7 @@ export default function PatientsCRUDPage() {
         await deleteHealthUnit(id, token);
         await loadHealth();
       } catch (error) {
-        console.log("Failed to delete health unit:", error);
+        console.error("Failed to delete health unit:", error);
         toast.error("Erro ao deletar unidade de saúde");
       }
     },
@@ -167,7 +167,7 @@ export default function PatientsCRUDPage() {
                 setIsModalOpen(false);
                 await loadHealth();
               } catch (error) {
-                console.log("Failed to create health unit:", error);
+                console.error("Failed to create health unit:", error);
                 toast.error("Erro ao salvar unidade de saúde");
               }
             }}

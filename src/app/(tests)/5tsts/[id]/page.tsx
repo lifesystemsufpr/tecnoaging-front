@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import NextLink from "next/link";
 import {
   Box,
@@ -47,10 +47,11 @@ export default function Page({ params }: { params: { id: string } }) {
   const { data: session } = useSession();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
 
-  const [evaluationDetails, setEvaluationDetails] =
-    React.useState<Evaluation | null>(null);
-  const [allEvaluations, setAllEvaluations] = React.useState<Evaluation[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [evaluationDetails, setEvaluationDetails] = useState<Evaluation | null>(
+    null
+  );
+  const [allEvaluations, setAllEvaluations] = useState<Evaluation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const iconePorClassificacao: { [key: string]: React.ReactNode } = {
     Excelente: <CheckCircleIcon fontSize="small" color="success" />,
@@ -71,14 +72,13 @@ export default function Page({ params }: { params: { id: string } }) {
     Crítico: "error",
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const [details] = await Promise.all([
           fetchEvaluationById(id, session?.accessToken),
         ]);
-        console.log(details);
         setEvaluationDetails(details);
         setAllEvaluations([]);
       } catch (err) {
@@ -90,7 +90,7 @@ export default function Page({ params }: { params: { id: string } }) {
     fetchData();
   }, [id]);
 
-  const indicadoresRadar = React.useMemo(() => {
+  const indicadoresRadar = useMemo(() => {
     if (!evaluationDetails || !evaluationDetails.sensorData.length) return null;
     return calcularIndicadores(evaluationDetails.sensorData, evaluationDetails);
   }, [evaluationDetails]);
@@ -99,7 +99,7 @@ export default function Page({ params }: { params: { id: string } }) {
     ? classificarDesempenhoGeral(indicadoresRadar)
     : "N/A";
 
-  const potencias = React.useMemo(() => {
+  const potencias = useMemo(() => {
     if (!evaluationDetails) return [];
     const pot: number[] = [];
     const limiar = 1.0;
