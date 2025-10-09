@@ -141,7 +141,7 @@ export function mapResearcherUpdate(data: UserUpdateFormData) {
     },
     email: data.email,
     institutionId: data.institution,
-    fieldOfStudyId: data.fieldOfStudy,
+    fieldOfStudy: data.fieldOfStudy,
     specialityId: data.specialization ?? "",
   };
   if (data.password && data.password.trim().length > 0) {
