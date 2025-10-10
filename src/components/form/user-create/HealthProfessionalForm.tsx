@@ -15,13 +15,8 @@ interface HealthProfessionalFormProps {
 export default function HealthProfessionalForm({
   isEdit,
 }: HealthProfessionalFormProps) {
-  const [selectedSpecialization, setSelectedSpecialization] = useState<
-    string | null
-  >(null);
-
   const {
     register,
-    control,
     formState: { errors },
   } = useFormContext<HealthProFormData>();
 

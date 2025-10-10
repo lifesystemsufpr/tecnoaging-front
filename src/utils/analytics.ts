@@ -43,7 +43,6 @@ export function calcularIndicadores(
     return Math.sqrt(d.accel_x ** 2 + d.accel_y ** 2 + d.accel_z ** 2);
   });
 
-  console.log({ accelNorm });
   const media = accelNorm.reduce((sum, v) => sum + v, 0) / accelNorm.length;
   const potencia = Math.sqrt(
     accelNorm.reduce((sum, v) => sum + v ** 2, 0) / accelNorm.length

@@ -71,7 +71,7 @@ export default function PatientsCRUDPage() {
   useEffect(() => {
     const handler = setTimeout(() => {
       if (!searchQuery) {
-        setPatientFilter(patientsList);
+        loadPatients(session.accessToken);
         setTotalRows(patientsList.length);
         return;
       }
@@ -81,12 +81,8 @@ export default function PatientsCRUDPage() {
 
       if (onlyLetters || onlyNumbers) {
         loadPatients(session.accessToken, searchQuery);
-      } else {
-        setPatientFilter([]);
-        setTotalRows(0);
       }
     }, DEBOUNCE_DELAY);
-
     return () => clearTimeout(handler);
   }, [searchQuery, session.accessToken, patientsList]);
 

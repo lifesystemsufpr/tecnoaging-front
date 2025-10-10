@@ -59,42 +59,36 @@ export default function HealthProfessionalsCRUDPage() {
 
   const searchProfessionals = (query: string) => {
     if (!query) {
-      setFilteredHealthProfessionals(null);
+      loadHealthProfessionals();
       return;
     }
     const onlyLetters = /^[A-Za-z\s]+$/.test(query);
     const onlyNumbers = /^[0-9]+$/.test(query);
-    if (onlyLetters) {
-      setFilteredHealthProfessionals(
-        HealthProfessionalsList.filter((p) =>
-          p.fullName.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    } else if (onlyNumbers) {
-      setFilteredHealthProfessionals(
-        HealthProfessionalsList.filter((p) => p.cpf.includes(query))
-      );
-    } else {
-      setFilteredHealthProfessionals([]);
+    if (onlyLetters || onlyNumbers) {
+      loadHealthProfessionals(query);
     }
   };
 
-  const loadHealthProfessionals = useCallback(async () => {
-    fetchHealthProfessionals({
-      accessToken: session.accessToken,
-      page: paginationModel.page + 1,
-      pageSize: paginationModel.pageSize,
-    })
-      .then((response) => {
-        const { data, meta } = response;
-        setHealthProfessionalsList(data);
-        setTotalRows(meta.total);
+  const loadHealthProfessionals = useCallback(
+    async (query?: string) => {
+      fetchHealthProfessionals({
+        accessToken: session.accessToken,
+        page: paginationModel.page + 1,
+        pageSize: paginationModel.pageSize,
+        query,
       })
-      .catch((error) => {
-        console.error("Error fetching health professionals:", error);
-        toast.error("Erro ao carregar profissionais de saúde.");
-      });
-  }, [session, paginationModel]);
+        .then((response) => {
+          const { data, meta } = response;
+          setHealthProfessionalsList(data);
+          setTotalRows(meta.total);
+        })
+        .catch((error) => {
+          console.error("Error fetching health professionals:", error);
+          toast.error("Erro ao carregar profissionais de saúde.");
+        });
+    },
+    [session, paginationModel]
+  );
 
   const handleDeleteHealthProfessional = async (id: string) => {
     try {
