@@ -180,16 +180,17 @@ const AppSidebar = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-blue-600 dark:bg-gray-900 dark:border-gray-800 text-white h-screen transition-all duration-300 ease-in-out z-6 border-r border-bg-blue-600 
-        ${
-          isExpanded || isMobileOpen
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-blue-600 dark:bg-gray-900 dark:border-gray-800 text-white h-screen transition-all duration-300 ease-in-out 
+      ${isMobileOpen ? "z-[1000]" : "z-6"} border-r border-bg-blue-600 
+      ${
+        isExpanded || isMobileOpen
+          ? "w-[290px]"
+          : isHovered
             ? "w-[290px]"
-            : isHovered
-              ? "w-[290px]"
-              : "w-[90px]"
-        }
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0`}
+            : "w-[90px]"
+      }
+      ${isMobileOpen ? "translate-x-0 " : "-translate-x-full"}
+      lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
