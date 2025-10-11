@@ -65,7 +65,9 @@ export async function middleware(request) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  const { exp: tokenExp } = parseJwt(String(nextAuthToken.accessToken));
+  const { exp: tokenExp } = parseJwt(
+    String(nextAuthToken?.accessToken) || "{}"
+  );
   const isAuthenticated = Boolean(
     nextAuthToken && tokenExp * 1000 > Date.now()
   );
