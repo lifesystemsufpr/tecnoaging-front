@@ -65,10 +65,22 @@ export async function middleware(request) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const { exp: tokenExp } = parseJwt(String(nextAuthToken.accessToken));
+  const isAuthenticated = Boolean(
+    nextAuthToken && tokenExp * 1000 > Date.now()
+  );
+  const { pathname } = request.nextUrl;
+
+  if (!isAuthenticated) {
+    if (pathname != "/login") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    } else {
+      return NextResponse.next();
+    }
+  }
+
   const user = getUserFromToken(nextAuthToken);
   const userRole = user?.role;
-  const isAuthenticated = Boolean(nextAuthToken);
-  const { pathname } = request.nextUrl;
 
   // Redirecionamento da raiz
   if (pathname === "/") {
@@ -115,7 +127,9 @@ export async function middleware(request) {
           const basePath = allowedPath.slice(0, -2);
           return pathname.startsWith(basePath);
         }
-        return pathname === allowedPath || pathname.startsWith(`${allowedPath}/`);
+        return (
+          pathname === allowedPath || pathname.startsWith(`${allowedPath}/`)
+        );
       });
 
     if (!isAllowed) {
