@@ -23,22 +23,13 @@ import { formatCpf, formatPhoneBR, genderPt } from "@/utils/format";
 import { Copyable } from "@/components/Compyable";
 import { UserDetailHeader } from "@/components/common/UserDetailHeader";
 
-type R = Researcher & {
-  fullName?: string;
-  cpf?: string;
-  phone?: string | null;
-  gender?: "MALE" | "FEMALE" | "OTHER";
-  institution?: { id: string; title: string };
-  institutionId?: string;
-  email?: string;
-};
-
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const [data, setData] = useState<R | null>(null);
+  const [data, setData] = useState<Researcher | null>(null);
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
@@ -53,7 +44,8 @@ export default function Page() {
         id: strId,
         access_token: session.accessToken,
       });
-      setData(res as R);
+      setData(res as Researcher);
+      setName(res.fullName || "");
     } catch (e: any) {
       setErr(e?.message || "Erro ao carregar pesquisador.");
       setData(null);
@@ -87,17 +79,6 @@ export default function Page() {
     );
   }
 
-  const name = data?.user?.fullName ?? data?.fullName ?? "—";
-  const email = data?.email ?? (data as any)?.user?.email ?? "—";
-  const cpf = data?.user?.cpf ?? data?.cpf;
-  const phone = data?.user?.phone ?? data?.phone ?? null;
-  const gender = (data?.user?.gender ?? data?.gender) as R["gender"];
-  const fieldOfStudy = data?.fieldOfStudy ?? "—";
-  const institutionTitle = data?.institution?.title ?? "—";
-  const institutionId = data?.institution?.id ?? data?.institutionId;
-  const updatedAt = data?.updatedAt;
-  const active = data?.active;
-
   return (
     <Box p={3} sx={{ mx: "auto" }}>
       <Stack
@@ -116,7 +97,7 @@ export default function Page() {
             Pesquisadores
           </MUILink>
           <Typography color="text.primary">
-            {name !== "—" ? name : "Detalhes"}
+            {name !== "" ? name : "Detalhes"}
           </Typography>
         </Breadcrumbs>
 
@@ -176,10 +157,10 @@ export default function Page() {
         <Paper sx={{ p: 3 }}>
           {/* Header */}
           <UserDetailHeader
-            active={!!active}
-            name={name}
+            active={!!data?.active || false}
+            name={data.fullName || "—"}
             entity="Pesquisador"
-            updatedAt={updatedAt}
+            updatedAt={data?.updatedAt}
           />
 
           <Divider sx={{ my: 3 }} />
@@ -190,14 +171,17 @@ export default function Page() {
               <Typography variant="subtitle2" color="text.secondary">
                 Email
               </Typography>
-              <Copyable text={email} label={email} />
+              <Copyable text={data.email} label={data.email} />
             </Grid>
 
             <Grid size={12}>
               <Typography variant="subtitle2" color="text.secondary">
                 CPF
               </Typography>
-              <Copyable text={cpf ?? undefined} label={formatCpf(cpf)} />
+              <Copyable
+                text={data.cpf ?? undefined}
+                label={formatCpf(data?.cpf)}
+              />
             </Grid>
 
             <Grid size={12}>
@@ -205,7 +189,7 @@ export default function Page() {
                 Telefone
               </Typography>
               <Typography variant="body1">
-                {formatPhoneBR(phone || undefined)}
+                {formatPhoneBR(data.phone || undefined)}
               </Typography>
             </Grid>
 
@@ -213,14 +197,14 @@ export default function Page() {
               <Typography variant="subtitle2" color="text.secondary">
                 Gênero
               </Typography>
-              <Typography variant="body1">{genderPt(gender)}</Typography>
+              <Typography variant="body1">{genderPt(data.gender)}</Typography>
             </Grid>
 
             <Grid size={12}>
               <Typography variant="subtitle2" color="text.secondary">
                 Área de atuação
               </Typography>
-              <Typography variant="body1">{fieldOfStudy}</Typography>
+              <Typography variant="body1">{data.fieldOfStudy}</Typography>
             </Grid>
 
             <Grid size={12}>
@@ -228,7 +212,7 @@ export default function Page() {
                 Instituição
               </Typography>
 
-              <Typography variant="body1">{institutionTitle}</Typography>
+              <Typography variant="body1">{data.institutionName}</Typography>
             </Grid>
           </Grid>
         </Paper>

@@ -193,7 +193,7 @@ export default function TitleResourcePage({
           sortModel={sortModel}
           onSortModelChange={setSortModel}
           disableColumnMenu
-          density="comfortable"
+          density="compact"
         />
       </div>
 

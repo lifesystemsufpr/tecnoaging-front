@@ -100,6 +100,8 @@ export const patientUpdateSchema = baseUpdate.extend({
 
 export const healthProUpdateSchema = baseUpdate.extend({
   role: z.literal(SystemRoles.HEALTH_PROFESSIONAL),
+  email: z.string().email("Email invalido"),
+  specialization: z.string().min(1, "Required"),
 });
 
 export const userSchema = z.discriminatedUnion("role", [

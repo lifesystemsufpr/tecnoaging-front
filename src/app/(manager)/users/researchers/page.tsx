@@ -171,7 +171,7 @@ export default function ResearcherCRUDPage() {
             },
             {
               key: "fieldOfStudy",
-              header: "Área de Estudo",
+              header: "Campo de Estudo",
               render: (p) => <>{p.row.fieldOfStudy ?? "—"}</>,
             },
           ]}
