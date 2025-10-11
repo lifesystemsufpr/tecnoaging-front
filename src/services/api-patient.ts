@@ -24,6 +24,12 @@ export async function fetchPatients(
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar pacientes: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
@@ -38,6 +44,12 @@ export async function fetchPatientById({
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar paciente: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
@@ -56,6 +68,12 @@ export async function createPatient({
     },
     body: JSON.stringify(patientData),
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao criar paciente: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
@@ -72,6 +90,12 @@ export async function updatePatient(
     },
     body: JSON.stringify(patientData),
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao atualizar paciente: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
@@ -79,8 +103,14 @@ export async function deletePatient(
   access_token: string,
   id: string
 ): Promise<void> {
-  await fetch(API_ROUTES.PATIENT_BY_ID(id), {
+  const resp = await fetch(API_ROUTES.PATIENT_BY_ID(id), {
     method: "DELETE",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!resp.ok) {
+    const errorData = await resp.json();
+    throw new Error(
+      "Falha ao deletar paciente: " + (errorData.message || resp.statusText)
+    );
+  }
 }

@@ -63,15 +63,25 @@ export async function createHealthProfessional({
   data: HealthProfessionalRequest;
   accessToken: string;
 }) {
-  const res = await fetch(API_ROUTES.HEALTH_PROFESSIONALS, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  return await res.json();
+  try {
+    const res = await fetch(API_ROUTES.HEALTH_PROFESSIONALS, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        `Falha ao criar profissional: ${errorData.message || res.statusText}`
+      );
+    }
+    return await res.json();
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function updateHealthProfessional({
@@ -91,6 +101,12 @@ export async function updateHealthProfessional({
     },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      `Falha ao atualizar profissional: ${errorData.message || res.statusText}`
+    );
+  }
   return await res.json();
 }
 

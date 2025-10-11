@@ -6,6 +6,13 @@ export const fetchHealthUnits = async (access_token: string) => {
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar unidades de saúde: " +
+        (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 };
 
@@ -14,6 +21,13 @@ export const fetchHealthUnitById = async (id: string, access_token: string) => {
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar unidade de saúde: " +
+        (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 };
 

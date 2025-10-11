@@ -32,6 +32,12 @@ export async function fetchResearchers({
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar pesquisadores: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
@@ -64,7 +70,7 @@ export async function createResearcher({
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(
-      `Error creating researcher: ${errorData.message || res.statusText}`
+      `Erro ao criar pesquisadors: ${errorData.message || res.statusText}`
     );
   }
   return await res.json();
@@ -87,6 +93,12 @@ export async function updateResearcher({
     },
     body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Erro ao atualizar pesquisador: " + (errorData.message || res.statusText)
+    );
+  }
   return await res.json();
 }
 
