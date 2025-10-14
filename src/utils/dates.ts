@@ -43,8 +43,10 @@ export function toISODateStart(d?: string | null): string | null {
   const dt = new Date(`${d}T00:00:00`);
   return dt.toISOString();
 }
+
 export function toISODateEnd(d?: string | null): string | null {
   if (!d) return null;
-  const dt = new Date(`${d}T23:59:59.999`);
+  const [year, month, day] = d.split("-").map(Number);
+  const dt = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
   return dt.toISOString();
 }
