@@ -48,7 +48,7 @@ const genderToBr = (g: string) => {
   }
 };
 
-export default function UserFields({ isEdit = false }) {
+export default function UserFields({ isEdit = false, isPatient = false }) {
   const {
     register,
     control,
@@ -92,33 +92,48 @@ export default function UserFields({ isEdit = false }) {
             });
           }}
         />
-        <TextField
-          label="Senha"
-          type={showPassword ? "text" : "password"}
-          fullWidth
-          margin="normal"
-          error={!!errors.password}
-          helperText={errors.password?.message}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  edge="end"
-                >
-                  {showPassword ? (
-                    <VisibilityOffIcon fontSize="small" />
-                  ) : (
-                    <VisibilityIcon fontSize="small" />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          {...register("password")}
-          required={!isEdit}
-        />
+
+        {/* Se for Paciente a sua senha sera a data de nascimento, ou seja so mostra um campo informativo caso paciente*/}
+        {!isPatient ? (
+          <TextField
+            label="Senha"
+            type={showPassword ? "text" : "password"}
+            fullWidth
+            margin="normal"
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={
+                      showPassword ? "Ocultar senha" : "Mostrar senha"
+                    }
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showPassword ? (
+                      <VisibilityOffIcon fontSize="small" />
+                    ) : (
+                      <VisibilityIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            {...register("password")}
+            required={!isEdit}
+          />
+        ) : (
+          <TextField
+            label="Senha (Data de Nascimento)"
+            type="text"
+            fullWidth
+            margin="normal"
+            value="Será a data de nascimento"
+            disabled
+          />
+        )}
       </Box>
 
       <Box mt={2} sx={{ display: "flex", gap: 2 }}>

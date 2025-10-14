@@ -102,7 +102,7 @@ export default function PatientForm({ isEdit }: PatientFormProps) {
   return (
     <Box>
       <Box sx={{ display: step === 0 ? "block" : "none" }}>
-        <UserFields />
+        <UserFields isPatient={true} />
         <Box mt={2}>
           <Controller
             name="birthDate"
