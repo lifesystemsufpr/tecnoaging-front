@@ -202,7 +202,7 @@ export default function Page() {
 
             <Grid size={12}>
               <Typography variant="subtitle2" color="text.secondary">
-                Área de atuação
+                Campo de estudo
               </Typography>
               <Typography variant="body1">{data.fieldOfStudy}</Typography>
             </Grid>

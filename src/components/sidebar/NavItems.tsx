@@ -97,10 +97,4 @@ export const navItems: NavItem[] = [
       },
     ],
   },
-  {
-    icon: <BarChart3 size={18} />,
-    name: "Análise da População",
-    path: "/population-analysis",
-    roles: [SystemRoles.RESEARCHER],
-  },
 ];

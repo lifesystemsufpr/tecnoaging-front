@@ -70,9 +70,10 @@ export default function PatientsCRUDPage() {
 
   useEffect(() => {
     const handler = setTimeout(() => {
+      if (!session?.accessToken) return;
+
       if (!searchQuery) {
         loadPatients(session.accessToken);
-        setTotalRows(patientsList.length);
         return;
       }
 
@@ -83,8 +84,9 @@ export default function PatientsCRUDPage() {
         loadPatients(session.accessToken, searchQuery);
       }
     }, DEBOUNCE_DELAY);
+
     return () => clearTimeout(handler);
-  }, [searchQuery, session.accessToken, patientsList]);
+  }, [searchQuery, session?.accessToken]);
 
   const handleDeletePatient = async (id: string) => {
     if (!session?.accessToken) return;
