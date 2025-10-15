@@ -8,7 +8,7 @@ import Button from "@/components/ui/button/Button";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { cpfSchema } from "@/lib/validators/cpf";
 
@@ -78,26 +78,22 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("credentials", {
-        redirect: true,
-        callbackUrl: "/",
         username: rawCpf.data.cpf,
-        password: password,
-        remember: isChecked,
+        password,
+        redirect: false,
       });
 
-      if (!result) {
-        toast.error("Erro inesperado. Verifique a configuração.");
-        return;
-      }
+      if (result?.ok) {
+        const session = await getSession();
 
-      if (result.error) {
-        toast.error("Verifique seu CPF e senha.");
-        return;
-      }
-
-      if (result.ok) {
-        toast.success("Login realizado com sucesso!");
-        router.push("/");
+        if (session?.user) {
+          toast.success("Login realizado com sucesso!");
+          router.push("/");
+        } else {
+          toast.warning("Sessão ainda não disponível, tente novamente.");
+        }
+      } else {
+        toast.error("Usuário ou senha inválidos.");
       }
     } catch (err) {
       console.error("Erro ao logar:", err);
