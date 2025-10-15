@@ -92,6 +92,7 @@ export default function LoginPage() {
           toast.success("Login realizado com sucesso!");
           router.push("/");
         } else {
+          console.log("Erro  ", result);
           toast.warning("Sessão ainda não disponível, tente novamente.");
         }
       } else {
