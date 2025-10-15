@@ -83,6 +83,8 @@ export default function LoginPage() {
         redirect: false,
       });
 
+      console.log("Result:", result);
+
       if (result?.ok) {
         await new Promise((res) => setTimeout(res, 500));
 
