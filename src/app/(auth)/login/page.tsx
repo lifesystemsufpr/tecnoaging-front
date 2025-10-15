@@ -84,6 +84,8 @@ export default function LoginPage() {
       });
 
       if (result?.ok) {
+        await new Promise((res) => setTimeout(res, 500));
+
         const session = await getSession();
 
         if (session?.user) {
