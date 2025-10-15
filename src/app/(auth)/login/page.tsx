@@ -80,7 +80,8 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         username: rawCpf.data.cpf,
         password,
-        redirect: false,
+        redirect: true,
+        callbackUrl: "/",
       });
 
       console.log("Result:", result);
