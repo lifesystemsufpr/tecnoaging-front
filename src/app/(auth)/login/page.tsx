@@ -96,6 +96,7 @@ export default function LoginPage() {
           toast.warning("Sessão ainda não disponível, tente novamente.");
         }
       } else {
+        console.log("Erro  ", result);
         toast.error("Usuário ou senha inválidos.");
       }
     } catch (err) {
