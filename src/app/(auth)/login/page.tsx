@@ -80,11 +80,8 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         username: rawCpf.data.cpf,
         password,
-        redirect: true,
-        callbackUrl: "/",
+        redirect: false,
       });
-
-      console.log("Result:", result);
 
       if (result?.ok) {
         await new Promise((res) => setTimeout(res, 500));

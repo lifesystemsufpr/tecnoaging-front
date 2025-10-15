@@ -26,7 +26,11 @@ export const authOptions: NextAuthOptions = {
             password: credentials.password,
           });
 
-          if (!res.ok) return null;
+          console.log("Resposta do fetchLogin:", res);
+
+          if (!res.ok) {
+            throw new Error("Credenciais inválidas");
+          }
 
           const data: LoginResponse = await res.json();
           const accessToken: string = data.access_token || data.refresh_token;
