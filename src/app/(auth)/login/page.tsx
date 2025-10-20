@@ -99,8 +99,10 @@ export default function LoginPage() {
 
       const targetUrl = result.url ?? "/";
       if (targetUrl.startsWith("http")) {
+        console.log("Redirecionando para (full reload):", targetUrl);
         window.location.href = targetUrl;
       } else {
+        console.log("Redirecionando para:", targetUrl);
         router.replace(targetUrl);
       }
     } catch (err) {
