@@ -40,7 +40,14 @@ export const researcherCreateSchema = baseCreate.extend({
 
 export const patientCreateSchema = baseCreate.extend({
   role: z.literal(SystemRoles.PATIENT),
-  birthDate: z.string().min(1, "Required"),
+  birthDate: z
+    .string()
+    .min(1, "Required")
+    .refine((value) => {
+      const date = new Date(value);
+      const now = new Date();
+      return date <= now;
+    }, "Data de nascimento inválida"),
   weight: z.number().min(0, "Required"),
   height: z.number().min(0, "Required"),
   scholarShip: z.enum(
@@ -77,7 +84,14 @@ export const researcherUpdateSchema = baseUpdate.extend({
 
 export const patientUpdateSchema = baseUpdate.extend({
   role: z.literal(SystemRoles.PATIENT),
-  birthDate: z.string().min(1, "Required"),
+  birthDate: z
+    .string()
+    .min(1, "Required")
+    .refine((value) => {
+      const date = new Date(value);
+      const now = new Date();
+      return date <= now;
+    }, "Data de nascimento inválida"),
   weight: z.number().min(0, "Required"),
   height: z.number().min(0, "Required"),
   scholarShip: z.enum(
