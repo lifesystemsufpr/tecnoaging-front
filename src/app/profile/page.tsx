@@ -28,6 +28,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 import { ResearcherDetailContent } from "@/components/common/user/ResearcherDetailContent";
+import ProfileSkeleton from "@/components/common/user/ProfileSkeleton";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<
@@ -137,7 +138,7 @@ export default function ProfilePage() {
           ) : null}
         </Paper>
       ) : (
-        <Typography>Loading user data...</Typography>
+        <ProfileSkeleton />
       )}
     </Box>
   );
