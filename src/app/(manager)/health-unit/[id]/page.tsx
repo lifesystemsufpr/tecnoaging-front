@@ -21,7 +21,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { fetchHealthUnitById } from "@/services/api-health-unit";
 import { HealthUnit } from "@/types/domain/Health-unit";
 import { Copyable } from "@/components/Compyable";
-import { UserDetailHeader } from "@/components/common/UserDetailHeader";
+import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 
 interface HealthUnitWithMeta extends HealthUnit {
   updatedAt?: string;

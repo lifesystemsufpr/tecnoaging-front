@@ -21,6 +21,7 @@ const roleAccess = {
     "/5tsts",
     "/5tsts/*",
     "/30sts",
+    "/profile",
   ],
   RESEARCHER: [
     "/login",
@@ -31,6 +32,7 @@ const roleAccess = {
     "/5tsts/*",
     "/30sts",
     "/population-analysis",
+    "/profile",
   ],
   HEALTH_PROFESSIONAL: [
     "/home",
@@ -41,8 +43,9 @@ const roleAccess = {
     "/5tsts",
     "/5tsts/*",
     "/30sts",
+    "/profile",
   ],
-  PATIENT: ["/home", "/evaluations"],
+  PATIENT: ["/home", "/evaluations", "/profile"],
 };
 
 function getUserFromToken(nextAuthToken) {

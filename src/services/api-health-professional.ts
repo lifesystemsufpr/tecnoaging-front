@@ -1,6 +1,7 @@
 import {
   HealthProfessionalPaginatedResponse,
   HealthProfessionalRequest,
+  HealthProfessionalResponse,
 } from "@/types/api/Health-professional";
 import { API_ROUTES } from "./Routes";
 
@@ -46,7 +47,7 @@ export async function fetchHealthProfessionalById({
 }: {
   id: string;
   accessToken: string;
-}) {
+}): Promise<HealthProfessionalResponse> {
   const res = await fetch(API_ROUTES.HEALTH_PROFESSIONAL_BY_ID(id), {
     headers: {
       Authorization: `Bearer ${accessToken}`,

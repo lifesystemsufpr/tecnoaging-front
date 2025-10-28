@@ -20,7 +20,7 @@ import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Copyable } from "@/components/Compyable";
-import { UserDetailHeader } from "@/components/common/UserDetailHeader";
+import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 
 export default function Page() {
   const { id } = useParams();
