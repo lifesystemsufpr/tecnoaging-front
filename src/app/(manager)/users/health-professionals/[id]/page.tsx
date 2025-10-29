@@ -21,7 +21,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatCpf, formatPhoneBR, genderPt } from "@/utils/format";
 import { Copyable } from "@/components/Compyable";
-import { UserDetailHeader } from "@/components/common/UserDetailHeader";
+import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 
 type HP = HealthProfessional & {
   gender?: "MALE" | "FEMALE" | "OTHER";

@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { useModal } from "@/hooks/useModal";
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
 import Image from "next/image";
 import { Pencil } from "lucide-react";
 import UserFormModal from "@/components/pages/users/UserFormModal";

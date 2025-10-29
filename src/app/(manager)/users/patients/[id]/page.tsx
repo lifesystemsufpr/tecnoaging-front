@@ -19,25 +19,19 @@ import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  fmtNumber,
   formatCpf,
   formatDateBr,
   formatPhoneBR,
   genderPt,
 } from "@/utils/format";
 import { Copyable } from "@/components/Compyable";
-import { UserDetailHeader } from "@/components/common/UserDetailHeader";
+import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 import { socioLabel } from "@/utils/socioEconomic";
 import { SocioEconomicLevel } from "@/types/enums/socio-economic-level";
 import { fetchPatientById } from "@/services/api-patient";
 import { ScholarShip } from "@/types/enums/scholar-ship";
-
-const fmtNumber = (n?: number, opts: Intl.NumberFormatOptions = {}) =>
-  typeof n === "number"
-    ? new Intl.NumberFormat("pt-BR", {
-        maximumFractionDigits: 2,
-        ...opts,
-      }).format(n)
-    : "—";
+import { UserDetailContent } from "@/components/common/user/UserDetailContent";
 
 export default function Page() {
   const { id } = useParams();
@@ -208,37 +202,8 @@ export default function Page() {
           <Divider sx={{ my: 3 }} />
 
           {/* Identificação */}
-          <Grid container spacing={2}>
-            <Grid size={12}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Nome completo
-              </Typography>
-              <Typography variant="body1">{name}</Typography>
-            </Grid>
-
-            <Grid size={12}>
-              <Typography variant="subtitle2" color="text.secondary">
-                CPF
-              </Typography>
-              <Copyable text={cpf ?? undefined} label={formatCpf(cpf)} />
-            </Grid>
-
-            <Grid size={12}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Telefone
-              </Typography>
-              <Typography variant="body1">
-                {formatPhoneBR(phone || undefined)}
-              </Typography>
-            </Grid>
-
-            <Grid size={12}>
-              <Typography variant="subtitle2" color="text.secondary">
-                Gênero
-              </Typography>
-              <Typography variant="body1">{genderPt(gender)}</Typography>
-            </Grid>
-
+          <UserDetailContent {...data} />
+          <Grid container spacing={2} sx={{ mt: 2 }}>
             <Grid size={12}>
               <Typography variant="subtitle2" color="text.secondary">
                 Data de nascimento

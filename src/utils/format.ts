@@ -1,3 +1,5 @@
+import { SystemRoles } from "@/types/enums/system-roles";
+
 export function formatCpf(value?: string): string {
   if (!value) return "";
   return value
@@ -42,3 +44,26 @@ export function genderPt(g?: string) {
   if (g === "OTHER") return "Outro";
   return "—";
 }
+
+export function rolePt(r?: SystemRoles | string) {
+  switch (r) {
+    case SystemRoles.MANAGER:
+      return "Administrador";
+    case SystemRoles.HEALTH_PROFESSIONAL:
+      return "Profissional de Saúde";
+    case SystemRoles.PATIENT:
+      return "Paciente";
+    case SystemRoles.RESEARCHER:
+      return "Pesquisador";
+    default:
+      return "—";
+  }
+}
+
+export const fmtNumber = (n?: number, opts: Intl.NumberFormatOptions = {}) =>
+  typeof n === "number"
+    ? new Intl.NumberFormat("pt-BR", {
+        maximumFractionDigits: 2,
+        ...opts,
+      }).format(n)
+    : "—";

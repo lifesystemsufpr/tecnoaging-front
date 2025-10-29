@@ -22,6 +22,7 @@ import { fetchHealthProfessionals } from "@/services/api-health-professional";
 import { Evaluation } from "@/types/domain/Evaluation";
 import { formatDateTime, toISODateEnd, toISODateStart } from "@/utils/dates";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { PageSizeOption } from "@/types/enums/page-size-options";
 
 type Option = { id: string; name: string };
 
@@ -31,6 +32,8 @@ type RequestFilters = {
   startDate: string | null;
   endDate: string | null;
   type: string | null;
+  page?: number;
+  pageSize?: PageSizeOption;
 };
 
 type TableRow = Evaluation & {
@@ -322,6 +325,10 @@ export default function TestsPage() {
   const filtersRef = useRef<RequestFilters>({ ...DEFAULT_FILTERS });
   const requestIdRef = useRef(0);
   const [loading, setLoading] = useState(false);
+
+  const [totalRows, setTotalRows] = useState(0);
+  const [pageSize, setPageSize] = useState<PageSizeOption>(5);
+  const [page, setPage] = useState(0);
   const [rows, setRows] = useState<TableRow[]>([]);
 
   const columns = useMemo<ColumnConfig<TableRow>[]>(
@@ -353,15 +360,17 @@ export default function TestsPage() {
       setLoading(true);
 
       try {
-        const { data } = await fetchEvaluations(token, {
+        const { data, meta } = await fetchEvaluations(token, {
           patientName: normalizedFilters.patientName,
           healthProfessionalName: normalizedFilters.healthProfessionalName,
           startDate: normalizedFilters.startDate,
           endDate: normalizedFilters.endDate,
           type: normalizedFilters.type,
-          page: 1,
-          pageSize: 100,
+          page: normalizedFilters.page ?? 1,
+          pageSize: normalizedFilters.pageSize ?? 5,
         });
+
+        setTotalRows(meta.total);
 
         if (currentRequestId !== requestIdRef.current) return;
 
@@ -403,13 +412,16 @@ export default function TestsPage() {
     void loadEvaluations(DEFAULT_FILTERS);
   }, [token, loadEvaluations]);
 
+  useEffect(() => {
+    void loadEvaluations({ ...filtersRef.current, page: page + 1, pageSize });
+  }, [pageSize, page]);
+
   if (status === "loading") return <div>Carregando...</div>;
   if (!token)
     return <div>Voce precisa estar logado para acessar essa pagina.</div>;
 
   return (
     <Box sx={{ p: 2 }}>
-      <h1>Avaliações</h1>
       <FiltersSection
         token={token}
         onSearch={handleApplyFilters}
@@ -437,13 +449,22 @@ export default function TestsPage() {
         toolbar={
           <Box sx={{ display: "flex", gap: 1 }}>
             <Chip
-              label={`Total: ${rows.length}`}
+              label={`Total: ${totalRows}`}
               size="small"
               variant="outlined"
             />
           </Box>
         }
-        pageSize={20}
+        paginationModel={{
+          pageSize: pageSize,
+          page: page,
+        }}
+        setPaginationModel={(model) => {
+          setPageSize(model.pageSize as PageSizeOption);
+          setPage(model.page);
+        }}
+        totalRows={totalRows}
+        pageSize={pageSize}
         autoHeight
       />
     </Box>
