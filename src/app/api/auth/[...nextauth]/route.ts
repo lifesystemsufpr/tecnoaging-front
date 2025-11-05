@@ -15,6 +15,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         username: { label: "CPF", type: "text" },
         password: { label: "Senha", type: "password" },
+        remember: { label: "Lembrar-me", type: "checkbox" },
       },
 
       async authorize(credentials) {
@@ -24,6 +25,7 @@ export const authOptions: NextAuthOptions = {
           const res = await fetchLogin({
             username: credentials.username,
             password: credentials.password,
+            remember: credentials.remember == "true",
           });
 
           if (!res.ok) {
