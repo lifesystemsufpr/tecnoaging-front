@@ -1,4 +1,33 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const FALLBACK_API_BASE_URL = "http://127.0.0.1:3333";
+
+const normalizeBaseUrl = (url?: string) => {
+  const candidate = url?.trim();
+
+  if (!candidate) return FALLBACK_API_BASE_URL;
+
+  try {
+    const parsed = new URL(candidate);
+    // Force IPv4 when backend listens only on 127.0.0.1 but Node resolves localhost => ::1.
+    const host = parsed.hostname === "localhost" ? "127.0.0.1" : parsed.hostname;
+    const port = parsed.port ? `:${parsed.port}` : "";
+
+    const pathname =
+      parsed.pathname && parsed.pathname !== "/"
+        ? parsed.pathname.replace(/\/$/, "")
+        : "";
+
+    return `${parsed.protocol}//${host}${port}${pathname}`;
+  } catch {
+    const sanitized = candidate.replace(/\/$/, "");
+    return sanitized || FALLBACK_API_BASE_URL;
+  }
+};
+
+export const API_BASE_URL = normalizeBaseUrl(
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.API_BASE_URL ??
+    FALLBACK_API_BASE_URL
+);
 
 export const API_ROUTES = {
   LOGIN: `${API_BASE_URL}/auth/login`,
