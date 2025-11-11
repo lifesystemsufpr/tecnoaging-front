@@ -8,10 +8,13 @@ import { API_BASE_URL } from "@/services/Routes";
 
 async function refreshAccessToken(token: any) {
   try {
+    // O backend espera o refresh_token via cookie, não no body
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: token.refreshToken }),
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Importante para enviar cookies
     });
 
     if (!res.ok) throw new Error("Falha ao atualizar token");
@@ -63,7 +66,8 @@ export const authOptions: NextAuthOptions = {
           const data: LoginResponse = await res.json();
 
           const accessToken = data.access_token;
-          const refreshToken = data.refresh_token;
+          // refresh_token vem como cookie HTTP-only, não no JSON
+          const refreshToken = data.refresh_token || undefined;
 
           if (!accessToken) return null;
 

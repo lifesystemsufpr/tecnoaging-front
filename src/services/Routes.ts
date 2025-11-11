@@ -31,7 +31,7 @@ export const API_BASE_URL = normalizeBaseUrl(
 
 export const API_ROUTES = {
   LOGIN: `${API_BASE_URL}/auth/login`,
-  REFRESH: `${API_BASE_URL}/auth/refresh-token`,
+  REFRESH: `${API_BASE_URL}/auth/refresh`,
 
   // Researcher
   RESEARCHERS: `${API_BASE_URL}/researcher`,
