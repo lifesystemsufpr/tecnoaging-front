@@ -138,6 +138,15 @@ export default function LoginPage() {
                   error={cpfError}
                   onChange={handleCpfChange}
                   placeholder="000.000.000-00"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (password === "") {
+                        senhaRef.current?.focus();
+                      } else {
+                        handleLogin();
+                      }
+                    }
+                  }}
                 />
                 {cpfError && (
                   <p className="mt-1.5 text-xs text-error-500">

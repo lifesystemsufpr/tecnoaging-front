@@ -18,9 +18,12 @@ import {
   Button,
   Divider,
   Link,
+  Modal,
   Paper,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -29,13 +32,17 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
 import { ResearcherDetailContent } from "@/components/common/user/ResearcherDetailContent";
 import ProfileSkeleton from "@/components/common/user/ProfileSkeleton";
+import { UserCreateForm } from "@/components/form/user-create";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<
     PatientResponse | ResearcherResponse | HealthProfessionalResponse
   >(null);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const router = useRouter();
+  const theme = useTheme();
+  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const session = useSession();
 
   const fetchUserData = async (accessToken: string) => {
@@ -108,8 +115,8 @@ export default function ProfilePage() {
           <Button
             variant="contained"
             startIcon={<EditIcon />}
-            onClick={() => {}}
-            disabled={true}
+            onClick={() => setOpenEditModal(true)}
+            disabled={false}
           >
             Editar
           </Button>
@@ -140,6 +147,38 @@ export default function ProfilePage() {
       ) : (
         <ProfileSkeleton />
       )}
+
+      <Modal
+        open={openEditModal}
+        onClose={() => setOpenEditModal(false)}
+        sx={{
+          padding: 2,
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute" as const,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: isNotebook ? "90%" : "50%",
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <UserCreateForm
+            lockedRole={userData?.role as SystemRoles}
+            editUser={userData}
+            onHandle={async () => {
+              setOpenEditModal(false);
+              fetchUserData(session.data.accessToken);
+            }}
+          />
+        </Box>
+      </Modal>
     </Box>
   );
 }

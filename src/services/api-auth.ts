@@ -14,7 +14,11 @@ export async function fetchLogin({
         Accept: "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ username, password, remember }),
+      body: JSON.stringify({
+        cpf: username,
+        password,
+        keepMeLoggedIn: remember,
+      }),
     });
 
     if (!response.ok) {

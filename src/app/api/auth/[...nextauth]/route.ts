@@ -10,8 +10,7 @@ async function refreshAccessToken(token: any) {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: token.refreshToken }),
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Falha ao atualizar token");
@@ -62,9 +61,14 @@ export const authOptions: NextAuthOptions = {
 
           const data: LoginResponse = await res.json();
 
-          const accessToken = data.access_token;
-          const refreshToken = data.refresh_token;
+          let refreshToken: string | null = null;
+          const setCookie = res.headers.get("set-cookie");
+          if (setCookie) {
+            const match = setCookie.match(/refresh_token=([^;]+)/);
+            refreshToken = match ? match[1] : null;
+          }
 
+          const accessToken = data.access_token;
           if (!accessToken) return null;
 
           const claims: TokenPayload = parseJwt(accessToken);
@@ -124,15 +128,15 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      console.log(token);
+
       if (!token.refreshToken) {
         console.warn("Token expirado, mas não há refresh_token para renovar.");
         return { ...token, error: "RefreshAccessTokenError" };
       }
 
-      console.warn("Token de acesso expirado. Refresh desabilitado.");
-      return { ...token, error: "AccessTokenExpired" };
-
-      //return await refreshAccessToken(token);
+      console.warn("Access token expirado, renovando...");
+      return await refreshAccessToken(token);
     },
 
     async session({ session, token }) {
