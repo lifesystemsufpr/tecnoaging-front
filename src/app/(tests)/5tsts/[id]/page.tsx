@@ -209,10 +209,20 @@ export default function Page({ params }: { params: { id: string } }) {
               sensorData={evaluationDetails.sensorData}
               labelColor={labelColor}
             />
-            <Typography variant="body2">
-              Ciclos Mockados (Ate api estiver certa)
-            </Typography>
-            <CicleBarChart data={CicleMock} />
+
+            {evaluationDetails?.cicleData ? null : (
+              <Typography variant="body2">
+                Ciclos Mockados (Ate api estiver certa)
+              </Typography>
+            )}
+            <CicleBarChart
+              data={
+                evaluationDetails?.cicleData
+                  ? evaluationDetails.cicleData
+                  : CicleMock
+              }
+            />
+
             {indicadoresRadar && (
               <RadarChart
                 indicators={indicadoresRadar}
