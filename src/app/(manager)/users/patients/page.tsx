@@ -115,7 +115,7 @@ export default function PatientsCRUDPage() {
       <h1>Gerenciar Pacientes</h1>
       <Box
         mb={1}
-        mt={2}
+        mt={1}
         sx={{
           display: "flex",
           justifyContent: "space-between",
