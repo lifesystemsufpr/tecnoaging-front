@@ -5,7 +5,7 @@ import NextLink from "next/link";
 import {
   Box,
   Button,
-  Card,
+  Card as MuiCard,
   CardContent,
   Container,
   Grid,
@@ -14,6 +14,8 @@ import {
   Alert,
   useTheme,
 } from "@mui/material";
+
+import Card from "../../../../components/card/index";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -41,7 +43,8 @@ import {
 import { useSession } from "next-auth/react";
 import { fetchEvaluationById } from "@/services/api-evaluation";
 import { CicleBarChart } from "@/components/evaluations/charts/CicleBarChart";
-import { CicleMock } from "@/mocks/Evaluation";
+import { CycleMock } from "@/mocks/Evaluation";
+import { durationMs } from "@/utils/dates";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -136,7 +139,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </Box>
 
       {/* Informações da Avaliação */}
-      <Card variant="outlined" sx={{ mb: 2 }}>
+      <MuiCard variant="outlined" sx={{ mb: 2 }}>
         <CardContent>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Informações da Avaliação
@@ -165,11 +168,11 @@ export default function Page({ params }: { params: { id: string } }) {
             </Grid>
           </Grid>
         </CardContent>
-      </Card>
+      </MuiCard>
 
       {/* Análise Funcional */}
       {indicadoresRadar && (
-        <Card variant="outlined" sx={{ mb: 2 }}>
+        <MuiCard variant="outlined" sx={{ mb: 2 }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Análise Funcional do Paciente
@@ -198,11 +201,11 @@ export default function Page({ params }: { params: { id: string } }) {
               </Typography>
             </Alert>
           </CardContent>
-        </Card>
+        </MuiCard>
       )}
 
       {/* Gráficos */}
-      <Card variant="outlined">
+      <MuiCard variant="outlined">
         <CardContent>
           <Stack spacing={4}>
             <SensorDataChart
@@ -215,11 +218,61 @@ export default function Page({ params }: { params: { id: string } }) {
                 Ciclos Mockados (Ate api estiver certa)
               </Typography>
             )}
+
+            <Box
+              sx={{ display: "flex", gap: 2, flexWrap: "wrap", width: "100%" }}
+            >
+              <Card.Root className="flex-1 flex-row justify-around">
+                <Card.Content
+                  title={"Tempo Total"}
+                  content={
+                    evaluationDetails?.totalTime ||
+                    durationMs(
+                      evaluationDetails.time_init,
+                      evaluationDetails.time_end
+                    ) /
+                      1000 +
+                      " s"
+                  }
+                  className={""}
+                />
+                <Card.Content
+                  title={"Tempo Medio por Ciclo"}
+                  content={
+                    evaluationDetails?.cicleData
+                      ? evaluationDetails.cicleData.avg.total.toFixed(2) + " s"
+                      : CycleMock.avg.total.toFixed(2) + " s"
+                  }
+                  className={""}
+                />
+              </Card.Root>
+              <Card.Root className="flex-1 flex-row justify-around">
+                <Card.Content
+                  title={"Ciclo mais rápido"}
+                  content={
+                    evaluationDetails?.cicleData
+                      ? `${evaluationDetails.cicleData.min.cycle} | ${evaluationDetails.cicleData.min.total.toFixed(2) + " s"}`
+                      : `${CycleMock.min.cycle} | ${CycleMock.min.total.toFixed(2) + " s"}`
+                  }
+                  className={""}
+                />
+                <Card.Content
+                  title={"Ciclo mais lento"}
+                  content={
+                    evaluationDetails?.cicleData
+                      ? `${evaluationDetails.cicleData.max.cycle} | ${evaluationDetails.cicleData.max.total.toFixed(2) + " s"}`
+                      : `${CycleMock.max.cycle} | ${CycleMock.max.total.toFixed(2) + " s"}`
+                  }
+                  className={""}
+                />
+              </Card.Root>
+            </Box>
+
             <CicleBarChart
               data={
                 evaluationDetails?.cicleData
                   ? evaluationDetails.cicleData
-                  : CicleMock
+                  : CycleMock
               }
             />
 
@@ -257,7 +310,7 @@ export default function Page({ params }: { params: { id: string } }) {
             )}
           </Stack>
         </CardContent>
-      </Card>
+      </MuiCard>
     </Box>
   );
 }
