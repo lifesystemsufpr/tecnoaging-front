@@ -153,7 +153,15 @@ export default function Page({ params }: { params: { id: string } }) {
             <Grid size={12}>
               <InfoItem
                 label="Tempo Total"
-                value={evaluationDetails.totalTime}
+                value={
+                  evaluationDetails?.totalTime ||
+                  durationMs(
+                    evaluationDetails.time_init,
+                    evaluationDetails.time_end
+                  ) /
+                    1000 +
+                    " segundos"
+                }
               />
             </Grid>
             <Grid size={12}>
