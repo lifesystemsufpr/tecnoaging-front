@@ -40,6 +40,7 @@ import {
 } from "@/utils/analytics";
 import { useSession } from "next-auth/react";
 import { fetchEvaluationById } from "@/services/api-evaluation";
+import { durationMs } from "@/utils/dates";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -152,7 +153,15 @@ export default function Page({ params }: { params: { id: string } }) {
             <Grid size={12}>
               <InfoItem
                 label="Tempo Total"
-                value={evaluationDetails.totalTime}
+                value={
+                  evaluationDetails?.totalTime ||
+                  durationMs(
+                    evaluationDetails.time_init,
+                    evaluationDetails.time_end
+                  ) /
+                    1000 +
+                    " segundos"
+                }
               />
             </Grid>
             <Grid size={12}>
@@ -221,10 +230,12 @@ export default function Page({ params }: { params: { id: string } }) {
                 evaluationDetails.patient?.birthday,
                 evaluationDetails.date
               )}
-              tempoPaciente={parseInt(
-                evaluationDetails.totalTime?.split(":")[2] || "0",
-                10
-              )}
+              tempoPaciente={
+                durationMs(
+                  evaluationDetails.time_init,
+                  evaluationDetails.time_end
+                ) / 1000
+              }
               tipo={evaluationDetails.type as any}
               labelColor={labelColor}
             />
