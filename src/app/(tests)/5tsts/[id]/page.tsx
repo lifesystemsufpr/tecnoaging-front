@@ -40,6 +40,8 @@ import {
 } from "@/utils/analytics";
 import { useSession } from "next-auth/react";
 import { fetchEvaluationById } from "@/services/api-evaluation";
+import { CicleBarChart } from "@/components/evaluations/charts/CicleBarChart";
+import { CicleMock } from "@/mocks/Evaluation";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -207,6 +209,20 @@ export default function Page({ params }: { params: { id: string } }) {
               sensorData={evaluationDetails.sensorData}
               labelColor={labelColor}
             />
+
+            {evaluationDetails?.cicleData ? null : (
+              <Typography variant="body2">
+                Ciclos Mockados (Ate api estiver certa)
+              </Typography>
+            )}
+            <CicleBarChart
+              data={
+                evaluationDetails?.cicleData
+                  ? evaluationDetails.cicleData
+                  : CicleMock
+              }
+            />
+
             {indicadoresRadar && (
               <RadarChart
                 indicators={indicadoresRadar}
