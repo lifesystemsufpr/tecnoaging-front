@@ -2,6 +2,7 @@ import * as React from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import {
   DataGrid,
   GridColDef,
@@ -21,6 +22,7 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  Tooltip,
 } from "@mui/material";
 import {
   PageSizeOption,
@@ -47,6 +49,7 @@ export type GenericTableProps<T> = {
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void | Promise<void>;
+  onEvaluations?: (row: T) => void;
   pageSize?: number;
   checkboxSelection?: boolean;
   autoHeight?: boolean;
@@ -83,14 +86,16 @@ function actionsColumn<T>(opts: {
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
+  onEvaluations?: (row: T) => void;
 }): GridColDef<T> {
-  const { onView, onEdit, onDelete } = opts;
+  const { onView, onEdit, onDelete, onEvaluations } = opts;
   return {
     field: "__actions__",
     headerName: "Ações",
     sortable: false,
     filterable: false,
-    width: 150,
+    // Aumentei levemente a largura para acomodar 4 ícones confortavelmente
+    width: 180,
     align: "center",
     headerAlign: "center",
     renderCell: (params) => (
@@ -99,33 +104,53 @@ function actionsColumn<T>(opts: {
         spacing={0.5}
         sx={{ width: "100%", justifyContent: "center" }}
       >
+        {/* Novo Botão de Avaliações/Testes */}
+        {onEvaluations && (
+          <Tooltip title="Ver Testes">
+            <IconButton
+              size="small"
+              color="primary"
+              aria-label="Ver Testes"
+              onClick={() => onEvaluations(params.row)}
+            >
+              <AssignmentIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
+
         {onView && (
-          <IconButton
-            size="small"
-            aria-label="Visualizar"
-            onClick={() => onView(params.row)}
-          >
-            <VisibilityIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Visualizar">
+            <IconButton
+              size="small"
+              aria-label="Visualizar"
+              onClick={() => onView(params.row)}
+            >
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
         {onEdit && (
-          <IconButton
-            size="small"
-            aria-label="Editar"
-            onClick={() => onEdit(params.row)}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Editar">
+            <IconButton
+              size="small"
+              aria-label="Editar"
+              onClick={() => onEdit(params.row)}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
         {onDelete && (
-          <IconButton
-            size="small"
-            color="error"
-            aria-label="Excluir"
-            onClick={() => onDelete(params.row)}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          <Tooltip title="Excluir">
+            <IconButton
+              size="small"
+              color="error"
+              aria-label="Excluir"
+              onClick={() => onDelete(params.row)}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
       </Stack>
     ),
@@ -143,7 +168,19 @@ function toGridColumns<T>(specs: ColumnConfig<T>[]): GridColDef<T>[] {
 
     if (c.render) base.renderCell = c.render;
     if (c.valueGetter) {
-      base.valueGetter = (params) => c.valueGetter!((params as { row: T }).row);
+      // MUI v6/v7: (value, row)
+      // MUI v5: (params)
+
+      base.valueGetter = (value: any, row: T) => {
+        // Se 'row' vier no segundo argumento (MUI v6+), usa ele.
+        // Se não, tenta pegar do primeiro argumento (fallback para MUI v5 ou estruturas antigas)
+        const rowData = row || (value as any)?.row;
+
+        // Proteção extra caso rowData ainda seja undefined
+        if (!rowData) return "";
+
+        return c.valueGetter!(rowData);
+      };
     }
     if (c.valueFormatter) {
       base.valueFormatter = (params) =>
@@ -245,6 +282,7 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     onView,
     onEdit,
     onDelete,
+    onEvaluations,
     pageSize = 10,
     checkboxSelection,
     autoHeight = true,
@@ -282,17 +320,26 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
 
   const gridColumns = React.useMemo(() => {
     const cols = toGridColumns(columns);
-    if (showActions && (onView || onEdit || onDelete)) {
+    if (showActions && (onView || onEdit || onDelete || onEvaluations)) {
       cols.push(
         actionsColumn<T>({
           onView,
           onEdit,
           onDelete: onDelete ? handleDeleteRequest : undefined,
+          onEvaluations,
         })
       );
     }
     return cols;
-  }, [columns, showActions, onView, onEdit, onDelete, handleDeleteRequest]);
+  }, [
+    columns,
+    showActions,
+    onView,
+    onEdit,
+    onDelete,
+    handleDeleteRequest,
+    onEvaluations,
+  ]);
 
   const resolvedGetRowId = React.useMemo(() => {
     if (getRowId) return getRowId;
