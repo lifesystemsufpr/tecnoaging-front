@@ -10,7 +10,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { GenericTable } from "@/components/datatable/GenericTable";
+import {
+  ColumnConfig,
+  GenericTable,
+} from "@/components/datatable/GenericTable";
 import { UserCreateForm } from "@/components/form/user-create";
 import { SystemRoles } from "@/types/enums/system-roles";
 import { useSession } from "next-auth/react";
@@ -19,6 +22,13 @@ import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 
 const DEBOUNCE_DELAY = 500;
+
+const columnsConfig: ColumnConfig<Patient>[] = [
+  { key: "fullName", header: "Nome Completo" },
+  { key: "cpf", header: "CPF" },
+  { key: "phone", header: "Telefone" },
+  { key: "state", header: "Estado" },
+];
 
 export default function PatientsCRUDPage() {
   const [patientsList, setPatientsList] = useState<Patient[]>([]);
@@ -41,6 +51,14 @@ export default function PatientsCRUDPage() {
   });
 
   const [totalRows, setTotalRows] = useState(0);
+
+  const isProfessional = useMemo(() => {
+    return (session as any)?.user?.role === SystemRoles.HEALTH_PROFESSIONAL;
+  }, [session]);
+
+  const handleViewTests = (id: string) => {
+    router.push(`patients/${id}/evaluations`);
+  };
 
   const loadPatients = useCallback(
     async (token: string, query?: string) => {
@@ -135,17 +153,15 @@ export default function PatientsCRUDPage() {
 
       <GenericTable
         rows={patientFilter ?? patientsList}
-        columns={[
-          { key: "fullName", header: "Nome Completo" },
-          { key: "cpf", header: "CPF" },
-          { key: "phone", header: "Telefone" },
-          { key: "state", header: "Estado" },
-        ]}
+        columns={columnsConfig}
         getRowId={(row) => row.id}
         showActions
         onEdit={(patient) => handleUpdatePatient(patient.id)}
         onDelete={(patient) => handleDeletePatient(patient.id)}
         onView={(patient) => router.push(`/users/patients/${patient.id}`)}
+        onEvaluations={
+          isProfessional ? (patient) => handleViewTests(patient.id) : undefined
+        }
         pageSize={5}
         autoHeight
         totalRows={totalRows}
