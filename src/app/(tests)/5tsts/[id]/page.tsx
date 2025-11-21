@@ -42,6 +42,7 @@ import { useSession } from "next-auth/react";
 import { fetchEvaluationById } from "@/services/api-evaluation";
 import { CicleBarChart } from "@/components/evaluations/charts/CicleBarChart";
 import { CicleMock } from "@/mocks/Evaluation";
+import { SystemRoles } from "@/types/enums/system-roles";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -142,22 +143,16 @@ export default function Page({ params }: { params: { id: string } }) {
             Informações da Avaliação
           </Typography>
           <Grid container spacing={2}>
-            <Grid size={12}>
+            <Grid size={4}>
               <InfoItem label="Tipo" value={evaluationDetails.type} />
             </Grid>
-            <Grid size={12}>
+            <Grid size={4}>
               <InfoItem
                 label="Data"
                 value={new Date(evaluationDetails.date).toLocaleString("pt-BR")}
               />
             </Grid>
-            <Grid size={12}>
-              <InfoItem
-                label="Tempo Total"
-                value={evaluationDetails.totalTime}
-              />
-            </Grid>
-            <Grid size={12}>
+            <Grid size={4}>
               <InfoItem
                 label="Unidade de Saúde"
                 value={evaluationDetails.healthcareUnit?.name}
@@ -168,7 +163,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </Card>
 
       {/* Análise Funcional */}
-      {indicadoresRadar && (
+      {indicadoresRadar && session.user.role !== SystemRoles.RESEARCHER && (
         <Card variant="outlined" sx={{ mb: 2 }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
