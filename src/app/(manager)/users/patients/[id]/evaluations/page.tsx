@@ -12,9 +12,16 @@ import { EvaluationRaw } from "@/types/domain/Evaluation";
 import { Patient } from "@/types/domain/Patient";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { formatDateTime } from "@/utils/dates";
-import { Box, Button, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const columns: ColumnConfig<EvaluationRaw>[] = [
@@ -39,6 +46,56 @@ const columns: ColumnConfig<EvaluationRaw>[] = [
   },
 ];
 
+function Filters({ onSearch }) {
+  const [dateFrom, setDateFrom] = useState<string | null>(null);
+  const [dateTo, setDateTo] = useState<string | null>(null);
+
+  const handleSearch = useCallback(() => {
+    onSearch({ dateFrom, dateTo });
+  }, [onSearch, dateFrom, dateTo]);
+
+  const handleReset = useCallback(() => {
+    setDateFrom(null);
+    setDateTo(null);
+    onSearch({ dateFrom: null, dateTo: null });
+  }, [onSearch]);
+
+  return (
+    <Grid container spacing={2} marginBottom={2}>
+      <Grid size={6}>
+        <TextField
+          size="small"
+          label="Data de"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={dateFrom ?? ""}
+          onChange={(event) => setDateFrom(event.target.value || null)}
+          fullWidth
+        />
+      </Grid>
+      <Grid size={6}>
+        <TextField
+          size="small"
+          label="Data até"
+          type="date"
+          InputLabelProps={{ shrink: true }}
+          value={dateTo ?? ""}
+          onChange={(event) => setDateTo(event.target.value || null)}
+          fullWidth
+        />
+      </Grid>
+      <Grid size={12} sx={{ textAlign: "left" }}>
+        <Button variant="contained" onClick={handleSearch} sx={{ mr: 1 }}>
+          Buscar
+        </Button>
+        <Button variant="outlined" onClick={handleReset}>
+          Limpar
+        </Button>
+      </Grid>
+    </Grid>
+  );
+}
+
 export default function PatientsEvaluationsPage() {
   const params = useParams();
   const patientId = params.id;
@@ -58,6 +115,17 @@ export default function PatientsEvaluationsPage() {
     pageSize: 20,
     page: 0,
   });
+
+  const handleOnSearch = ({
+    dateFrom,
+    dateTo,
+  }: {
+    dateFrom: string | null;
+    dateTo: string | null;
+  }) => {
+    setInitDate(dateFrom || "");
+    setEndDate(dateTo || "");
+  };
 
   //Atualmente terei que implementar um api composition para buscar os dados do paciente e depois as avaliações
   //(necessario endpoint de avaliações com filtro por ID do paciente)
@@ -117,6 +185,9 @@ export default function PatientsEvaluationsPage() {
         </Button>
       </Box>
       <h1>Avaliações do Paciente: {patientData?.fullName}</h1>
+      <Box marginTop={2} marginBottom={1}>
+        <Filters onSearch={handleOnSearch} />
+      </Box>
       <Box marginTop={1} marginBottom={1}>
         {evaluations.length === 0 && !isLoading ? (
           <Typography>Nenhuma avaliação encontrada.</Typography>
