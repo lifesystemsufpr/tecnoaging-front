@@ -4,13 +4,11 @@ import {
   EvaluationResponse,
   ListEvaluationsResponse,
 } from "@/types/api/Evaluation";
-import { fetchClient } from "./api-client";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ?? "https://api.seuservidor.com";
 
 type ListFilters = {
-  patientCpf?: string | null;
   patientName?: string | null;
   healthProfessionalName?: string | null;
   startDate?: string | null; // 'YYYY-MM-DD' (recomendado)
@@ -36,17 +34,11 @@ function qs(params: Record<string, string | number | undefined | null>) {
   return search.toString();
 }
 
-interface EvaluationListParams {
-  token?: string;
-  filters?: ListFilters;
-}
-
-export async function fetchEvaluations({
-  token,
-  filters,
-}: EvaluationListParams): Promise<ListEvaluationsResponse> {
+export async function fetchEvaluations(
+  token: string,
+  filters?: ListFilters
+): Promise<ListEvaluationsResponse> {
   const query = qs({
-    patientCpf: filters?.patientCpf ?? undefined,
     patientName: filters?.patientName ?? undefined,
     healthProfessionalName: filters?.healthProfessionalName ?? undefined,
     startDate: filters?.startDate ?? undefined,
@@ -58,11 +50,16 @@ export async function fetchEvaluations({
 
   const url = `${API_ROUTES.EVALUATIONS}${query ? `?${query}` : ""}`;
 
-  return fetchClient(url, {
+  const res = await fetch(url, {
     method: "GET",
-    token,
+    headers: authHeaders(token),
     cache: "no-store",
   });
+
+  if (!res.ok) {
+    throw new Error(`Erro ao listar avaliações (${res.status})`);
+  }
+  return res.json();
 }
 
 export async function fetchEvaluationById(

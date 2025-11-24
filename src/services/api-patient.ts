@@ -4,7 +4,6 @@ import {
   PatientResponse,
 } from "@/types/api/Patient";
 import { API_ROUTES } from "./Routes";
-import { fetchClient } from "./api-client";
 
 export async function fetchPatients(
   access_token: string,
@@ -38,15 +37,20 @@ export async function fetchPatientById({
   access_token,
   id,
 }: {
-  access_token?: string;
+  access_token: string;
   id: string;
 }): Promise<PatientResponse> {
-  let url = API_ROUTES.PATIENT_BY_ID(id);
-
-  return fetchClient(url, {
+  const res = await fetch(API_ROUTES.PATIENT_BY_ID(id), {
     method: "GET",
-    token: access_token,
+    headers: { Authorization: `Bearer ${access_token}` },
   });
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(
+      "Falha ao buscar paciente: " + (errorData.message || res.statusText)
+    );
+  }
+  return await res.json();
 }
 
 export async function createPatient({
