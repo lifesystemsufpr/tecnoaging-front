@@ -35,19 +35,6 @@ export interface EvaluationRaw {
   updatedAt: string; // ISO
 }
 
-export interface CicloData {
-  total: number;
-  sit: number;
-  stand: number;
-}
-
-export interface Cicle {
-  [key: string]: CicloData;
-  min: CicloData;
-  max: CicloData;
-}
-
 export interface Evaluation extends EvaluationRaw {
   sensorData: SensorData[];
-  cicleData?: Cicle;
 }
