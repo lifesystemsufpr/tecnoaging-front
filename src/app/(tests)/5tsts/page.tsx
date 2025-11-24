@@ -9,6 +9,7 @@ import {
   Chip,
   Grid,
   TextField,
+  Typography,
 } from "@mui/material";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -421,13 +422,16 @@ export default function TestsPage() {
     return <div>Voce precisa estar logado para acessar essa pagina.</div>;
 
   return (
-    <Box sx={{ p: 2 }}>
-      <FiltersSection
-        token={token}
-        onSearch={handleApplyFilters}
-        onReset={handleResetFilters}
-        disabled={loading}
-      />
+    <Box sx={{ p: 0 }}>
+      <h1>Gerenciar 5TSTS</h1>
+      <Box mt={1} mb={1}>
+        <FiltersSection
+          token={token}
+          onSearch={handleApplyFilters}
+          onReset={handleResetFilters}
+          disabled={loading}
+        />
+      </Box>
       <GenericTable<TableRow>
         rows={rows}
         columns={columns}

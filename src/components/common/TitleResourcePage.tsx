@@ -158,7 +158,7 @@ export default function TitleResourcePage({
   return (
     <Box>
       {/* Toolbar */}
-      <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+      <Stack direction="row" spacing={2} alignItems="center" mb={1}>
         <h1>Gerenciar {resourceName}</h1>
       </Stack>
 
@@ -167,7 +167,7 @@ export default function TitleResourcePage({
         spacing={2}
         justifyContent="space-between"
         alignItems={{ xs: "stretch", sm: "center" }}
-        mb={2}
+        mb={1}
       >
         <TextField
           size="small"

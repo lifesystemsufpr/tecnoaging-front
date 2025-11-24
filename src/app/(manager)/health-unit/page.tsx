@@ -91,7 +91,8 @@ export default function PatientsCRUDPage() {
       <h1>Gerenciar Unidades de Saúde</h1>
       <Box
         sx={{
-          mb: 2,
+          mb: 1,
+          mt: 1,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -105,7 +106,7 @@ export default function PatientsCRUDPage() {
         <Button
           variant="contained"
           color="primary"
-          sx={{ mt: 2, mb: 2 }}
+          sx={{ mt: 0, mb: 0 }}
           onClick={() => setIsModalOpen(true)}
         >
           Adicionar Unidades de Saúde
