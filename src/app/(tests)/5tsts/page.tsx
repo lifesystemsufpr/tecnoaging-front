@@ -361,16 +361,16 @@ export default function TestsPage() {
       setLoading(true);
 
       try {
-        const { data, meta } = await fetchEvaluations(token, {
-          patientName: normalizedFilters.patientName,
-          healthProfessionalName: normalizedFilters.healthProfessionalName,
-          startDate: normalizedFilters.startDate,
-          endDate: normalizedFilters.endDate,
-          type: normalizedFilters.type,
-          page: normalizedFilters.page ?? 1,
-          pageSize: normalizedFilters.pageSize ?? 5,
+        const { data, meta } = await fetchEvaluations({
+          filters: {
+            patientName: normalizedFilters.patientName ?? undefined,
+            healthProfessionalName:
+              normalizedFilters.healthProfessionalName ?? undefined,
+            startDate: normalizedFilters.startDate ?? undefined,
+            endDate: normalizedFilters.endDate ?? undefined,
+            type: normalizedFilters.type ?? undefined,
+          },
         });
-
         setTotalRows(meta.total);
 
         if (currentRequestId !== requestIdRef.current) return;
