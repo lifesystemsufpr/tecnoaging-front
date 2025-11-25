@@ -41,6 +41,7 @@ import {
 import { useSession } from "next-auth/react";
 import { fetchEvaluationById } from "@/services/api-evaluation";
 import { durationMs } from "@/utils/dates";
+import { SystemRoles } from "@/types/enums/system-roles";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -161,7 +162,7 @@ export default function Page({ params }: { params: { id: string } }) {
       </Card>
 
       {/* Análise Funcional */}
-      {indicadoresRadar && session.user.role !== SystemRoles.RESEARCHER && (
+      {indicadoresRadar && (
         <Card variant="outlined" sx={{ mb: 2 }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
