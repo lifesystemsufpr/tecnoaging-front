@@ -208,12 +208,14 @@ export default function Page({ params }: { params: { id: string } }) {
               sensorData={extraEvaluations.sensor}
               labelColor={labelColor}
             />
+
             {indicadoresRadar && (
               <RadarChart
                 indicators={indicadoresRadar}
                 labelColor={labelColor}
               />
             )}
+
             {potencias.length > 0 && (
               <FadigaAreaChart potencias={potencias} labelColor={labelColor} />
             )}
@@ -226,10 +228,7 @@ export default function Page({ params }: { params: { id: string } }) {
             )}
 
             <ContinuityChart30s
-              idadePaciente={calcularIdadeAnos(
-                evaluationDetails.patient?.birthday,
-                evaluationDetails.date
-              )}
+              idadePaciente={extraEvaluations.derived.patientAgeOnEvaluation}
               repeticoesPaciente={extraEvaluations.cycle.totalCycles || 15}
               labelColor={labelColor}
             />
