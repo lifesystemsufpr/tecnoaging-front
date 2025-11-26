@@ -23,7 +23,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
-import { Evaluation } from "@/types/domain/Evaluation";
+import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
 import { InfoItem } from "@/components/evaluations/InfoItem";
 import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
@@ -38,7 +38,10 @@ import {
   classificarDesempenhoGeral,
 } from "@/utils/analytics";
 import { useSession } from "next-auth/react";
-import { fetchEvaluationById } from "@/services/api-evaluation";
+import {
+  fetchEvaluationById,
+  fetchEvaluationDetailedById,
+} from "@/services/api-evaluation";
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -50,6 +53,8 @@ export default function Page({ params }: { params: { id: string } }) {
   const [evaluationDetails, setEvaluationDetails] = useState<Evaluation | null>(
     null
   );
+  const [extraEvaluations, setExtraEvaluations] =
+    useState<MotionAnalysisResponse | null>(null);
   const [allEvaluations, setAllEvaluations] = useState<Evaluation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -76,10 +81,13 @@ export default function Page({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [details] = await Promise.all([
+        const [details, extraDetails] = await Promise.all([
           fetchEvaluationById(id, session?.accessToken),
+          fetchEvaluationDetailedById(id, session?.accessToken),
         ]);
         setEvaluationDetails(details);
+        console.log(extraDetails);
+        setExtraEvaluations(extraDetails);
         setAllEvaluations([]);
       } catch (err) {
         console.error(err);
@@ -140,7 +148,7 @@ export default function Page({ params }: { params: { id: string } }) {
           </Typography>
           <Grid container spacing={2}>
             <Grid size={4}>
-              <InfoItem label="Tipo" value={evaluationDetails.type} />
+              <InfoItem label="Tipo" value={"30SSTS"} />
             </Grid>
             <Grid size={4}>
               <InfoItem
@@ -197,7 +205,7 @@ export default function Page({ params }: { params: { id: string } }) {
         <CardContent>
           <Stack spacing={4}>
             <SensorDataChart
-              sensorData={evaluationDetails.sensorData}
+              sensorData={extraEvaluations.sensor}
               labelColor={labelColor}
             />
             {indicadoresRadar && (
@@ -210,15 +218,19 @@ export default function Page({ params }: { params: { id: string } }) {
               <FadigaAreaChart potencias={potencias} labelColor={labelColor} />
             )}
 
-            <p>
-              O dado de repeticoes ainda nao esta vindo, numero fixado em 15
-            </p>
+            {!extraEvaluations.cycle.totalCycles && (
+              <p>
+                Nao informado no endpoint o total de repeticoes | Repeticoes
+                padrao 15
+              </p>
+            )}
+
             <ContinuityChart30s
               idadePaciente={calcularIdadeAnos(
                 evaluationDetails.patient?.birthday,
                 evaluationDetails.date
               )}
-              repeticoesPaciente={15}
+              repeticoesPaciente={extraEvaluations.cycle.totalCycles || 15}
               labelColor={labelColor}
             />
 
