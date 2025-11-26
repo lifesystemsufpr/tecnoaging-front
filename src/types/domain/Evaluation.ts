@@ -38,3 +38,56 @@ export interface EvaluationRaw {
 export interface Evaluation extends EvaluationRaw {
   sensorData: SensorData[];
 }
+
+export type SensorColumn = "t" | "ax" | "ay" | "az" | "gx" | "gy" | "gz";
+
+export interface SensorStatDetails {
+  min: number;
+  max: number;
+  mean: number;
+}
+
+export interface SensorData {
+  format: string;
+  columns: SensorColumn[];
+  units: Record<SensorColumn | string, string>;
+  samplingHz: number;
+  resolution: number;
+  downsampled: boolean;
+  method: string;
+  originalSampleCount: number;
+  data: number[][];
+  stats: Record<string, SensorStatDetails>;
+}
+
+export interface Indicator {
+  name: string;
+  value: number;
+  maxValue: number;
+  classification: string;
+}
+
+export interface DerivedData {
+  patientAgeOnEvaluation: number;
+  indicators: Indicator[];
+  overallClassification: string;
+}
+
+export interface CyclePhases {
+  total: number;
+  stand: number;
+  sit: number;
+}
+
+export interface CycleData {
+  min: CyclePhases;
+  max: CyclePhases;
+  avg: CyclePhases;
+  totalCycles: number;
+}
+
+export interface MotionAnalysisResponse {
+  sensor: SensorData;
+  derived: DerivedData;
+  cycle: CycleData;
+}

@@ -368,7 +368,7 @@ export default function TestsPage() {
               normalizedFilters.healthProfessionalName ?? undefined,
             startDate: normalizedFilters.startDate ?? undefined,
             endDate: normalizedFilters.endDate ?? undefined,
-            type: normalizedFilters.type ?? undefined,
+            type: "FTSTS",
           },
         });
         setTotalRows(meta.total);
