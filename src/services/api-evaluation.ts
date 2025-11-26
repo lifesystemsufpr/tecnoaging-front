@@ -1,4 +1,4 @@
-import { Evaluation } from "@/types/domain/Evaluation";
+import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
 import { API_ROUTES } from "./Routes";
 import {
   EvaluationResponse,
@@ -92,4 +92,19 @@ export async function deleteEvaluation(
   if (!res.ok) {
     throw new Error(`Erro ao excluir avaliação (${res.status})`);
   }
+}
+
+export async function fetchEvaluationDetailedById(
+  id: string,
+  token: string
+): Promise<MotionAnalysisResponse> {
+  const res = await fetch(API_ROUTES.EVALUATION_DETAILED_BY_ID(id), {
+    method: "GET",
+    headers: authHeaders(token),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(`Erro ao buscar avaliação detalhada (${res.status})`);
+  }
+  return res.json();
 }

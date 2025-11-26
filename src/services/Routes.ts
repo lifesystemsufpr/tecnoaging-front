@@ -8,7 +8,8 @@ const normalizeBaseUrl = (url?: string) => {
   try {
     const parsed = new URL(candidate);
     // Force IPv4 when backend listens only on 127.0.0.1 but Node resolves localhost => ::1.
-    const host = parsed.hostname === "localhost" ? "127.0.0.1" : parsed.hostname;
+    const host =
+      parsed.hostname === "localhost" ? "127.0.0.1" : parsed.hostname;
     const port = parsed.port ? `:${parsed.port}` : "";
 
     const pathname =
@@ -65,4 +66,6 @@ export const API_ROUTES = {
   // Evaluation
   EVALUATIONS: `${API_BASE_URL}/evaluation`,
   EVALUATION_BY_ID: (id: string) => `${API_BASE_URL}/evaluation/${id}`,
+  EVALUATION_DETAILED_BY_ID: (id: string) =>
+    `${API_BASE_URL}/evaluation/${id}/detailed`,
 } as const;
