@@ -97,7 +97,7 @@ jobs:
             # Note: NEXT_PUBLIC_API_BASE_URL is already embedded in the build, not needed here
             echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" > .env
             echo "NEXTAUTH_URL=https://${{ secrets.DUCK_DOMAIN }}" >> .env
-            echo "API_BASE_URL=http://localhost:3333
+            echo "API_BASE_URL=http://localhost:3333" >> .env
             echo "NODE_ENV=production" >> .env
             echo "DEV_SKIP_AUTH=false" >> .env
           ENDFRONT
