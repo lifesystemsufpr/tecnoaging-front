@@ -423,7 +423,7 @@ export default function TestsPage() {
 
   return (
     <Box sx={{ p: 0 }}>
-      <h1>Gerenciar 5TSTS</h1>
+      <h1>Gerenciar 30SSTS</h1>
       <Box mt={1} mb={1}>
         <FiltersSection
           token={token}
