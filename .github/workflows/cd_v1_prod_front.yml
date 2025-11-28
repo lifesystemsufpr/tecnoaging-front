@@ -1,0 +1,206 @@
+name: Deploy Frontend to Azure Prod
+
+on:
+  push:
+    branches:
+      - MVP_V1
+      
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.AZUREPROD_KEY }}
+
+      - name: Adicionar host à known_hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.PROD_DUCK_DOMAIN }} >> ~/.ssh/known_hosts
+
+      - name: Backup Current Deployment
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDBACKUP'
+            if [ -d ~/TecnoAging_front ]; then
+              rm -rf ~/TecnoAging_front_backup
+              cp -r ~/TecnoAging_front ~/TecnoAging_front_backup
+            else
+              echo "+   No existing deployment found, skipping backup"
+            fi
+          ENDBACKUP
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Frontend
+        run: |
+          # Set build-time environment variables
+          export NEXT_PUBLIC_API_BASE_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}/backend
+          npm run build
+
+      - name: Remover diretório com código antigo
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDREMOVE'
+            rm -rf ~/TecnoAging_front
+          ENDREMOVE
+
+      - name: Copy built artifacts to server
+        run: |
+          # Copy production files: .next (built output), public, source files (needed for API routes), configs
+          # Exclude dev-only files and build cache
+          rsync -avz \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'node_modules' \
+            --exclude '*.md' \
+            --exclude '.env*' \
+            --exclude 'env.production.example' \
+            --exclude '*.test.*' \
+            --exclude '*.spec.*' \
+            --exclude '.next/cache' \
+            --exclude '.next/standalone' \
+            -e "ssh" \
+            ./ ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }}:~/TecnoAging_front/
+
+      - name: Install production dependencies on server
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDINSTALL'
+            set -e
+
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use --lts || nvm install --lts
+
+            cd ~/TecnoAging_front
+            # Install only production dependencies (faster, smaller)
+            npm ci --production --silent
+          ENDINSTALL
+
+      - name: Create .env
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDFRONT'
+            set -e
+            cd ~/TecnoAging_front
+
+            # Cria .env (usado pelo Next.js em produção e pelo middleware)
+            # Note: NEXT_PUBLIC_API_BASE_URL is already embedded in the build, not needed here
+            echo "NEXTAUTH_SECRET=${{ secrets.PROD_NEXTAUTH_SECRET }}" > .env
+            echo "NEXTAUTH_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}" >> .env
+            echo "NODE_ENV=production" >> .env
+            echo "DEV_SKIP_AUTH=false" >> .env
+          ENDFRONT
+
+      - name: Setup PM2 on server
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDSETUP'
+            set -e
+
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use --lts || nvm install --lts
+
+            # Install PM2 if not present
+            if ! command -v pm2 >/dev/null 2>&1; then
+              npm install -g pm2 --silent --no-progress
+            fi
+          ENDSETUP
+
+      - name: Restart Frontend Service
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDRESTARTFRONT'
+            set -e
+
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use --lts
+
+            cd ~/TecnoAging_front
+
+            # Delete existing process if running
+            pm2 delete tecnoaging_frontend 2>/dev/null || echo "Frontend was not running"
+
+            # Start the frontend
+            pm2 start npm --name "tecnoaging_frontend" -- start
+
+            echo "+   Frontend restarted successfully!"
+          ENDRESTARTFRONT
+
+      - name: Save PM2 Configuration
+        run: |
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDSAVE'
+            set -e
+
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use --lts
+
+            # Save PM2 configuration
+            pm2 save
+            echo "+   PM2 configuration saved!"
+          ENDSAVE
+
+      - name: Cleanup Old Backup on Success
+        if: success()
+        run: |
+          echo "+   Cleaning up old backup..."
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDCLEANUP'
+            rm -rf ~/TecnoAging_front_backup
+          ENDCLEANUP
+
+      - name: Rollback on Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Attempting rollback..."
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDROLLBACK' || true
+            set -e
+
+            if [ -d ~/TecnoAging_front_backup ]; then
+              # Remove failed deployment
+              rm -rf ~/TecnoAging_front
+
+              # Restore backup
+              mv ~/TecnoAging_front_backup ~/TecnoAging_front
+
+              # Load NVM
+              export NVM_DIR="$HOME/.nvm"
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+              nvm use --lts || nvm install --lts
+
+              cd ~/TecnoAging_front
+
+              # Ensure dependencies are installed (backup should have them, but verify as safety measure)
+              if [ ! -d "node_modules" ] || [ ! -f "node_modules/.package-lock.json" ]; then
+                echo "Installing dependencies for rollback..."
+                npm ci --production --silent
+              fi
+
+              # Restart or start the frontend
+              pm2 restart tecnoaging_frontend || pm2 start npm --name "tecnoaging_frontend" -- start
+
+              pm2 save
+
+              echo "✅ Rollback completed successfully!"
+              echo "🔄 Services restored to previous version"
+            else
+              echo "⚠️  No backup found, manual intervention may be required"
+            fi
+          ENDROLLBACK
+
+          echo "🚨 Deployment failed and rollback attempted"
+          echo "📞 Please check the logs and server status manually"
+          exit 1
+
