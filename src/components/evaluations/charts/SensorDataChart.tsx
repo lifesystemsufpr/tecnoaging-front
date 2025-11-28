@@ -3,6 +3,7 @@
 import * as React from "react";
 import ReactECharts from "echarts-for-react";
 import { SensorData } from "@/types/domain/Evaluation";
+import { Box, Typography } from "@mui/material";
 
 interface SensorDataChartProps {
   sensorData: SensorData | null;
@@ -183,7 +184,21 @@ export default function SensorDataChart({
     };
   }, [sensorData, labelColor]);
 
-  if (!sensorData || !sensorData.data) return null;
+  if (!sensorData || !sensorData.data || sensorData.data.length === 0)
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: 100,
+        }}
+      >
+        <Typography variant="body1" color="error">
+          Nenhum dado de sensor disponível para exibir o gráfico.
+        </Typography>
+      </Box>
+    );
 
   return (
     <>
