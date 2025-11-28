@@ -23,7 +23,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
-import { Evaluation } from "@/types/domain/Evaluation";
+import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
 import { InfoItem } from "@/components/evaluations/InfoItem";
 import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
@@ -39,7 +39,10 @@ import {
   classificarDesempenhoGeral,
 } from "@/utils/analytics";
 import { useSession } from "next-auth/react";
-import { fetchEvaluationById } from "@/services/api-evaluation";
+import {
+  fetchEvaluationById,
+  fetchEvaluationDetailedById,
+} from "@/services/api-evaluation";
 import { durationMs } from "@/utils/dates";
 import { SystemRoles } from "@/types/enums/system-roles";
 
@@ -52,6 +55,8 @@ export default function Page({ params }: { params: { id: string } }) {
   const [evaluationDetails, setEvaluationDetails] = useState<Evaluation | null>(
     null
   );
+  const [extraEvaluations, setExtraEvaluations] =
+    useState<MotionAnalysisResponse | null>(null);
   const [allEvaluations, setAllEvaluations] = useState<Evaluation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -78,10 +83,12 @@ export default function Page({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [details] = await Promise.all([
+        const [details, extra] = await Promise.all([
           fetchEvaluationById(id, session?.accessToken),
+          fetchEvaluationDetailedById(id, session?.accessToken),
         ]);
         setEvaluationDetails(details);
+        setExtraEvaluations(extra);
         setAllEvaluations([]);
       } catch (err) {
         console.error(err);
@@ -200,7 +207,7 @@ export default function Page({ params }: { params: { id: string } }) {
         <CardContent>
           <Stack spacing={4}>
             <SensorDataChart
-              sensorData={evaluationDetails.sensorData}
+              sensorData={extraEvaluations.sensor}
               labelColor={labelColor}
             />
             {indicadoresRadar && (

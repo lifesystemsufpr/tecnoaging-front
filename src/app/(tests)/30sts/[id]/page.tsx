@@ -86,7 +86,6 @@ export default function Page({ params }: { params: { id: string } }) {
           fetchEvaluationDetailedById(id, session?.accessToken),
         ]);
         setEvaluationDetails(details);
-        console.log(extraDetails);
         setExtraEvaluations(extraDetails);
         setAllEvaluations([]);
       } catch (err) {
