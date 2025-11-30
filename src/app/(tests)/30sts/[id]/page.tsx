@@ -29,10 +29,7 @@ import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
 import SensorDataChart from "@/components/evaluations/charts/SensorDataChart";
 import RadarChart from "@/components/evaluations/charts/RadarChart";
-import FadigaAreaChart from "@/components/evaluations/charts/FadigaAreaChart";
 import BarChart from "@/components/evaluations/charts/BarChart";
-
-import { calcularIdadeAnos } from "@/utils/format";
 import {
   calcularIndicadores,
   classificarDesempenhoGeral,
@@ -55,6 +52,8 @@ export default function Page({ params }: { params: { id: string } }) {
   );
   const [extraEvaluations, setExtraEvaluations] =
     useState<MotionAnalysisResponse | null>(null);
+
+  const [repetitions, setRepetitions] = useState<number | null>(null);
   const [allEvaluations, setAllEvaluations] = useState<Evaluation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -87,6 +86,12 @@ export default function Page({ params }: { params: { id: string } }) {
         ]);
         setEvaluationDetails(details);
         setExtraEvaluations(extraDetails);
+        if (extraDetails) {
+          const reps = extraDetails.derived.indicators.find(
+            (ind) => ind.name === "Repetitions"
+          )?.value;
+          setRepetitions(reps || null);
+        }
         setAllEvaluations([]);
       } catch (err) {
         console.error(err);
@@ -105,22 +110,6 @@ export default function Page({ params }: { params: { id: string } }) {
   const classificacao = indicadoresRadar
     ? classificarDesempenhoGeral(indicadoresRadar)
     : "N/A";
-
-  const potencias = useMemo(() => {
-    if (!evaluationDetails) return [];
-    const pot: number[] = [];
-    const limiar = 1.0;
-    const sensorData = evaluationDetails.sensorData;
-    for (let i = 1; i < sensorData.length - 1; i++) {
-      const prev = sensorData[i - 1].accel_z;
-      const curr = sensorData[i].accel_z;
-      const next = sensorData[i + 1].accel_z;
-      if (curr > prev && curr > next && curr > limiar) {
-        pot.push(curr);
-      }
-    }
-    return pot;
-  }, [evaluationDetails]);
 
   if (isLoading) return <EvaluationSkeleton />;
   if (!evaluationDetails)
@@ -215,11 +204,7 @@ export default function Page({ params }: { params: { id: string } }) {
               />
             )}
 
-            {potencias.length > 0 && (
-              <FadigaAreaChart potencias={potencias} labelColor={labelColor} />
-            )}
-
-            {!extraEvaluations.cycle.totalCycles && (
+            {!repetitions && (
               <p>
                 Nao informado no endpoint o total de repeticoes | Repeticoes
                 padrao 15
@@ -228,7 +213,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
             <ContinuityChart30s
               idadePaciente={extraEvaluations.derived.patientAgeOnEvaluation}
-              repeticoesPaciente={extraEvaluations.cycle.totalCycles || 15}
+              repeticoesPaciente={repetitions ? repetitions : 15}
               labelColor={labelColor}
             />
 
