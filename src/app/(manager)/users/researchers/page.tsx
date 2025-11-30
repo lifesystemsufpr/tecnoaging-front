@@ -125,7 +125,8 @@ export default function ResearcherCRUDPage() {
     <Box>
       <h1>Gerenciar Pesquisadores</h1>
       <Box
-        mb={2}
+        mb={1}
+        mt={1}
         sx={{
           display: "flex",
           justifyContent: "space-between",

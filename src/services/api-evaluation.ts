@@ -1,14 +1,16 @@
-import { Evaluation } from "@/types/domain/Evaluation";
+import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
 import { API_ROUTES } from "./Routes";
 import {
   EvaluationResponse,
   ListEvaluationsResponse,
 } from "@/types/api/Evaluation";
+import { fetchClient } from "./api-client";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ?? "https://api.seuservidor.com";
 
 type ListFilters = {
+  patientCpf?: string | null;
   patientName?: string | null;
   healthProfessionalName?: string | null;
   startDate?: string | null; // 'YYYY-MM-DD' (recomendado)
@@ -34,11 +36,17 @@ function qs(params: Record<string, string | number | undefined | null>) {
   return search.toString();
 }
 
-export async function fetchEvaluations(
-  token: string,
-  filters?: ListFilters
-): Promise<ListEvaluationsResponse> {
+interface EvaluationListParams {
+  token?: string;
+  filters?: ListFilters;
+}
+
+export async function fetchEvaluations({
+  token,
+  filters,
+}: EvaluationListParams): Promise<ListEvaluationsResponse> {
   const query = qs({
+    patientCpf: filters?.patientCpf ?? undefined,
     patientName: filters?.patientName ?? undefined,
     healthProfessionalName: filters?.healthProfessionalName ?? undefined,
     startDate: filters?.startDate ?? undefined,
@@ -50,16 +58,11 @@ export async function fetchEvaluations(
 
   const url = `${API_ROUTES.EVALUATIONS}${query ? `?${query}` : ""}`;
 
-  const res = await fetch(url, {
+  return fetchClient(url, {
     method: "GET",
-    headers: authHeaders(token),
+    token,
     cache: "no-store",
   });
-
-  if (!res.ok) {
-    throw new Error(`Erro ao listar avaliações (${res.status})`);
-  }
-  return res.json();
 }
 
 export async function fetchEvaluationById(
@@ -89,4 +92,19 @@ export async function deleteEvaluation(
   if (!res.ok) {
     throw new Error(`Erro ao excluir avaliação (${res.status})`);
   }
+}
+
+export async function fetchEvaluationDetailedById(
+  id: string,
+  token: string
+): Promise<MotionAnalysisResponse> {
+  const res = await fetch(API_ROUTES.EVALUATION_DETAILED_BY_ID(id), {
+    method: "GET",
+    headers: authHeaders(token),
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(`Erro ao buscar avaliação detalhada (${res.status})`);
+  }
+  return res.json();
 }

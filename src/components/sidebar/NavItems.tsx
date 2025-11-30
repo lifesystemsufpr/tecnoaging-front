@@ -79,17 +79,8 @@ export const navItems: NavItem[] = [
   {
     icon: <Stethoscope size={18} />,
     name: "Avaliações",
-    roles: [
-      SystemRoles.HEALTH_PROFESSIONAL,
-      SystemRoles.MANAGER,
-      SystemRoles.RESEARCHER,
-    ],
+    roles: [SystemRoles.MANAGER, SystemRoles.RESEARCHER],
     subItems: [
-      {
-        name: "5 Times Sit to Stand",
-        path: "/5tsts",
-        pro: false,
-      },
       {
         name: "30 Seconds Sit to Stand",
         path: "/30sts",

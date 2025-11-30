@@ -119,7 +119,8 @@ export default function HealthProfessionalsCRUDPage() {
     <Box>
       <h1>Gerenciar Profissionais de Saúde</h1>
       <Box
-        mb={2}
+        mb={1}
+        mt={1}
         sx={{
           display: "flex",
           justifyContent: "space-between",

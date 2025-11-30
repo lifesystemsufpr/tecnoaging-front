@@ -29,11 +29,7 @@ import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
 import SensorDataChart from "@/components/evaluations/charts/SensorDataChart";
 import RadarChart from "@/components/evaluations/charts/RadarChart";
-import FadigaAreaChart from "@/components/evaluations/charts/FadigaAreaChart";
 import BarChart from "@/components/evaluations/charts/BarChart";
-import ContinuityChart from "@/components/evaluations/charts/ContinuityChart";
-
-import { calcularIdadeAnos } from "@/utils/format";
 import {
   calcularIndicadores,
   classificarDesempenhoGeral,
@@ -43,8 +39,7 @@ import {
   fetchEvaluationById,
   fetchEvaluationDetailedById,
 } from "@/services/api-evaluation";
-import { durationMs } from "@/utils/dates";
-import { SystemRoles } from "@/types/enums/system-roles";
+import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -57,6 +52,8 @@ export default function Page({ params }: { params: { id: string } }) {
   );
   const [extraEvaluations, setExtraEvaluations] =
     useState<MotionAnalysisResponse | null>(null);
+
+  const [repetitions, setRepetitions] = useState<number | null>(null);
   const [allEvaluations, setAllEvaluations] = useState<Evaluation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,12 +80,18 @@ export default function Page({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [details, extra] = await Promise.all([
+        const [details, extraDetails] = await Promise.all([
           fetchEvaluationById(id, session?.accessToken),
           fetchEvaluationDetailedById(id, session?.accessToken),
         ]);
         setEvaluationDetails(details);
-        setExtraEvaluations(extra);
+        setExtraEvaluations(extraDetails);
+        if (extraDetails) {
+          const reps = extraDetails.derived.indicators.find(
+            (ind) => ind.name === "Repetitions"
+          )?.value;
+          setRepetitions(reps || null);
+        }
         setAllEvaluations([]);
       } catch (err) {
         console.error(err);
@@ -108,22 +111,6 @@ export default function Page({ params }: { params: { id: string } }) {
     ? classificarDesempenhoGeral(indicadoresRadar)
     : "N/A";
 
-  const potencias = useMemo(() => {
-    if (!evaluationDetails) return [];
-    const pot: number[] = [];
-    const limiar = 1.0;
-    const sensorData = evaluationDetails.sensorData;
-    for (let i = 1; i < sensorData.length - 1; i++) {
-      const prev = sensorData[i - 1].accel_z;
-      const curr = sensorData[i].accel_z;
-      const next = sensorData[i + 1].accel_z;
-      if (curr > prev && curr > next && curr > limiar) {
-        pot.push(curr);
-      }
-    }
-    return pot;
-  }, [evaluationDetails]);
-
   if (isLoading) return <EvaluationSkeleton />;
   if (!evaluationDetails)
     return <Container sx={{ py: 2 }}>Avaliação não encontrada.</Container>;
@@ -132,8 +119,7 @@ export default function Page({ params }: { params: { id: string } }) {
     <Box>
       <Box sx={{ mb: 2 }}>
         <Button
-          component={NextLink}
-          href="/5tsts"
+          onClick={() => window.history.back()}
           startIcon={<ArrowBackIcon />}
           size="small"
           variant="text"
@@ -150,7 +136,7 @@ export default function Page({ params }: { params: { id: string } }) {
           </Typography>
           <Grid container spacing={2}>
             <Grid size={4}>
-              <InfoItem label="Tipo" value={evaluationDetails.type} />
+              <InfoItem label="Tipo" value={"30SSTS"} />
             </Grid>
             <Grid size={4}>
               <InfoItem
@@ -210,29 +196,27 @@ export default function Page({ params }: { params: { id: string } }) {
               sensorData={extraEvaluations.sensor}
               labelColor={labelColor}
             />
+
             {indicadoresRadar && (
               <RadarChart
                 indicators={indicadoresRadar}
                 labelColor={labelColor}
               />
             )}
-            {potencias.length > 0 && (
-              <FadigaAreaChart potencias={potencias} labelColor={labelColor} />
+
+            {!repetitions && (
+              <p>
+                Nao informado no endpoint o total de repeticoes | Repeticoes
+                padrao 15
+              </p>
             )}
-            <ContinuityChart
-              idadePaciente={calcularIdadeAnos(
-                evaluationDetails.patient?.birthday,
-                evaluationDetails.date
-              )}
-              tempoPaciente={
-                durationMs(
-                  evaluationDetails.time_init,
-                  evaluationDetails.time_end
-                ) / 1000
-              }
-              tipo={evaluationDetails.type as any}
+
+            <ContinuityChart30s
+              idadePaciente={extraEvaluations.derived.patientAgeOnEvaluation}
+              repeticoesPaciente={repetitions ? repetitions : 15}
               labelColor={labelColor}
             />
+
             {allEvaluations.length > 0 && (
               <BarChart
                 evaluations={allEvaluations.filter(

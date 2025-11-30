@@ -9,6 +9,7 @@ import {
   Chip,
   Grid,
   TextField,
+  Typography,
 } from "@mui/material";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -360,16 +361,16 @@ export default function TestsPage() {
       setLoading(true);
 
       try {
-        const { data, meta } = await fetchEvaluations(token, {
-          patientName: normalizedFilters.patientName,
-          healthProfessionalName: normalizedFilters.healthProfessionalName,
-          startDate: normalizedFilters.startDate,
-          endDate: normalizedFilters.endDate,
-          type: normalizedFilters.type,
-          page: normalizedFilters.page ?? 1,
-          pageSize: normalizedFilters.pageSize ?? 5,
+        const { data, meta } = await fetchEvaluations({
+          filters: {
+            patientName: normalizedFilters.patientName ?? undefined,
+            healthProfessionalName:
+              normalizedFilters.healthProfessionalName ?? undefined,
+            startDate: normalizedFilters.startDate ?? undefined,
+            endDate: normalizedFilters.endDate ?? undefined,
+            type: "FTSTS",
+          },
         });
-
         setTotalRows(meta.total);
 
         if (currentRequestId !== requestIdRef.current) return;
@@ -421,13 +422,16 @@ export default function TestsPage() {
     return <div>Voce precisa estar logado para acessar essa pagina.</div>;
 
   return (
-    <Box sx={{ p: 2 }}>
-      <FiltersSection
-        token={token}
-        onSearch={handleApplyFilters}
-        onReset={handleResetFilters}
-        disabled={loading}
-      />
+    <Box sx={{ p: 0 }}>
+      <h1>Gerenciar 5TSTS</h1>
+      <Box mt={1} mb={1}>
+        <FiltersSection
+          token={token}
+          onSearch={handleApplyFilters}
+          onReset={handleResetFilters}
+          disabled={loading}
+        />
+      </Box>
       <GenericTable<TableRow>
         rows={rows}
         columns={columns}
