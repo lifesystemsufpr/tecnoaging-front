@@ -3,7 +3,7 @@ name: Deploy Frontend to Azure Dev
 on:
   push:
     branches:
-      - MVP_V1
+      - dev
       
 jobs:
   deploy:
