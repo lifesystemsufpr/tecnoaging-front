@@ -1,9 +1,9 @@
-name: Deploy Frontend to Azure Prod
+name: Prod deploy
 
 on:
   push:
     branches:
-      - paused
+      - dev
       
 jobs:
   deploy:
