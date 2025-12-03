@@ -20,11 +20,11 @@ jobs:
 
       - name: Adicionar host à known_hosts
         run: |
-          ssh-keyscan -H ${{ secrets.PROD_DUCK_DOMAIN }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.TECNOAGING_DOMAIN }} >> ~/.ssh/known_hosts
 
       - name: Backup Current Deployment
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDBACKUP'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDBACKUP'
             if [ -d ~/TecnoAging_front ]; then
               rm -rf ~/TecnoAging_front_backup
               cp -r ~/TecnoAging_front ~/TecnoAging_front_backup
@@ -45,12 +45,12 @@ jobs:
       - name: Build Frontend
         run: |
           # Set build-time environment variables
-          export NEXT_PUBLIC_API_BASE_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}/backend
+          export NEXT_PUBLIC_API_BASE_URL=https://${{ secrets.TECNOAGING_DOMAIN }}/backend
           npm run build
 
       - name: Remover diretório com código antigo
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDREMOVE'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDREMOVE'
             rm -rf ~/TecnoAging_front
           ENDREMOVE
 
@@ -70,11 +70,11 @@ jobs:
             --exclude '.next/cache' \
             --exclude '.next/standalone' \
             -e "ssh" \
-            ./ ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }}:~/TecnoAging_front/
+            ./ ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }}:~/TecnoAging_front/
 
       - name: Install production dependencies on server
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDINSTALL'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDINSTALL'
             set -e
 
             # Load NVM
@@ -90,13 +90,13 @@ jobs:
       - name: Create .env
         run: |
           create_env_cmd() {
-            ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDFRONT'
+            ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDFRONT'
               set -e
               cd ~/TecnoAging_front
 
               # Cria .env
               echo "NEXTAUTH_SECRET=${{ secrets.PROD_NEXTAUTH_SECRET }}" > .env
-              echo "NEXTAUTH_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}" >> .env
+              echo "NEXTAUTH_URL=https://${{ secrets.TECNOAGING_DOMAIN }}" >> .env
               echo "NODE_ENV=production" >> .env
               echo "DEV_SKIP_AUTH=false" >> .env
           ENDFRONT
@@ -106,7 +106,7 @@ jobs:
         
       - name: Setup PM2 on server
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDSETUP'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDSETUP'
             set -e
 
             # Load NVM
@@ -122,7 +122,7 @@ jobs:
 
       - name: Restart Frontend Service
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDRESTARTFRONT'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDRESTARTFRONT'
             set -e
 
             # Load NVM
@@ -143,7 +143,7 @@ jobs:
 
       - name: Save PM2 Configuration
         run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDSAVE'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDSAVE'
             set -e
 
             # Load NVM
@@ -160,7 +160,7 @@ jobs:
         if: success()
         run: |
           echo "+   Cleaning up old backup..."
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDCLEANUP'
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDCLEANUP'
             rm -rf ~/TecnoAging_front_backup
           ENDCLEANUP
 
@@ -168,7 +168,7 @@ jobs:
         if: failure()
         run: |
           echo "❌ Deployment failed! Attempting rollback..."
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDROLLBACK' || true
+          ssh ${{ secrets.AZURE_USER }}@${{ secrets.TECNOAGING_DOMAIN }} << 'ENDROLLBACK' || true
             set -e
 
             if [ -d ~/TecnoAging_front_backup ]; then
