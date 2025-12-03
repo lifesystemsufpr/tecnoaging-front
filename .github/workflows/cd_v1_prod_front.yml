@@ -87,20 +87,23 @@ jobs:
             npm ci --production --silent
           ENDINSTALL
 
-      - name: Create .env
-        run: |
-          ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDFRONT'
-            set -e
-            cd ~/TecnoAging_front
-
-            # Cria .env (usado pelo Next.js em produção e pelo middleware)
-            # Note: NEXT_PUBLIC_API_BASE_URL is already embedded in the build, not needed here
-            echo "NEXTAUTH_SECRET=${{ secrets.PROD_NEXTAUTH_SECRET }}" > .env
-            echo "NEXTAUTH_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}" >> .env
-            echo "NODE_ENV=production" >> .env
-            echo "DEV_SKIP_AUTH=false" >> .env
-          ENDFRONT
-
+          - name: Create .env
+          run: |
+            create_env_cmd() {
+              ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDFRONT'
+                set -e
+                cd ~/TecnoAging_front
+  
+                # Cria .env
+                echo "NEXTAUTH_SECRET=${{ secrets.PROD_NEXTAUTH_SECRET }}" > .env
+                echo "NEXTAUTH_URL=https://${{ secrets.PROD_DUCK_DOMAIN }}" >> .env
+                echo "NODE_ENV=production" >> .env
+                echo "DEV_SKIP_AUTH=false" >> .env
+            ENDFRONT
+            }
+            # Try to run the command, if it fails, wait 10s and try again
+            create_env_cmd || (echo "Retrying..." && sleep 10 && create_env_cmd)
+            
       - name: Setup PM2 on server
         run: |
           ssh ${{ secrets.AZURE_USER }}@${{ secrets.PROD_DUCK_DOMAIN }} << 'ENDSETUP'
