@@ -143,54 +143,42 @@ export default function ResearcherCRUDPage() {
         </Button>
       </Box>
 
-      {loading ? (
-        <Box>
-          <Skeleton
-            variant="rectangular"
-            width="100%"
-            height={300}
-            sx={{
-              borderRadius: 1,
-            }}
-          />
-        </Box>
-      ) : (
-        <GenericTable<Researcher>
-          rows={filteredResearchers ?? researchersList}
-          columns={[
-            {
-              key: "fullName",
-              header: "Nome",
-              render: (p) => <>{p.row.fullName ?? "—"}</>,
-            },
-            { key: "email", header: "Email" },
-            { key: "cpf", header: "CPF" },
-            {
-              key: "institution",
-              header: "Instituição",
-              render: (p) => <>{p.row?.institutionName ?? "—"}</>,
-            },
-            {
-              key: "fieldOfStudy",
-              header: "Campo de Estudo",
-              render: (p) => <>{p.row.fieldOfStudy ?? "—"}</>,
-            },
-          ]}
-          getRowId={(r) => r.id}
-          showActions
-          onView={(r) => {
-            router.push(`/users/researchers/${r?.id}`);
-          }}
-          onEdit={(r) => {
-            setSelectedResearcher(r);
-            safeSetOpenModal(true);
-          }}
-          onDelete={(r) => handleDeleteResearcher(r.id)}
-          totalRows={totalRows}
-          setPaginationModel={setPaginationModel}
-          paginationModel={paginationModel}
-        />
-      )}
+      <GenericTable<Researcher>
+        rows={filteredResearchers ?? researchersList}
+        columns={[
+          {
+            key: "fullName",
+            header: "Nome",
+            render: (p) => <>{p.row.fullName ?? "—"}</>,
+          },
+          { key: "email", header: "Email" },
+          { key: "cpf", header: "CPF" },
+          {
+            key: "institution",
+            header: "Instituição",
+            render: (p) => <>{p.row?.institutionName ?? "—"}</>,
+          },
+          {
+            key: "fieldOfStudy",
+            header: "Campo de Estudo",
+            render: (p) => <>{p.row.fieldOfStudy ?? "—"}</>,
+          },
+        ]}
+        getRowId={(r) => r.id}
+        showActions
+        onView={(r) => {
+          router.push(`/users/researchers/${r?.id}`);
+        }}
+        onEdit={(r) => {
+          setSelectedResearcher(r);
+          safeSetOpenModal(true);
+        }}
+        onDelete={(r) => handleDeleteResearcher(r.id)}
+        totalRows={totalRows}
+        setPaginationModel={setPaginationModel}
+        paginationModel={paginationModel}
+        loading={loading}
+      />
 
       <Modal
         open={openModal}

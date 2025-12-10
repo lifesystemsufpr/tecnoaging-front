@@ -28,6 +28,7 @@ export default function HealthProfessionalsCRUDPage() {
   >([]);
   const [filteredHealthProfessionals, setFilteredHealthProfessionals] =
     useState<HealthProfessional[] | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<{
     pageSize: PageSizeOption;
@@ -71,6 +72,7 @@ export default function HealthProfessionalsCRUDPage() {
 
   const loadHealthProfessionals = useCallback(
     async (query?: string) => {
+      setLoading(true);
       fetchHealthProfessionals({
         accessToken: session.accessToken,
         page: paginationModel.page + 1,
@@ -85,6 +87,9 @@ export default function HealthProfessionalsCRUDPage() {
         .catch((error) => {
           console.error("Error fetching health professionals:", error);
           toast.error("Erro ao carregar profissionais de saúde.");
+        })
+        .finally(() => {
+          setLoading(false);
         });
     },
     [session, paginationModel]
@@ -178,6 +183,7 @@ export default function HealthProfessionalsCRUDPage() {
         totalRows={totalRows}
         paginationModel={paginationModel}
         setPaginationModel={setPaginationModel}
+        loading={loading}
       />
 
       <Modal
