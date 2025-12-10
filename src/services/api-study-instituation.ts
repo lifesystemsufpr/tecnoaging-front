@@ -3,6 +3,7 @@ import {
   InstitutionResponse,
 } from "@/types/api/Institution";
 import { API_ROUTES } from "./Routes";
+import { fetchClient } from "./api-client";
 
 export async function fetchInstitutions({
   access_token,
@@ -23,4 +24,48 @@ export async function fetchInstitutionById({
     headers: { Authorization: `Bearer ${access_token}` },
   });
   return await res.json();
+}
+
+export async function deleteInstitution({ id }: { id: string }): Promise<void> {
+  try {
+    await fetchClient(API_ROUTES.INSTITUTION_BY_ID(id), {
+      method: "DELETE",
+    });
+  } catch (error) {
+    throw new Error(`Erro ao excluir instituição (${error})`);
+  }
+}
+
+export async function createInstitution({
+  title,
+}: {
+  title: string;
+}): Promise<void> {
+  try {
+    await fetchClient(API_ROUTES.INSTITUTIONS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+  } catch (error) {
+    throw new Error(`Erro ao criar instituição (${error})`);
+  }
+}
+
+export async function updateInstitution({
+  id,
+  title,
+}: {
+  id: string;
+  title: string;
+}): Promise<void> {
+  try {
+    await fetchClient(API_ROUTES.INSTITUTION_BY_ID(id), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+  } catch (error) {
+    throw new Error(`Erro ao atualizar instituição (${error})`);
+  }
 }
