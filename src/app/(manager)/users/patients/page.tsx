@@ -60,6 +60,10 @@ export default function PatientsCRUDPage() {
     router.push(`patients/${id}/evaluations`);
   };
 
+  const handleViewQuestionnaires = (id: string) => {
+    router.push(`patients/${id}/questionnaires`);
+  };
+
   const loadPatients = useCallback(
     async (token: string, query?: string) => {
       try {
@@ -159,9 +163,8 @@ export default function PatientsCRUDPage() {
         onEdit={(patient) => handleUpdatePatient(patient.id)}
         onDelete={(patient) => handleDeletePatient(patient.id)}
         onView={(patient) => router.push(`/users/patients/${patient.id}`)}
-        onEvaluations={
-          isProfessional ? (patient) => handleViewTests(patient.id) : undefined
-        }
+        onTests={(patient) => handleViewTests(patient.id)}
+        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
         pageSize={5}
         autoHeight
         totalRows={totalRows}
