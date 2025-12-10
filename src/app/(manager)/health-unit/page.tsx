@@ -129,6 +129,10 @@ export default function PatientsCRUDPage() {
         onView={(u) => router.push(`/health-unit/${u.id}`)}
         pageSize={5}
         autoHeight
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.name}?</>
+        )}
+        deleteConfirmTitle="Excluir unidade de saúde"
       />
 
       <Modal

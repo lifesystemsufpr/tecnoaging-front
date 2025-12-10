@@ -184,6 +184,10 @@ export default function HealthProfessionalsCRUDPage() {
         paginationModel={paginationModel}
         setPaginationModel={setPaginationModel}
         loading={loading}
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.fullName}?</>
+        )}
+        deleteConfirmTitle="Excluir profissional de saúde"
       />
 
       <Modal

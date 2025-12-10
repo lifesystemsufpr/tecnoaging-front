@@ -172,6 +172,10 @@ export default function PatientsCRUDPage() {
         paginationModel={paginationModel}
         setPaginationModel={setPaginationModel}
         loading={loading}
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.fullName}?</>
+        )}
+        deleteConfirmTitle="Excluir paciente"
       />
 
       <Modal

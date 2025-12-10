@@ -178,6 +178,10 @@ export default function ResearcherCRUDPage() {
         setPaginationModel={setPaginationModel}
         paginationModel={paginationModel}
         loading={loading}
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.fullName}?</>
+        )}
+        deleteConfirmTitle="Excluir pesquisador"
       />
 
       <Modal
