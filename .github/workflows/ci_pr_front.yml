@@ -3,7 +3,6 @@ name: Frontend CI - Pull Request Check
 on:
   pull_request:
     branches:
-      - main
       - dev
 
 jobs:

@@ -134,10 +134,10 @@ jobs:
             cd ~/TecnoAging_front
 
             # Delete existing process if running
-            pm2 delete tecnoaging_frontend 2>/dev/null || echo "Frontend was not running"
+            pm2 delete TecnoAging-front 2>/dev/null || echo "Frontend was not running"
 
             # Start the frontend
-            pm2 start npm --name "tecnoaging_frontend" -- start
+            pm2 start npm --name "TecnoAging-front" -- start
 
             echo "+   Frontend restarted successfully!"
           ENDRESTARTFRONT
@@ -193,7 +193,7 @@ jobs:
               fi
 
               # Restart or start the frontend
-              pm2 restart tecnoaging_frontend || pm2 start npm --name "tecnoaging_frontend" -- start
+              pm2 restart TecnoAging-front || pm2 start npm --name "TecnoAging-front" -- start
 
               pm2 save
 
