@@ -2,10 +2,11 @@
 
 import { fetchPatientQuestionnaires } from "@/services/api-questionnaires";
 import { classification, PatientQuestionnaire, PatientQuestionnaireList } from "@/types/domain/Questionnaire";
-import { Box, Card, CardContent, Typography } from "@mui/material"
-import { useParams } from "next/navigation"
+import { Box, Breadcrumbs, Button, Card, CardContent, Link, Stack, Typography } from "@mui/material"
+import { useParams , useRouter} from "next/navigation"
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const getSeverityColor = (status: classification) => {
     switch (status) {
@@ -90,6 +91,7 @@ function QuestionnaireItem({ item }: { item: PatientQuestionnaire }) {
 export default function PatientQuestionnairesPage() {
     const params = useParams();
     const patientId = params.id as string;
+    const router = useRouter();
 
     const [questionnaires, setQuestionnaires] = useState<PatientQuestionnaireList>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -116,10 +118,42 @@ export default function PatientQuestionnairesPage() {
 
     return (
         <Box sx={{ p: 2 }}>
-            <Typography variant="h5" sx={{ mb: 3 }}>Histórico de Questionários</Typography>
-            {questionnaires.map((q) => (
-                <QuestionnaireItem key={q.id} item={q} />
-            ))}
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+            >
+                <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    component="button"
+                    onClick={() => router.push("/users/patients")}
+                    underline="hover"
+                    color="inherit"
+                >
+                    Pacientes
+                </Link>
+                <Typography color="text.primary">
+                    Questionários do Paciente
+                </Typography>
+                </Breadcrumbs>
+
+                <Stack direction="row" spacing={1}>
+                <Button
+                    startIcon={<ArrowBackIcon />}
+                    onClick={() => router.back()}
+                >
+                    Voltar
+                </Button>
+                </Stack>
+            </Stack>
+            {questionnaires.length === 0 ? (
+                <Typography variant="body1">Nenhum questionário encontrado para este paciente.</Typography>
+            ) : (
+                questionnaires.map((q) => (
+                    <QuestionnaireItem key={q.id} item={q} />
+                ))
+            )}
         </Box>
     )
 }
