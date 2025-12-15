@@ -39,8 +39,8 @@ export const API_ROUTES = {
   RESEARCHER_BY_ID: (id: string) => `${API_BASE_URL}/researcher/${id}`,
 
   // Patient
-  PATIENTS: `${API_BASE_URL}/patient`,
-  PATIENT_BY_ID: (id: string) => `${API_BASE_URL}/patient/${id}`,
+  PATIENTS: `${API_BASE_URL}/participant`,
+  PATIENT_BY_ID: (id: string) => `${API_BASE_URL}/participant/${id}`,
 
   // Health Professional
   HEALTH_PROFESSIONALS: `${API_BASE_URL}/health-professional`,
