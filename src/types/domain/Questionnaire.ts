@@ -1,3 +1,5 @@
+export type classification = 'Frágil' | 'Potencialmente Frágil' | 'Em Risco de Fragilização' |'Robusto';
+
 export interface UserBasicInfo {
   fullName: string;
 }
@@ -32,7 +34,7 @@ export interface Answer {
 export interface PatientQuestionnaire {
   id: string;
   totalScore: number;
-  classification: string;
+  classification: classification;
   date: string;
   createdAt: string;
   healthProfessional: HealthProfessionalInfo;
