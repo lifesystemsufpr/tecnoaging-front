@@ -93,11 +93,11 @@ export default function Page() {
         <Breadcrumbs aria-label="breadcrumb">
           <MUILink
             component="button"
-            onClick={() => router.push("/studies/institutions")}
+            onClick={() => router.push("/institutions")}
             underline="hover"
             color="inherit"
           >
-            Instituições de Estudo
+            Instituições de Ensino
           </MUILink>
           <Typography color="text.primary">
             {title !== "—" ? title : "Detalhes"}
@@ -107,7 +107,7 @@ export default function Page() {
         <Stack direction="row" spacing={1}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => router.push("/studies/institutions")}
+            onClick={() => router.push("/institutions")}
           >
             Voltar
           </Button>
@@ -116,7 +116,7 @@ export default function Page() {
             startIcon={<EditIcon />}
             onClick={() =>
               router.push(
-                `/studies/institutions/${encodeURIComponent(String(strId))}/edit`
+                `/institutions/${encodeURIComponent(String(strId))}/edit`
               )
             }
             disabled={true}

@@ -3,8 +3,7 @@ name: Prod deploy
 on:
   push:
     branches:
-      - main
-      - dev
+      - obsolete
       
 jobs:
   deploy:

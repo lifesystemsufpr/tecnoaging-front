@@ -39,8 +39,8 @@ export const API_ROUTES = {
   RESEARCHER_BY_ID: (id: string) => `${API_BASE_URL}/researcher/${id}`,
 
   // Patient
-  PATIENTS: `${API_BASE_URL}/patient`,
-  PATIENT_BY_ID: (id: string) => `${API_BASE_URL}/patient/${id}`,
+  PATIENTS: `${API_BASE_URL}/participant`,
+  PATIENT_BY_ID: (id: string) => `${API_BASE_URL}/participant/${id}`,
 
   // Health Professional
   HEALTH_PROFESSIONALS: `${API_BASE_URL}/health-professional`,
@@ -68,4 +68,8 @@ export const API_ROUTES = {
   EVALUATION_BY_ID: (id: string) => `${API_BASE_URL}/evaluation/${id}`,
   EVALUATION_DETAILED_BY_ID: (id: string) =>
     `${API_BASE_URL}/evaluation/${id}/detailed`,
+
+  QUESTIONNAIRES: `${API_BASE_URL}/questionnaire`,
+  QUESTIONNAIRES_BY_PATIENT_ID: (patientId: string) =>
+    `${API_BASE_URL}/questionnaires/participant/${patientId}`,
 } as const;

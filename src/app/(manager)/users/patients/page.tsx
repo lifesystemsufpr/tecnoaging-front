@@ -36,6 +36,7 @@ export default function PatientsCRUDPage() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -60,9 +61,14 @@ export default function PatientsCRUDPage() {
     router.push(`patients/${id}/evaluations`);
   };
 
+  const handleViewQuestionnaires = (id: string) => {
+    router.push(`patients/${id}/questionnaires`);
+  };
+
   const loadPatients = useCallback(
     async (token: string, query?: string) => {
       try {
+        setLoading(true);
         const { data, meta } = await fetchPatients(
           token,
           paginationModel.page + 1,
@@ -73,6 +79,8 @@ export default function PatientsCRUDPage() {
         setTotalRows(meta.total);
       } catch (e) {
         console.error(e);
+      } finally {
+        setLoading(false);
       }
     },
     [paginationModel]
@@ -159,14 +167,18 @@ export default function PatientsCRUDPage() {
         onEdit={(patient) => handleUpdatePatient(patient.id)}
         onDelete={(patient) => handleDeletePatient(patient.id)}
         onView={(patient) => router.push(`/users/patients/${patient.id}`)}
-        onEvaluations={
-          isProfessional ? (patient) => handleViewTests(patient.id) : undefined
-        }
+        onTests={(patient) => handleViewTests(patient.id)}
+        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
         pageSize={5}
         autoHeight
         totalRows={totalRows}
         paginationModel={paginationModel}
         setPaginationModel={setPaginationModel}
+        loading={loading}
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.fullName}?</>
+        )}
+        deleteConfirmTitle="Excluir paciente"
       />
 
       <Modal
