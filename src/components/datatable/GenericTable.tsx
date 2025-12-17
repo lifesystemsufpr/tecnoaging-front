@@ -23,6 +23,8 @@ import {
   DialogActions,
   Button,
   Tooltip,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import {
   PageSizeOption,
@@ -50,6 +52,8 @@ export type GenericTableProps<T> = {
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void | Promise<void>;
   onEvaluations?: (row: T) => void;
+  onTests?: (row: T) => void;
+  onQuestionnaires?: (row: T) => void;
   pageSize?: number;
   checkboxSelection?: boolean;
   autoHeight?: boolean;
@@ -86,75 +90,122 @@ function actionsColumn<T>(opts: {
   onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
-  onEvaluations?: (row: T) => void;
+  onTests?: (row: T) => void;
+  onQuestionnaires?: (row: T) => void;
 }): GridColDef<T> {
-  const { onView, onEdit, onDelete, onEvaluations } = opts;
+  const { onView, onEdit, onDelete, onTests, onQuestionnaires } = opts;
+
   return {
     field: "__actions__",
     headerName: "Ações",
     sortable: false,
     filterable: false,
-    // Aumentei levemente a largura para acomodar 4 ícones confortavelmente
     width: 180,
     align: "center",
     headerAlign: "center",
-    renderCell: (params) => (
-      <Stack
-        direction="row"
-        spacing={0.5}
-        sx={{ width: "100%", justifyContent: "center" }}
-      >
-        {/* Novo Botão de Avaliações/Testes */}
-        {onEvaluations && (
-          <Tooltip title="Ver Testes">
-            <IconButton
-              size="small"
-              color="primary"
-              aria-label="Ver Testes"
-              onClick={() => onEvaluations(params.row)}
-            >
-              <AssignmentIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
+    renderCell: (params) => {
+      const row = params.row;
 
-        {onView && (
-          <Tooltip title="Visualizar">
-            <IconButton
-              size="small"
-              aria-label="Visualizar"
-              onClick={() => onView(params.row)}
-            >
-              <VisibilityIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
-        {onEdit && (
-          <Tooltip title="Editar">
-            <IconButton
-              size="small"
-              aria-label="Editar"
-              onClick={() => onEdit(params.row)}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
-        {onDelete && (
-          <Tooltip title="Excluir">
-            <IconButton
-              size="small"
-              color="error"
-              aria-label="Excluir"
-              onClick={() => onDelete(params.row)}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Stack>
-    ),
-  } as GridColDef<T>;
+      const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+      const open = Boolean(anchorEl);
+
+      const hasTests = !!onTests;
+      const hasQuestionnaires = !!onQuestionnaires;
+
+      const handleEvalClick = (event: React.MouseEvent<HTMLElement>) => {
+        // somente uma função → chama direto
+        if (hasTests && !hasQuestionnaires) {
+          onTests?.(row);
+          return;
+        }
+        if (!hasTests && hasQuestionnaires) {
+          onQuestionnaires?.(row);
+          return;
+        }
+
+        // as duas → abre menu
+        setAnchorEl(event.currentTarget);
+      };
+
+      const handleClose = () => setAnchorEl(null);
+
+      return (
+        <Stack
+          direction="row"
+          spacing={0.5}
+          sx={{ width: "100%", justifyContent: "center" }}
+        >
+          {/* Botão Avaliações */}
+          {(hasTests || hasQuestionnaires) && (
+            <>
+              <Tooltip title="Avaliações">
+                <IconButton
+                  size="small"
+                  color="primary"
+                  aria-label="Avaliações"
+                  onClick={handleEvalClick}
+                >
+                  <AssignmentIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+
+              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                {hasTests && (
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      onTests?.(row);
+                    }}
+                  >
+                    Testes
+                  </MenuItem>
+                )}
+
+                {hasQuestionnaires && (
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      onQuestionnaires?.(row);
+                    }}
+                  >
+                    Questionários
+                  </MenuItem>
+                )}
+              </Menu>
+            </>
+          )}
+
+          {onView && (
+            <Tooltip title="Visualizar">
+              <IconButton size="small" onClick={() => onView(row)}>
+                <VisibilityIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {onEdit && (
+            <Tooltip title="Editar">
+              <IconButton size="small" onClick={() => onEdit(row)}>
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {onDelete && (
+            <Tooltip title="Excluir">
+              <IconButton
+                size="small"
+                color="error"
+                onClick={() => onDelete(row)}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
+      );
+    },
+  };
 }
 
 function toGridColumns<T>(specs: ColumnConfig<T>[]): GridColDef<T>[] {
@@ -168,15 +219,9 @@ function toGridColumns<T>(specs: ColumnConfig<T>[]): GridColDef<T>[] {
 
     if (c.render) base.renderCell = c.render;
     if (c.valueGetter) {
-      // MUI v6/v7: (value, row)
-      // MUI v5: (params)
-
       base.valueGetter = (value: any, row: T) => {
-        // Se 'row' vier no segundo argumento (MUI v6+), usa ele.
-        // Se não, tenta pegar do primeiro argumento (fallback para MUI v5 ou estruturas antigas)
         const rowData = row || (value as any)?.row;
 
-        // Proteção extra caso rowData ainda seja undefined
         if (!rowData) return "";
 
         return c.valueGetter!(rowData);
@@ -283,6 +328,8 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     onEdit,
     onDelete,
     onEvaluations,
+    onTests,
+    onQuestionnaires,
     pageSize = 10,
     checkboxSelection,
     autoHeight = true,
@@ -320,13 +367,17 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
 
   const gridColumns = React.useMemo(() => {
     const cols = toGridColumns(columns);
-    if (showActions && (onView || onEdit || onDelete || onEvaluations)) {
+    if (
+      showActions &&
+      (onView || onEdit || onDelete || onTests || onQuestionnaires)
+    ) {
       cols.push(
         actionsColumn<T>({
           onView,
           onEdit,
           onDelete: onDelete ? handleDeleteRequest : undefined,
-          onEvaluations,
+          onTests: onTests,
+          onQuestionnaires: onQuestionnaires,
         })
       );
     }
@@ -338,7 +389,8 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     onEdit,
     onDelete,
     handleDeleteRequest,
-    onEvaluations,
+    onTests,
+    onQuestionnaires,
   ]);
 
   const resolvedGetRowId = React.useMemo(() => {
