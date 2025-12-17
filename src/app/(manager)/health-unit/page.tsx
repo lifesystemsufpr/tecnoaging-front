@@ -14,7 +14,7 @@ import { HealthUnitForm } from "@/components/form/health-unit";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export default function PatientsCRUDPage() {
+export default function HealthUnitCRUDPage() {
   const [healthUnitsList, setHealthUnitsList] = useState<HealthUnit[]>([]);
   const [filteredHealthUnits, setFilteredHealthUnits] = useState<
     HealthUnit[] | null
@@ -129,6 +129,10 @@ export default function PatientsCRUDPage() {
         onView={(u) => router.push(`/health-unit/${u.id}`)}
         pageSize={5}
         autoHeight
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.name}?</>
+        )}
+        deleteConfirmTitle="Excluir unidade de saúde"
       />
 
       <Modal

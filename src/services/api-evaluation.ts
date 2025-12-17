@@ -42,7 +42,6 @@ interface EvaluationListParams {
 }
 
 export async function fetchEvaluations({
-  token,
   filters,
 }: EvaluationListParams): Promise<ListEvaluationsResponse> {
   const query = qs({
@@ -60,7 +59,6 @@ export async function fetchEvaluations({
 
   return fetchClient(url, {
     method: "GET",
-    token,
     cache: "no-store",
   });
 }

@@ -328,7 +328,7 @@ export default function TestsPage() {
   const [loading, setLoading] = useState(false);
 
   const [totalRows, setTotalRows] = useState(0);
-  const [pageSize, setPageSize] = useState<PageSizeOption>(5);
+  const [pageSize, setPageSize] = useState<PageSizeOption>(10);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState<TableRow[]>([]);
 
@@ -369,6 +369,8 @@ export default function TestsPage() {
             startDate: normalizedFilters.startDate ?? undefined,
             endDate: normalizedFilters.endDate ?? undefined,
             type: "TTSTS",
+            pageSize: normalizedFilters.pageSize ?? pageSize,
+            page: normalizedFilters.page ?? 1,
           },
         });
         setTotalRows(meta.total);
