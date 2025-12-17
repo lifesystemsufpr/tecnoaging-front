@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchInstitutionById } from "@/services/api-study-instituation";
+import { fetchInstitutionById } from "@/services/api-study-institution";
 import { Institution } from "@/types/domain/Institution";
 import {
   Box,

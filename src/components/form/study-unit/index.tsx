@@ -8,7 +8,7 @@ import { Institution } from "@/types/domain/Institution";
 import {
   createInstitution,
   updateInstitution,
-} from "@/services/api-study-instituation";
+} from "@/services/api-study-institution";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 

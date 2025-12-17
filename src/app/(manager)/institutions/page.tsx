@@ -5,7 +5,7 @@ import { InstitutionForm } from "@/components/form/study-unit";
 import {
   deleteInstitution,
   fetchInstitutions,
-} from "@/services/api-study-instituation";
+} from "@/services/api-study-institution";
 import { Institution } from "@/types/domain/Institution";
 import {
   Box,
