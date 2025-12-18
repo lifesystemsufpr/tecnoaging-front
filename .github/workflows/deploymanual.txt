@@ -6,7 +6,8 @@ FRONT
 # PRÉ-REQUISITOS (Rodar uma vez na sua máquina)
 # 1. Ter Node.js instalado (Versão LTS recomendada)
 # 2. Ter um terminal Bash (Git Bash no Windows, ou WSL, ou Terminal Linux/Mac)
-# 3. Ter o comando 'ssh' e 'scp'
+#    OU usar PowerShell com 'tar' e 'ssh' (Windows 10/11 já possuem).
+# 3. Este guia assume comandos compatíveis com PowerShell e Bash onde indicado.
 
 # ==============================================================================
 # 1. PREPARAÇÃO DO AMBIENTE LOCAL (CLEAN SLATE)
@@ -19,7 +20,8 @@ cd "E:\IC\4 projects\DEV FULL\tecnoaging-front"
 # PowerShell:
 if (Test-Path .next) { Remove-Item -Recurse -Force .next }
 if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
-# Git Bash/Linux: rm -rf .next node_modules
+if (Test-Path deploy.tar.gz) { Remove-Item -Force deploy.tar.gz }
+# Git Bash/Linux: rm -rf .next node_modules deploy.tar.gz
 
 # Passo 1.3: Instale as dependências limpas
 npm ci
@@ -39,38 +41,32 @@ npm run build
 # DEV_SKIP_AUTH=false
 
 # ==============================================================================
-# 2. PREPARAÇÃO DO SERVIDOR (BACKUP E LIMPEZA)
+# 2. EMPACOTAMENTO
+# ==============================================================================
+# Vamos criar um arquivo único (.tar.gz).
+
+# PowerShell ou Git Bash:
+tar -czf deploy.tar.gz .next public package.json package-lock.json next.config.js .env tecnoaging.nginx.conf
+
+# ==============================================================================
+# 3. PREPARAÇÃO E ENVIO AO SERVIDOR
 # ==============================================================================
 # Conecte-se via SSH para preparar o terreno
-ssh azureuser@tecnoaging.com.br
+ssh azureuser@tecnoaging.com.br "
+  # Backup se existir
+  if [ -d ~/TecnoAging_front ]; then
+    rm -rf ~/TecnoAging_front_backup
+    cp -r ~/TecnoAging_front ~/TecnoAging_front_backup
+    echo 'Backup criado.'
+  fi
+  
+  # Limpar e Criar pasta
+  rm -rf ~/TecnoAging_front
+  mkdir ~/TecnoAging_front
+"
 
-# --- COMANDOS NO SERVIDOR ---
-
-# 2.1: Backup da versão atual (igual ao workflow automático)
-if [ -d ~/TecnoAging_front ]; then
-  rm -rf ~/TecnoAging_front_backup
-  cp -r ~/TecnoAging_front ~/TecnoAging_front_backup
-  echo "Backup criado em ~/TecnoAging_front_backup"
-fi
-
-# 2.2: Limpar pasta de destino (Para evitar conflitos de arquivos antigos)
-rm -rf ~/TecnoAging_front
-mkdir ~/TecnoAging_front
-
-exit
-# --- FIM COMANDOS SERVIDOR ---
-
-# ==============================================================================
-# 3. TRANSFERÊNCIA DE ARQUIVOS
-# ==============================================================================
-# De volta ao seu terminal local (PowerShell/Bash):
-
-# 3.1: Enviar artefatos de build e configs
-# Nota: Não enviamos node_modules nem código fonte (src), apenas o build (.next), public e configs.
-scp -r .next public package.json package-lock.json next.config.js azureuser@tecnoaging.com.br:~/TecnoAging_front/
-
-# 3.2: Enviar o arquivo .env
-scp .env azureuser@tecnoaging.com.br:~/TecnoAging_front/.env
+# Enviar o arquivo compactado
+scp deploy.tar.gz azureuser@tecnoaging.com.br:~/TecnoAging_front/deploy.tar.gz
 
 # ==============================================================================
 # 4. FINALIZAÇÃO NO SERVIDOR
@@ -79,24 +75,31 @@ ssh azureuser@tecnoaging.com.br
 
 # --- COMANDOS NO SERVIDOR ---
 
-# 4.1: Setup ambiente
+# 4.1: Setup ambiente e Node
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm use --lts
 
-# 4.2: Instalar dependências de Produção
+# 4.2: Extrair arquivos
 cd ~/TecnoAging_front
-npm ci --production
+tar -xzf deploy.tar.gz
+rm deploy.tar.gz
 
-# 4.3: Reiniciar Aplicação (PM2)
+# 4.3: ATUALIZAR NGINX (Para corrigir erro 400 de cabeçalhos grandes)
+# Copia o arquivo conf atualizado para o diretório do Nginx e reinicia
+sudo cp tecnoaging.nginx.conf /etc/nginx/sites-available/default
+sudo nginx -t && sudo service nginx restart
+
+# 4.4: Instalar dependências (Completo, para garantir 'next' binário)
+npm ci
+
+# 4.5: Reiniciar Aplicação (PM2)
 pm2 delete TecnoAging-front || true
 pm2 start npm --name "TecnoAging-front" -- start
 
-# 4.4: Verificar e Salvar
+# 4.6: Verificar e Salvar
 pm2 status
 pm2 save
 
-# 4.5: (Opcional) Limpar backup se tudo funcionou
-# rm -rf ~/TecnoAging_front_backup
-
+# 4.7: SAIR
 exit

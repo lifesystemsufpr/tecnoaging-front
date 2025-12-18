@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # Mantém as dependências do Frontend (NPM) atualizadas
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
