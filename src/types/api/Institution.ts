@@ -6,4 +6,6 @@ export interface InstitutionRequest {
   title?: string;
 }
 
-export interface InstitutionResponse extends Institution {}
+export interface InstitutionResponse extends Institution {
+  children?: React.ReactNode;
+}

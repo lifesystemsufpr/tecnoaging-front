@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Patient } from "@/types/domain/Patient";
 import {
   Box,
@@ -32,7 +32,6 @@ const columnsConfig: ColumnConfig<Patient>[] = [
 
 export default function PatientsCRUDPage() {
   const [patientsList, setPatientsList] = useState<Patient[]>([]);
-  const [patientFilter, setPatientFilter] = useState<Patient[] | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,10 +52,6 @@ export default function PatientsCRUDPage() {
 
   const [totalRows, setTotalRows] = useState(0);
 
-  const isProfessional = useMemo(() => {
-    return (session as any)?.user?.role === SystemRoles.HEALTH_PROFESSIONAL;
-  }, [session]);
-
   const handleViewTests = (id: string) => {
     router.push(`patients/${id}/evaluations`);
   };
@@ -66,15 +61,23 @@ export default function PatientsCRUDPage() {
   };
 
   const loadPatients = useCallback(
-    async (token: string, query?: string) => {
+    async (
+      token: string,
+      params?: { query?: string; page?: number; pageSize?: number }
+    ) => {
       try {
         setLoading(true);
+
+        const page = params?.page ?? paginationModel.page;
+        const pageSize = params?.pageSize ?? paginationModel.pageSize;
+
         const { data, meta } = await fetchPatients(
           token,
-          paginationModel.page + 1,
-          paginationModel.pageSize,
-          query
+          page + 1,
+          pageSize,
+          params?.query
         );
+
         setPatientsList(data);
         setTotalRows(meta.total);
       } catch (e) {
@@ -83,7 +86,7 @@ export default function PatientsCRUDPage() {
         setLoading(false);
       }
     },
-    [paginationModel]
+    [paginationModel.page, paginationModel.pageSize]
   );
 
   useEffect(() => {
@@ -107,12 +110,12 @@ export default function PatientsCRUDPage() {
       const onlyNumbers = /^[0-9]+$/.test(searchQuery);
 
       if (onlyLetters || onlyNumbers) {
-        loadPatients(session.accessToken, searchQuery);
+        loadPatients(session.accessToken, { query: searchQuery });
       }
     }, DEBOUNCE_DELAY);
 
     return () => clearTimeout(handler);
-  }, [searchQuery, session?.accessToken]);
+  }, [searchQuery, session?.accessToken, loadPatients]);
 
   const handleDeletePatient = async (id: string) => {
     if (!session?.accessToken) return;
@@ -160,7 +163,7 @@ export default function PatientsCRUDPage() {
       </Box>
 
       <GenericTable
-        rows={patientFilter ?? patientsList}
+        rows={patientsList}
         columns={columnsConfig}
         getRowId={(row) => row.id}
         showActions

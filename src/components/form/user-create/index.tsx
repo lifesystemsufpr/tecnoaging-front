@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SystemRoles } from "@/types/enums/system-roles";
 import {
   Box,
@@ -67,10 +68,7 @@ export function UserCreateForm({
   onHandle,
 }: UserUpsertFormProps) {
   const isEdit = !!editUser;
-  const roleFromEntity =
-    ((editUser as any)?.role as SystemRoles) ||
-    ((editUser as any)?.user?.role as SystemRoles) ||
-    undefined;
+  const roleFromEntity = (editUser?.role as SystemRoles) || undefined;
 
   const { data: session } = useSession();
 
@@ -258,7 +256,7 @@ export function UserCreateForm({
           )}
           {role === SystemRoles.PATIENT && <PatientForm isEdit={isEdit} />}
           {role === SystemRoles.HEALTH_PROFESSIONAL && (
-            <HealthProfessionalForm isEdit={isEdit} />
+            <HealthProfessionalForm />
           )}
         </Box>
 

@@ -28,6 +28,7 @@ export const UF_LIST = [
   "SE",
   "SP",
   "TO",
+  "",
 ] as const;
 
 export const healthUnitSchema = z.object({

@@ -48,7 +48,7 @@ export default function Page() {
         accessToken: session.accessToken,
       });
       setData(res as HealthProfessional);
-    } catch (e: any) {
+    } catch (e) {
       setErr(e?.message || "Erro ao carregar profissional.");
       setData(null);
     } finally {
@@ -82,13 +82,13 @@ export default function Page() {
   }
 
   const name = data?.fullName ?? "—";
-  const email = data?.email ?? (data as any)?.user?.email ?? "—";
+  const email = data?.email ?? "—";
   const cpf = data?.cpf;
   const phone = data?.phone ?? null;
   const gender = data?.gender as HP["gender"];
   const speciality = data?.speciality ?? "—";
-  const updatedAt = (data as any)?.updatedAt as string | undefined;
-  const active = (data as any)?.active as boolean | undefined;
+  const updatedAt = data?.updatedAt as string | undefined;
+  const active = data?.active as boolean | undefined;
 
   return (
     <Box p={3} sx={{ mx: "auto" }}>

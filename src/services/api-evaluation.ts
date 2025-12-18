@@ -1,13 +1,10 @@
-import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
+import { MotionAnalysisResponse } from "@/types/domain/Evaluation";
 import { API_ROUTES } from "./Routes";
 import {
   EvaluationResponse,
   ListEvaluationsResponse,
 } from "@/types/api/Evaluation";
 import { fetchClient } from "./api-client";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "https://api.seuservidor.com";
 
 type ListFilters = {
   patientCpf?: string | null;

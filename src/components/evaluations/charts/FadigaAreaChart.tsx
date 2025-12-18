@@ -25,7 +25,7 @@ export default function FadigaAreaChart({
       },
       tooltip: {
         trigger: "axis",
-        formatter: (params: any) => {
+        formatter: (params) => {
           const { dataIndex, value } = params[0];
           return `Repetição ${dataIndex + 1}<br/>Fadiga acumulada: <b>${value.toFixed(2)}%</b>`;
         },

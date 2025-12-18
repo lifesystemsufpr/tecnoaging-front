@@ -16,7 +16,6 @@ export const muiDataGridOverrides = (
       borderRadius: theme.shape.borderRadius,
       overflow: "hidden",
       boxShadow: "0 1px 2px rgba(16,24,40,0.04)",
-      // @ts-ignore - algumas versões não tipam as CSS vars
       "--DataGrid-rowBorderColor": theme.palette.grey[200],
     },
     columnHeaders: {

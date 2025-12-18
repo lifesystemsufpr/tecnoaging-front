@@ -3,7 +3,6 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 
 interface AuthLayoutProps {
   children: React.ReactNode;

@@ -2,11 +2,17 @@
 import * as React from "react";
 import ReactECharts from "echarts-for-react";
 
+interface RadarIndicator {
+  name: string;
+  maxValue: number;
+  value: number;
+}
+
 export default function RadarChart({
   indicators,
   labelColor,
 }: {
-  indicators: any[];
+  indicators: RadarIndicator[];
   labelColor: string;
 }) {
   const option = React.useMemo(
@@ -19,7 +25,7 @@ export default function RadarChart({
       tooltip: {},
       legend: { textStyle: { color: labelColor }, top: 30 },
       radar: {
-        indicator: indicators.map((i: any) => ({
+        indicator: indicators.map((i: RadarIndicator) => ({
           name: i.name,
           max: i.maxValue,
         })),
@@ -34,7 +40,7 @@ export default function RadarChart({
           data: [
             {
               name: "Atuação",
-              value: indicators.map((i: any) => i.value),
+              value: indicators.map((i: RadarIndicator) => i.value),
               areaStyle: { opacity: 0.3 },
             },
           ],

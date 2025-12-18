@@ -45,8 +45,7 @@ export function HealthUnitForm({
       number: initialValues?.number?.toString?.() ?? "",
       complement: initialValues?.complement ?? "",
       city: initialValues?.city ?? "",
-      state:
-        (initialValues?.state as HealthUnitFormData["state"]) ?? ("" as any),
+      state: (initialValues?.state as HealthUnitFormData["state"]) ?? "",
       neighborhood: initialValues?.neighborhood ?? "",
     }),
     [initialValues]
@@ -89,7 +88,7 @@ export function HealthUnitForm({
           setValue("street", "");
           setValue("neighborhood", "");
           setValue("city", "");
-          setValue("state", "" as any);
+          setValue("state", "");
           return;
         }
 

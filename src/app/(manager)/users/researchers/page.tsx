@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Modal,
-  Skeleton,
   TextField,
   useMediaQuery,
   useTheme,
@@ -22,9 +21,6 @@ import { toast } from "sonner";
 
 export default function ResearcherCRUDPage() {
   const [researchersList, setResearchersList] = useState<Researcher[]>([]);
-  const [filteredResearchers, setFilteredResearchers] = useState<
-    Researcher[] | null
-  >(null);
 
   const [paginationModel, setPaginationModel] = useState<{
     pageSize: PageSizeOption;
@@ -54,20 +50,7 @@ export default function ResearcherCRUDPage() {
     };
   }, []);
 
-  const searchResearchers = async (query: string) => {
-    if (!query) {
-      loadResearchers();
-      return;
-    }
-    const onlyLetters = /^[A-Za-z\s]+$/.test(query);
-    const onlyNumbers = /^[0-9]+$/.test(query);
-    if (onlyLetters || onlyNumbers) loadResearchers(query);
-    else {
-      setResearchersList([]);
-      setPaginationModel({ page: 0, pageSize: 20 });
-      setTotalRows(0);
-    }
-  };
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const safeSetResearchers = useCallback((rows: Researcher[]) => {
     if (mountedRef.current) setResearchersList(rows);
@@ -80,7 +63,7 @@ export default function ResearcherCRUDPage() {
   const loadResearchers = useCallback(
     async (search?: string) => {
       if (status !== "authenticated" || !session?.accessToken) return;
-
+      setLoading(true);
       try {
         const { data, meta } = await fetchResearchers({
           access_token: session.accessToken,
@@ -94,11 +77,32 @@ export default function ResearcherCRUDPage() {
         safeSetResearchers(rows);
         setLoading(false);
       } catch (error) {
+        console.error("Error fetching researchers:", error);
         safeSetResearchers([]);
+        setLoading(false);
+      } finally {
         setLoading(false);
       }
     },
     [status, session?.accessToken, safeSetResearchers, paginationModel]
+  );
+
+  const searchResearchers = useCallback(
+    (query: string) => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+
+      debounceRef.current = setTimeout(() => {
+        if (!query) {
+          loadResearchers();
+          return;
+        }
+
+        loadResearchers(query);
+      }, 500);
+    },
+    [loadResearchers]
   );
 
   useEffect(() => {
@@ -144,7 +148,7 @@ export default function ResearcherCRUDPage() {
       </Box>
 
       <GenericTable<Researcher>
-        rows={filteredResearchers ?? researchersList}
+        rows={researchersList}
         columns={[
           {
             key: "fullName",

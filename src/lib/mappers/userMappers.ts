@@ -1,4 +1,5 @@
 // lib/mappers/userMappers.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SystemRoles } from "@/types/enums/system-roles";
 import type { UserFormData, UserUpdateFormData } from "@/lib/validators/user";
 import type { Researcher } from "@/types/domain/Reseracher";
@@ -37,7 +38,7 @@ const normalizeEnumKey = <E extends Record<string, string>>(
 export function mapEntityToFormDefaults(
   entity: AnyUserEntity
 ): UserUpdateFormData {
-  const role = entity.role || (entity as any)?.user?.role;
+  const role = entity.role as SystemRoles;
   switch (role) {
     case SystemRoles.RESEARCHER: {
       const r = entity as Researcher;

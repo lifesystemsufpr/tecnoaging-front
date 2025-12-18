@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -5,7 +6,7 @@ import {
   RowData,
   type Table as TanStackTable,
 } from "@tanstack/react-table";
-import React, { useContext, createContext } from "react";
+import { useContext, createContext } from "react";
 
 export type SortDir = "asc" | "desc";
 

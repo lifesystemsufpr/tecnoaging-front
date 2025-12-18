@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Box, Button, Modal, TextField } from "@mui/material";
 import { GenericTable } from "@/components/datatable/GenericTable";
 import {
@@ -27,11 +27,6 @@ export default function HealthUnitCRUDPage() {
   const { data: session, status } = useSession();
   const token = session?.accessToken as string | undefined;
 
-  // enquanto carrega a sessão, não renderize a tabela
-  if (status === "loading") return <div>Carregando…</div>;
-  if (!token)
-    return <div>Você precisa estar logado para acessar essa página.</div>;
-
   const loadHealth = useCallback(async () => {
     if (!token) return;
     let active = true;
@@ -39,6 +34,7 @@ export default function HealthUnitCRUDPage() {
       const data = await fetchHealthUnits(token);
       if (active) setHealthUnitsList(data);
     } catch (e) {
+      console.error(e);
       if (active) toast.error("Erro ao carregar unidades de saúde");
     }
     return () => {
@@ -85,6 +81,10 @@ export default function HealthUnitCRUDPage() {
       )
     );
   };
+
+  if (status === "loading") return <div>Carregando…</div>;
+  if (!token)
+    return <div>Você precisa estar logado para acessar essa página.</div>;
 
   return (
     <Box>

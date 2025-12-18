@@ -12,9 +12,9 @@ import {
 } from "@tanstack/react-table";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-interface DataTableProps {
-  data: any[];
-  columns: ColumnDef<any>[];
+interface DataTableProps<TData> {
+  data: TData[];
+  columns: ColumnDef<TData>[];
   total: number;
   pageIndex: number;
   pageSize: number;
@@ -27,7 +27,7 @@ interface DataTableProps {
   loading?: boolean;
 }
 
-export default function DataTable({
+export default function DataTable<TData>({
   data,
   columns,
   total,
@@ -40,7 +40,7 @@ export default function DataTable({
   sortDir,
   onSortChange,
   loading = false,
-}: DataTableProps) {
+}: DataTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
@@ -69,7 +69,9 @@ export default function DataTable({
     },
     onSortingChange: (updater) => {
       if (typeof updater === "function") {
-        const newSorting = updater([{ id: sortBy || "", desc: sortDir === "desc" }]);
+        const newSorting = updater([
+          { id: sortBy || "", desc: sortDir === "desc" },
+        ]);
         if (newSorting.length > 0 && onSortChange) {
           onSortChange(newSorting[0].id, newSorting[0].desc ? "desc" : "asc");
         }
@@ -128,8 +130,14 @@ export default function DataTable({
               table.getRowModel().rows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50">
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <td
+                      key={cell.id}
+                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </td>
                   ))}
                 </tr>
@@ -143,7 +151,8 @@ export default function DataTable({
       <div className="flex items-center justify-between mt-4">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-700">
-            Mostrando {pageIndex * pageSize + 1} a {Math.min((pageIndex + 1) * pageSize, total)} de {total} resultados
+            Mostrando {pageIndex * pageSize + 1} a{" "}
+            {Math.min((pageIndex + 1) * pageSize, total)} de {total} resultados
           </span>
           <select
             value={pageSize}
@@ -165,11 +174,11 @@ export default function DataTable({
           >
             <ChevronLeftIcon className="w-4 h-4" />
           </button>
-          
+
           <span className="text-sm text-gray-700">
             Página {pageIndex + 1} de {totalPages}
           </span>
-          
+
           <button
             onClick={() => onPageChange(pageIndex + 1)}
             disabled={pageIndex >= totalPages - 1}

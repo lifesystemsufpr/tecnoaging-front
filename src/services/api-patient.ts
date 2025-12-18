@@ -41,7 +41,7 @@ export async function fetchPatientById({
   access_token?: string;
   id: string;
 }): Promise<PatientResponse> {
-  let url = API_ROUTES.PATIENT_BY_ID(id);
+  const url = API_ROUTES.PATIENT_BY_ID(id);
 
   return fetchClient(url, {
     method: "GET",

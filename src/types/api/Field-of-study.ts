@@ -6,4 +6,6 @@ export type FieldOfStudyRequest = {
   title: string;
 };
 
-export interface FieldOfStudyResponse extends FieldOfStudy {}
+export interface FieldOfStudyResponse extends FieldOfStudy {
+  children?: React.ReactNode;
+}

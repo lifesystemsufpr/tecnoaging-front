@@ -9,7 +9,6 @@ import {
   Chip,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -396,7 +395,7 @@ export default function TestsPage() {
         }
       }
     },
-    [token]
+    [token, pageSize]
   );
 
   const handleApplyFilters = useCallback(
@@ -417,7 +416,7 @@ export default function TestsPage() {
 
   useEffect(() => {
     void loadEvaluations({ ...filtersRef.current, page: page + 1, pageSize });
-  }, [pageSize, page]);
+  }, [pageSize, page, loadEvaluations]);
 
   if (status === "loading") return <div>Carregando...</div>;
   if (!token)

@@ -13,21 +13,18 @@ import {
   Button,
   Modal,
   TextField,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function HealthProfessionalsCRUDPage() {
   const [HealthProfessionalsList, setHealthProfessionalsList] = useState<
     HealthProfessional[]
   >([]);
-  const [filteredHealthProfessionals, setFilteredHealthProfessionals] =
-    useState<HealthProfessional[] | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<{
@@ -50,25 +47,7 @@ export default function HealthProfessionalsCRUDPage() {
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
-  if (!session) {
-    return (
-      <Typography>
-        Você precisa estar logado para acessar essa página.
-      </Typography>
-    );
-  }
-
-  const searchProfessionals = (query: string) => {
-    if (!query) {
-      loadHealthProfessionals();
-      return;
-    }
-    const onlyLetters = /^[A-Za-z\s]+$/.test(query);
-    const onlyNumbers = /^[0-9]+$/.test(query);
-    if (onlyLetters || onlyNumbers) {
-      loadHealthProfessionals(query);
-    }
-  };
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadHealthProfessionals = useCallback(
     async (query?: string) => {
@@ -95,6 +74,24 @@ export default function HealthProfessionalsCRUDPage() {
     [session, paginationModel]
   );
 
+  const searchProfessionals = useCallback(
+    (query: string) => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+
+      debounceRef.current = setTimeout(() => {
+        if (!query) {
+          loadHealthProfessionals();
+          return;
+        }
+
+        loadHealthProfessionals(query);
+      }, 800);
+    },
+    [loadHealthProfessionals]
+  );
+
   const handleDeleteHealthProfessional = async (id: string) => {
     try {
       await deleteHealthProfessional({
@@ -118,7 +115,7 @@ export default function HealthProfessionalsCRUDPage() {
 
   useEffect(() => {
     loadHealthProfessionals();
-  }, [paginationModel]);
+  }, [paginationModel, loadHealthProfessionals]);
 
   return (
     <Box>

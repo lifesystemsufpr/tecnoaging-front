@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SensorData, Evaluation } from "@/types/domain/Evaluation";
 import { EvaluationType } from "@/types/domain/Evaluation";
 import { calcularIdadeAnos } from "./format";
@@ -55,7 +56,7 @@ export function calcularIndicadores(
   const ladoNegativo = sensorData.filter((d) => d.accel_x < 0).length;
   const simetria = Math.abs(ladoPositivo - ladoNegativo) / sensorData.length;
   const idade = calcularIdadeAnos(
-    evaluationDetails.patient?.birthday,
+    evaluationDetails.participant?.birthday,
     evaluationDetails.date
   );
 
@@ -65,7 +66,7 @@ export function calcularIndicadores(
     valor: number,
     faixas: [number, number, string][]
   ): string {
-    for (let [min, max, label] of faixas) {
+    for (const [min, max, label] of faixas) {
       if (valor >= min && valor <= max) return label;
     }
     return "Desconhecido";

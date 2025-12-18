@@ -7,14 +7,7 @@ import {
   fetchInstitutions,
 } from "@/services/api-study-institution";
 import { Institution } from "@/types/domain/Institution";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -22,9 +15,8 @@ import { toast } from "sonner";
 
 export default function InstitutionsPage() {
   const [InstitutionsList, setInstitutionsList] = useState<Institution[]>([]);
-  const [filteredInstitutions, setFilteredInstitutions] = useState<
-    Institution[] | null
-  >(null);
+
+  const [searchTitle, setSearchTitle] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstitution, setSelectedInstitution] =
     useState<Institution | null>(null);
@@ -35,9 +27,6 @@ export default function InstitutionsPage() {
   const token = session?.accessToken as string | undefined;
 
   // enquanto carrega a sessão, não renderize a tabela
-  if (status === "loading") return <div>Carregando…</div>;
-  if (!token)
-    return <div>Você precisa estar logado para acessar essa página.</div>;
 
   const loadHealth = useCallback(async () => {
     if (!token) return;
@@ -46,9 +35,11 @@ export default function InstitutionsPage() {
     try {
       const data = await fetchInstitutions({
         access_token: token,
+        title: searchTitle,
       });
       if (active) setInstitutionsList(data);
     } catch (e) {
+      console.error(e);
       if (active) toast.error("Erro ao carregar unidades de saúde");
     } finally {
       setLoading(false);
@@ -56,7 +47,7 @@ export default function InstitutionsPage() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, searchTitle]);
 
   useEffect(() => {
     loadHealth();
@@ -74,7 +65,7 @@ export default function InstitutionsPage() {
         toast.error("Erro ao deletar instituição de ensino.");
       }
     },
-    [token, loadHealth]
+    [loadHealth]
   );
 
   const handleSelectPatient = (id: string) => {
@@ -96,6 +87,10 @@ export default function InstitutionsPage() {
     setSelectedInstitution(null);
   };
 
+  if (status === "loading") return <div>Carregando…</div>;
+  if (!token)
+    return <div>Você precisa estar logado para acessar essa página.</div>;
+
   return (
     <Box>
       <h1>Gerenciar Instituição de Ensino</h1>
@@ -111,7 +106,7 @@ export default function InstitutionsPage() {
         <TextField
           size="small"
           placeholder="Buscar Instituição de Ensino"
-          onChange={(e) => handleSelectInstitution(e.target.value)}
+          onChange={(e) => setSearchTitle(e.target.value)}
         />
         <Button
           variant="contained"
@@ -124,7 +119,7 @@ export default function InstitutionsPage() {
       </Box>
 
       <GenericTable
-        rows={filteredInstitutions ?? InstitutionsList}
+        rows={InstitutionsList}
         columns={[{ key: "title", header: "Nome do Ensino" }]}
         getRowId={(row) => row.id}
         showActions

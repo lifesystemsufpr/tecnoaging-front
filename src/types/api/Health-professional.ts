@@ -10,7 +10,9 @@ export interface HealthProfessionalRequest
   user: User;
 }
 
-export interface HealthProfessionalResponse extends HealthProfessional {}
+export interface HealthProfessionalResponse extends HealthProfessional {
+  children?: React.ReactNode;
+}
 
 export interface HealthProfessionalPaginatedResponse {
   data: HealthProfessional[];

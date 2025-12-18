@@ -44,7 +44,6 @@ import {
   fetchEvaluationDetailedById,
 } from "@/services/api-evaluation";
 import { durationMs } from "@/utils/dates";
-import { SystemRoles } from "@/types/enums/system-roles";
 
 export default function Page({ params }: { params: { id: string } }) {
   const id = params.id;
@@ -97,7 +96,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, session?.accessToken]);
 
   const indicadoresRadar = useMemo(() => {
     if (!evaluationDetails || !evaluationDetails.sensorData.length) return null;
@@ -176,7 +175,7 @@ export default function Page({ params }: { params: { id: string } }) {
               Análise Funcional do Paciente
             </Typography>
             <Grid container spacing={2} sx={{ mb: 2 }}>
-              {indicadoresRadar.map((item: any, idx: number) => (
+              {indicadoresRadar.map((item, idx: number) => (
                 <Grid size={12} key={idx}>
                   <InfoItem label={item.name} value={item.classificacao} />
                 </Grid>
@@ -221,7 +220,7 @@ export default function Page({ params }: { params: { id: string } }) {
             )}
             <ContinuityChart
               idadePaciente={calcularIdadeAnos(
-                evaluationDetails.patient?.birthday,
+                evaluationDetails.participant?.birthday,
                 evaluationDetails.date
               )}
               tempoPaciente={
@@ -230,14 +229,14 @@ export default function Page({ params }: { params: { id: string } }) {
                   evaluationDetails.time_end
                 ) / 1000
               }
-              tipo={evaluationDetails.type as any}
+              tipo={evaluationDetails.type}
               labelColor={labelColor}
             />
             {allEvaluations.length > 0 && (
               <BarChart
                 evaluations={allEvaluations.filter(
                   (e) =>
-                    e.patient.cpf === evaluationDetails.patient.cpf &&
+                    e.participant.cpf === evaluationDetails.participant.cpf &&
                     e.type === "5TSTS"
                 )}
                 currentId={evaluationDetails.id}

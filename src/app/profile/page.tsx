@@ -26,7 +26,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useRouter } from "next/navigation";
@@ -45,46 +45,56 @@ export default function ProfilePage() {
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const session = useSession();
 
-  const fetchUserData = async (accessToken: string) => {
-    try {
-      let resp:
-        | PatientResponse
-        | ResearcherResponse
-        | HealthProfessionalResponse;
-      switch (session.data.user.role) {
-        case SystemRoles.HEALTH_PROFESSIONAL:
-          resp = await fetchHealthProfessionalById({
-            accessToken: accessToken,
-            id: session.data.user.id,
-          });
-          break;
-        case SystemRoles.PATIENT:
-          resp = await fetchPatientById({
-            access_token: accessToken,
-            id: session.data.user.id,
-          });
-          break;
+  const fetchUserData = useCallback(
+    async (accessToken: string) => {
+      try {
+        let resp:
+          | PatientResponse
+          | ResearcherResponse
+          | HealthProfessionalResponse
+          | undefined;
 
-        case SystemRoles.RESEARCHER:
-          resp = await fetchResearcherById({
-            access_token: accessToken,
-            id: session.data.user.id,
-          });
-          break;
+        switch (session.data?.user?.role) {
+          case SystemRoles.HEALTH_PROFESSIONAL:
+            resp = await fetchHealthProfessionalById({
+              accessToken,
+              id: session.data.user.id,
+            });
+            break;
 
-        default:
-          break;
+          case SystemRoles.PATIENT:
+            resp = await fetchPatientById({
+              access_token: accessToken,
+              id: session.data.user.id,
+            });
+            break;
+
+          case SystemRoles.RESEARCHER:
+            resp = await fetchResearcherById({
+              access_token: accessToken,
+              id: session.data.user.id,
+            });
+            break;
+
+          default:
+            return;
+        }
+
+        if (resp) {
+          setUserData(resp);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados do usuário:", error);
       }
-      setUserData(resp);
-    } catch (error) {}
-  };
+    },
+    [session.data?.user?.role, session.data?.user?.id]
+  );
 
   useEffect(() => {
-    if (session.data?.user) {
+    if (session.data?.user && session.data.accessToken) {
       fetchUserData(session.data.accessToken);
     }
-  }, [session.data]);
-
+  }, [session.data?.user, session.data?.accessToken, fetchUserData]);
   return (
     <Box>
       <Stack

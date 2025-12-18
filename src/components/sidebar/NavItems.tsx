@@ -1,14 +1,5 @@
 import { SystemRoles } from "@/types/enums/system-roles";
-import {
-  Home,
-  User,
-  Users,
-  BarChart3,
-  ListCheck,
-  Building2,
-  GraduationCap,
-  Stethoscope,
-} from "lucide-react";
+import { Home, User, Users, Building2, Stethoscope } from "lucide-react";
 
 interface NavItem {
   icon: React.ReactNode;

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import NextLink from "next/link";
 import {
   Box,
   Button,
@@ -42,9 +41,9 @@ import {
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 import { useParams } from "next/navigation";
 
-export default function Page({ params }: { params: { id: string } }) {
-  const paramsParserd = useParams();
-  const id = String(paramsParserd.id);
+export default function Page() {
+  const paramsParsed = useParams();
+  const id = String(paramsParsed.id);
   const theme = useTheme();
   const { data: session } = useSession();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
@@ -102,7 +101,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, session?.accessToken]);
 
   const indicadoresRadar = useMemo(() => {
     if (!evaluationDetails || !evaluationDetails.sensorData.length) return null;
@@ -143,7 +142,12 @@ export default function Page({ params }: { params: { id: string } }) {
             <Grid size={4}>
               <InfoItem
                 label="Data"
-                value={new Date(evaluationDetails.date).toLocaleString("pt-BR")}
+                value={new Date(evaluationDetails.date).toLocaleString(
+                  "pt-BR",
+                  {
+                    timeZone: "UTC",
+                  }
+                )}
               />
             </Grid>
             <Grid size={4}>
@@ -164,7 +168,7 @@ export default function Page({ params }: { params: { id: string } }) {
               Análise Funcional do Paciente
             </Typography>
             <Grid container spacing={2} sx={{ mb: 2 }}>
-              {indicadoresRadar.map((item: any, idx: number) => (
+              {indicadoresRadar.map((item, idx: number) => (
                 <Grid size={12} key={idx}>
                   <InfoItem label={item.name} value={item.classificacao} />
                 </Grid>

@@ -41,10 +41,10 @@ export default function ContinuityChart30s({
       },
       tooltip: {
         trigger: "axis",
-        formatter: (params: any) => {
+        formatter: (params) => {
           // Customização simples para mostrar as infos corretamente no hover
           let res = `<strong>Idade: ${params[0].axisValue}</strong><br/>`;
-          params.forEach((item: any) => {
+          params.forEach((item) => {
             res += `${item.marker} ${item.seriesName}: ${item.value[1]} reps<br/>`;
           });
           return res;

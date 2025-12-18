@@ -9,7 +9,6 @@ import {
   Chip,
   Grid,
   TextField,
-  Typography,
 } from "@mui/material";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -378,7 +377,7 @@ export default function TestsPage() {
         setRows(
           data.map((ev) => ({
             ...ev,
-            patientName: ev.patient?.fullName,
+            patientName: ev.participant?.fullName,
             professionalName: ev.healthProfessional?.fullName,
             healthUnitName: ev.healthcareUnit?.name,
           }))
@@ -415,7 +414,7 @@ export default function TestsPage() {
 
   useEffect(() => {
     void loadEvaluations({ ...filtersRef.current, page: page + 1, pageSize });
-  }, [pageSize, page]);
+  }, [pageSize, page, loadEvaluations]);
 
   if (status === "loading") return <div>Carregando...</div>;
   if (!token)

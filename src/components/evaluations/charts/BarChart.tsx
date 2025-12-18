@@ -43,7 +43,7 @@ export default function BarChart({
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
-      formatter: (params: any) => {
+      formatter: (params) => {
         const { name, value } = params[0];
         return `Data: ${name}<br/>Tempo: <b>${value}s</b>`;
       },
