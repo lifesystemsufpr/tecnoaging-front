@@ -25,7 +25,7 @@ export interface EvaluationRaw {
   healthcareUnitId: string;
 
   healthProfessional: HealthProfessional;
-  patient: Patient;
+  participant: Patient;
   healthcareUnit: HealthUnit;
 
   date: string;
@@ -68,7 +68,7 @@ export interface Indicator {
 }
 
 export interface DerivedData {
-  patientAgeOnEvaluation: number;
+  participantAgeOnEvaluation: number;
   indicators: Indicator[];
   overallClassification: string;
 }

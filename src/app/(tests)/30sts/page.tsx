@@ -380,7 +380,7 @@ export default function TestsPage() {
         setRows(
           data.map((ev) => ({
             ...ev,
-            patientName: ev.patient?.fullName,
+            patientName: ev.participant?.fullName,
             professionalName: ev.healthProfessional?.fullName,
             healthUnitName: ev.healthcareUnit?.name,
           }))

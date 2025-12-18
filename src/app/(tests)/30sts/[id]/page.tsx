@@ -40,9 +40,11 @@ import {
   fetchEvaluationDetailedById,
 } from "@/services/api-evaluation";
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
+import { useParams } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
-  const id = params.id;
+  const paramsParserd = useParams();
+  const id = String(paramsParserd.id);
   const theme = useTheme();
   const { data: session } = useSession();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
@@ -212,7 +214,9 @@ export default function Page({ params }: { params: { id: string } }) {
             )}
 
             <ContinuityChart30s
-              idadePaciente={extraEvaluations.derived.patientAgeOnEvaluation}
+              idadePaciente={
+                extraEvaluations.derived.participantAgeOnEvaluation
+              }
               repeticoesPaciente={repetitions ? repetitions : 15}
               labelColor={labelColor}
             />
@@ -221,7 +225,7 @@ export default function Page({ params }: { params: { id: string } }) {
               <BarChart
                 evaluations={allEvaluations.filter(
                   (e) =>
-                    e.patient.cpf === evaluationDetails.patient.cpf &&
+                    e.participant.cpf === evaluationDetails.participant.cpf &&
                     e.type === "5TSTS"
                 )}
                 currentId={evaluationDetails.id}

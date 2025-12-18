@@ -45,8 +45,8 @@ export async function fetchEvaluations({
   filters,
 }: EvaluationListParams): Promise<ListEvaluationsResponse> {
   const query = qs({
-    patientCpf: filters?.patientCpf ?? undefined,
-    patientName: filters?.patientName ?? undefined,
+    participantCpf: filters?.patientCpf ?? undefined,
+    participantName: filters?.patientName ?? undefined,
     healthProfessionalName: filters?.healthProfessionalName ?? undefined,
     startDate: filters?.startDate ?? undefined,
     endDate: filters?.endDate ?? undefined,
