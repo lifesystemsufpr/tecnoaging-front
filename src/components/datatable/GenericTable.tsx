@@ -40,7 +40,7 @@ export type ColumnConfig<T> = {
   flex?: number;
   valueGetter?: (row: T) => unknown;
   valueFormatter?: (value: unknown, row: T) => React.ReactNode;
-  render?: (params: GridRenderCellParams<T, any>) => React.ReactNode;
+  render?: (params: GridRenderCellParams<T, unknown>) => React.ReactNode;
 };
 
 export type GenericTableProps<T> = {
@@ -79,6 +79,112 @@ export type GenericTableProps<T> = {
   }) => void;
 };
 
+type ActionsCellProps<T> = {
+  row: T;
+  onView?: (row: T) => void;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
+  onTests?: (row: T) => void;
+  onQuestionnaires?: (row: T) => void;
+};
+
+const createLoadingOverlay = (columnCount: number, rowCount: number) =>
+  function LoadingOverlayWrapper() {
+    return (
+      <LoadingSkeletonOverlay columnCount={columnCount} rowCount={rowCount} />
+    );
+  };
+
+function ActionsCell<T>({
+  row,
+  onView,
+  onEdit,
+  onDelete,
+  onTests,
+  onQuestionnaires,
+}: ActionsCellProps<T>) {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const hasTests = !!onTests;
+  const hasQuestionnaires = !!onQuestionnaires;
+
+  const handleEvalClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (hasTests && !hasQuestionnaires) {
+      onTests?.(row);
+      return;
+    }
+    if (!hasTests && hasQuestionnaires) {
+      onQuestionnaires?.(row);
+      return;
+    }
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => setAnchorEl(null);
+
+  return (
+    <Stack direction="row" spacing={0.5} justifyContent="center">
+      {(hasTests || hasQuestionnaires) && (
+        <>
+          <Tooltip title="Avaliações">
+            <IconButton size="small" onClick={handleEvalClick}>
+              <AssignmentIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+            {hasTests && (
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  onTests?.(row);
+                }}
+              >
+                Testes
+              </MenuItem>
+            )}
+            {hasQuestionnaires && (
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  onQuestionnaires?.(row);
+                }}
+              >
+                Questionários
+              </MenuItem>
+            )}
+          </Menu>
+        </>
+      )}
+
+      {onView && (
+        <Tooltip title="Visualizar">
+          <IconButton size="small" onClick={() => onView(row)}>
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {onEdit && (
+        <Tooltip title="Editar">
+          <IconButton size="small" onClick={() => onEdit(row)}>
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {onDelete && (
+        <Tooltip title="Excluir">
+          <IconButton size="small" color="error" onClick={() => onDelete(row)}>
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+}
+
 function humanizeKey(k: string) {
   return k
     .replace(/_/g, " ")
@@ -103,108 +209,16 @@ function actionsColumn<T>(opts: {
     width: 180,
     align: "center",
     headerAlign: "center",
-    renderCell: (params) => {
-      const row = params.row;
-
-      const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-      const open = Boolean(anchorEl);
-
-      const hasTests = !!onTests;
-      const hasQuestionnaires = !!onQuestionnaires;
-
-      const handleEvalClick = (event: React.MouseEvent<HTMLElement>) => {
-        // somente uma função → chama direto
-        if (hasTests && !hasQuestionnaires) {
-          onTests?.(row);
-          return;
-        }
-        if (!hasTests && hasQuestionnaires) {
-          onQuestionnaires?.(row);
-          return;
-        }
-
-        // as duas → abre menu
-        setAnchorEl(event.currentTarget);
-      };
-
-      const handleClose = () => setAnchorEl(null);
-
-      return (
-        <Stack
-          direction="row"
-          spacing={0.5}
-          sx={{ width: "100%", justifyContent: "center" }}
-        >
-          {/* Botão Avaliações */}
-          {(hasTests || hasQuestionnaires) && (
-            <>
-              <Tooltip title="Avaliações">
-                <IconButton
-                  size="small"
-                  color="primary"
-                  aria-label="Avaliações"
-                  onClick={handleEvalClick}
-                >
-                  <AssignmentIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-
-              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-                {hasTests && (
-                  <MenuItem
-                    onClick={() => {
-                      handleClose();
-                      onTests?.(row);
-                    }}
-                  >
-                    Testes
-                  </MenuItem>
-                )}
-
-                {hasQuestionnaires && (
-                  <MenuItem
-                    onClick={() => {
-                      handleClose();
-                      onQuestionnaires?.(row);
-                    }}
-                  >
-                    Questionários
-                  </MenuItem>
-                )}
-              </Menu>
-            </>
-          )}
-
-          {onView && (
-            <Tooltip title="Visualizar">
-              <IconButton size="small" onClick={() => onView(row)}>
-                <VisibilityIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-
-          {onEdit && (
-            <Tooltip title="Editar">
-              <IconButton size="small" onClick={() => onEdit(row)}>
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-
-          {onDelete && (
-            <Tooltip title="Excluir">
-              <IconButton
-                size="small"
-                color="error"
-                onClick={() => onDelete(row)}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
-      );
-    },
+    renderCell: (params) => (
+      <ActionsCell
+        row={params.row}
+        onView={onView}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onTests={onTests}
+        onQuestionnaires={onQuestionnaires}
+      />
+    ),
   };
 }
 
@@ -219,8 +233,8 @@ function toGridColumns<T>(specs: ColumnConfig<T>[]): GridColDef<T>[] {
 
     if (c.render) base.renderCell = c.render;
     if (c.valueGetter) {
-      base.valueGetter = (value: any, row: T) => {
-        const rowData = row || (value as any)?.row;
+      base.valueGetter = (value, row: T) => {
+        const rowData = row || (value as unknown)?.row;
 
         if (!rowData) return "";
 
@@ -327,7 +341,6 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     onView,
     onEdit,
     onDelete,
-    onEvaluations,
     onTests,
     onQuestionnaires,
     pageSize = 10,
@@ -337,11 +350,9 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     density = "compact",
     toolbar,
     rowHref,
-    totalRows,
     paginationModel,
     setPaginationModel,
     skeletonRowCount = DEFAULT_SKELETON_ROWS,
-    noRowsLabel = DEFAULT_NO_ROWS_LABEL,
     deleteConfirmTitle = DEFAULT_DELETE_TITLE,
     deleteConfirmMessage = DEFAULT_DELETE_MESSAGE,
     deleteConfirmConfirmLabel = DEFAULT_DELETE_CONFIRM_LABEL,
@@ -395,12 +406,8 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
 
   const resolvedGetRowId = React.useMemo(() => {
     if (getRowId) return getRowId;
-    return (row: any): GridRowId => {
-      if (row && row.id != null) return row.id;
-      console.warn(
-        `[GenericTable] A prop 'getRowId' não foi fornecida e a propriedade 'id' não foi encontrada na linha. Usando JSON.stringify como fallback, o que pode causar problemas de performance.`,
-        { row }
-      );
+    return (row: T & { id?: GridRowId }): GridRowId => {
+      if (row.id != null) return row.id;
       return JSON.stringify(row);
     };
   }, [getRowId]);
@@ -448,6 +455,11 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     return deleteConfirmMessage;
   }, [deleteConfirmMessage, rowPendingDeletion]);
 
+  const LoadingOverlaySlot = React.useMemo(
+    () => createLoadingOverlay(gridColumns.length, skeletonRowCount),
+    [gridColumns.length, skeletonRowCount]
+  );
+
   return (
     <Box>
       {toolbar && (
@@ -473,17 +485,8 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
           }),
         }}
         slots={{
-          loadingOverlay: LoadingSkeletonOverlay,
+          loadingOverlay: LoadingOverlaySlot,
           noRowsOverlay: EmptyStateOverlay,
-        }}
-        slotProps={{
-          loadingOverlay: {
-            columnCount: gridColumns.length,
-            rowCount: skeletonRowCount,
-          } as any,
-          noRowsOverlay: {
-            children: noRowsLabel,
-          },
         }}
         paginationMode="server"
         rowCount={props.totalRows ?? rows.length}

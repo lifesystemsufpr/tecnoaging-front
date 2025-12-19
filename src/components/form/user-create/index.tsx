@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SystemRoles } from "@/types/enums/system-roles";
 import {
   Box,
@@ -41,6 +42,7 @@ import {
   createHealthProfessional,
   updateHealthProfessional,
 } from "@/services/api-health-professional";
+import { FormContainer } from "../container/FormProvider";
 
 interface UserUpsertFormProps {
   lockedRole?: SystemRoles;
@@ -67,10 +69,7 @@ export function UserCreateForm({
   onHandle,
 }: UserUpsertFormProps) {
   const isEdit = !!editUser;
-  const roleFromEntity =
-    ((editUser as any)?.role as SystemRoles) ||
-    ((editUser as any)?.user?.role as SystemRoles) ||
-    undefined;
+  const roleFromEntity = (editUser?.role as SystemRoles) || undefined;
 
   const { data: session } = useSession();
 
@@ -197,11 +196,7 @@ export function UserCreateForm({
 
   return (
     <FormProvider {...methods}>
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit, onError)}
-        noValidate
-      >
+      <FormContainer onSubmit={handleSubmit(onSubmit, onError)}>
         <Box>
           <Typography variant="h6" gutterBottom>
             {isEdit
@@ -258,7 +253,7 @@ export function UserCreateForm({
           )}
           {role === SystemRoles.PATIENT && <PatientForm isEdit={isEdit} />}
           {role === SystemRoles.HEALTH_PROFESSIONAL && (
-            <HealthProfessionalForm isEdit={isEdit} />
+            <HealthProfessionalForm />
           )}
         </Box>
 
@@ -269,7 +264,7 @@ export function UserCreateForm({
             </Button>
           </Box>
         )}
-      </Box>
+      </FormContainer>
     </FormProvider>
   );
 }

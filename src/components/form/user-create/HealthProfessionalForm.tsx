@@ -1,20 +1,9 @@
 import UserFields from "@/components/common/UserFields";
-import {
-  HealthProFormData,
-  UserFormData,
-  UserUpdateFormData,
-} from "@/lib/validators/user";
-import { Autocomplete, Box, TextField } from "@mui/material";
-import { useState } from "react";
+import { HealthProFormData } from "@/lib/validators/user";
+import { Box, TextField } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 
-interface HealthProfessionalFormProps {
-  isEdit: boolean;
-}
-
-export default function HealthProfessionalForm({
-  isEdit,
-}: HealthProfessionalFormProps) {
+export default function HealthProfessionalForm() {
   const {
     register,
     formState: { errors },
@@ -30,9 +19,9 @@ export default function HealthProfessionalForm({
           fullWidth
           margin="normal"
           required
-          error={!!(errors as any).email}
-          helperText={(errors as any).email?.message}
-          {...register("email" as any)}
+          error={!!errors.email}
+          helperText={errors.email?.message}
+          {...register("email")}
         />
       </Box>
       <Box mt={2}>

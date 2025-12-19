@@ -7,8 +7,11 @@ import { fetchClient } from "./api-client";
 
 export async function fetchInstitutions({
   access_token,
+  title,
 }: InstitutionRequest): Promise<InstitutionResponse[]> {
-  const res = await fetch(API_ROUTES.INSTITUTIONS, {
+  const url = new URL(API_ROUTES.INSTITUTIONS);
+  if (title) url.searchParams.append("title", title);
+  const res = await fetch(url.toString(), {
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });

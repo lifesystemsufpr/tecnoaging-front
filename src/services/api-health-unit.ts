@@ -1,8 +1,20 @@
 import { HealthUnitRequest } from "@/types/api/Health-unit";
 import { API_ROUTES } from "./Routes";
 
-export const fetchHealthUnits = async (access_token: string) => {
-  const res = await fetch(API_ROUTES.HEALTH_UNITS, {
+interface FetchHealthUnitsParams {
+  access_token: string;
+  name?: string;
+}
+
+export const fetchHealthUnits = async ({
+  access_token,
+  name,
+}: FetchHealthUnitsParams) => {
+  const url = new URL(API_ROUTES.HEALTH_UNITS);
+  if (name) {
+    url.searchParams.append("name", name);
+  }
+  const res = await fetch(url.toString(), {
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },
   });

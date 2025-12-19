@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Modal,
-  TextField,
   Typography,
   useMediaQuery,
   useTheme,
@@ -20,8 +19,7 @@ import { useSession } from "next-auth/react";
 import { deletePatient, fetchPatients } from "@/services/api-patient";
 import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
-
-const DEBOUNCE_DELAY = 500;
+import { SearchInput } from "@/components/form/input/SearchInput";
 
 const columnsConfig: ColumnConfig<Patient>[] = [
   { key: "fullName", header: "Nome Completo" },
@@ -32,7 +30,6 @@ const columnsConfig: ColumnConfig<Patient>[] = [
 
 export default function PatientsCRUDPage() {
   const [patientsList, setPatientsList] = useState<Patient[]>([]);
-  const [patientFilter, setPatientFilter] = useState<Patient[] | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,28 +50,38 @@ export default function PatientsCRUDPage() {
 
   const [totalRows, setTotalRows] = useState(0);
 
-  const isProfessional = useMemo(() => {
-    return (session as any)?.user?.role === SystemRoles.HEALTH_PROFESSIONAL;
-  }, [session]);
+  const handleViewTests = useCallback(
+    (id: string) => {
+      router.push(`patients/${id}/evaluations`);
+    },
+    [router]
+  );
 
-  const handleViewTests = (id: string) => {
-    router.push(`patients/${id}/evaluations`);
-  };
-
-  const handleViewQuestionnaires = (id: string) => {
-    router.push(`patients/${id}/questionnaires`);
-  };
+  const handleViewQuestionnaires = useCallback(
+    (id: string) => {
+      router.push(`patients/${id}/questionnaires`);
+    },
+    [router]
+  );
 
   const loadPatients = useCallback(
-    async (token: string, query?: string) => {
+    async (
+      token: string,
+      params?: { query?: string; page?: number; pageSize?: number }
+    ) => {
       try {
         setLoading(true);
+
+        const page = params?.page ?? paginationModel.page;
+        const pageSize = params?.pageSize ?? paginationModel.pageSize;
+
         const { data, meta } = await fetchPatients(
           token,
-          paginationModel.page + 1,
-          paginationModel.pageSize,
-          query
+          page + 1,
+          pageSize,
+          params?.query
         );
+
         setPatientsList(data);
         setTotalRows(meta.total);
       } catch (e) {
@@ -83,7 +90,7 @@ export default function PatientsCRUDPage() {
         setLoading(false);
       }
     },
-    [paginationModel]
+    [paginationModel.page, paginationModel.pageSize]
   );
 
   useEffect(() => {
@@ -92,38 +99,86 @@ export default function PatientsCRUDPage() {
     (async () => {
       loadPatients(session.accessToken);
     })();
-  }, [status, session?.accessToken, paginationModel]);
+  }, [status, session?.accessToken, paginationModel, loadPatients]);
 
   useEffect(() => {
-    const handler = setTimeout(() => {
+    if (status !== "authenticated" || !session?.accessToken) return;
+
+    if (!searchQuery) {
+      loadPatients(session.accessToken);
+      return;
+    }
+
+    const onlyLetters = /^[A-Za-z\s]+$/.test(searchQuery);
+    const onlyNumbers = /^[0-9]+$/.test(searchQuery);
+
+    if (onlyLetters || onlyNumbers) {
+      loadPatients(session.accessToken, { query: searchQuery });
+    }
+  }, [searchQuery, session?.accessToken, status, loadPatients]);
+
+  const handleDeletePatient = useCallback(
+    async (id: string) => {
       if (!session?.accessToken) return;
+      await deletePatient(session.accessToken, id);
+      await loadPatients(session.accessToken);
+    },
+    [session?.accessToken, loadPatients]
+  );
 
-      if (!searchQuery) {
-        loadPatients(session.accessToken);
-        return;
-      }
+  const handleUpdatePatient = useCallback(
+    (id: string) => {
+      setSelectedPatient(patientsList.find((p) => p.id === id) || null);
+      setOpenModal(true);
+    },
+    [patientsList]
+  );
 
-      const onlyLetters = /^[A-Za-z\s]+$/.test(searchQuery);
-      const onlyNumbers = /^[0-9]+$/.test(searchQuery);
+  const handleEdit = useCallback(
+    (p: Patient) => handleUpdatePatient(p.id),
+    [handleUpdatePatient]
+  );
+  const handleDelete = useCallback(
+    (p: Patient) => handleDeletePatient(p.id),
+    [handleDeletePatient]
+  );
 
-      if (onlyLetters || onlyNumbers) {
-        loadPatients(session.accessToken, searchQuery);
-      }
-    }, DEBOUNCE_DELAY);
-
-    return () => clearTimeout(handler);
-  }, [searchQuery, session?.accessToken]);
-
-  const handleDeletePatient = async (id: string) => {
-    if (!session?.accessToken) return;
-    await deletePatient(session.accessToken, id);
-    await loadPatients(session.accessToken);
-  };
-
-  const handleUpdatePatient = (id: string) => {
-    setSelectedPatient(patientsList.find((p) => p.id === id) || null);
-    setOpenModal(true);
-  };
+  const memoizedTable = useMemo(
+    () => (
+      <GenericTable
+        rows={patientsList}
+        columns={columnsConfig}
+        getRowId={(row) => row.id}
+        showActions
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onView={(patient) => router.push(`/users/patients/${patient.id}`)}
+        onTests={(patient) => handleViewTests(patient.id)}
+        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
+        pageSize={5}
+        autoHeight
+        totalRows={totalRows}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        loading={loading}
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.fullName}?</>
+        )}
+        deleteConfirmTitle="Excluir paciente"
+      />
+    ),
+    [
+      patientsList,
+      loading,
+      paginationModel,
+      totalRows,
+      handleDelete,
+      handleEdit,
+      handleViewQuestionnaires,
+      handleViewTests,
+      router,
+    ]
+  );
 
   if (status === "loading") {
     return <Typography>Carregando…</Typography>;
@@ -148,38 +203,13 @@ export default function PatientsCRUDPage() {
           alignItems: "center",
         }}
       >
-        <TextField
-          label="Buscar Paciente"
-          variant="outlined"
-          size="small"
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <SearchInput onSearch={setSearchQuery} />
         <Button variant="contained" onClick={() => setOpenModal(true)}>
           Adicionar Paciente
         </Button>
       </Box>
 
-      <GenericTable
-        rows={patientFilter ?? patientsList}
-        columns={columnsConfig}
-        getRowId={(row) => row.id}
-        showActions
-        onEdit={(patient) => handleUpdatePatient(patient.id)}
-        onDelete={(patient) => handleDeletePatient(patient.id)}
-        onView={(patient) => router.push(`/users/patients/${patient.id}`)}
-        onTests={(patient) => handleViewTests(patient.id)}
-        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
-        pageSize={5}
-        autoHeight
-        totalRows={totalRows}
-        paginationModel={paginationModel}
-        setPaginationModel={setPaginationModel}
-        loading={loading}
-        deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.fullName}?</>
-        )}
-        deleteConfirmTitle="Excluir paciente"
-      />
+      {memoizedTable}
 
       <Modal
         open={openModal}
@@ -198,10 +228,6 @@ export default function PatientsCRUDPage() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: isNotebook ? "90%" : "50%",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
           }}
         >
           <UserCreateForm

@@ -46,7 +46,7 @@ export default function Page() {
       });
       setData(res as Researcher);
       setName(res.fullName || "");
-    } catch (e: any) {
+    } catch (e) {
       setErr(e?.message || "Erro ao carregar pesquisador.");
       setData(null);
     } finally {

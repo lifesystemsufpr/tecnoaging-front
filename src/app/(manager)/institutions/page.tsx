@@ -1,30 +1,23 @@
 "use client";
 
 import { GenericTable } from "@/components/datatable/GenericTable";
+import { FormRoot } from "@/components/form/container/FormProvider";
 import { InstitutionForm } from "@/components/form/study-unit";
 import {
   deleteInstitution,
   fetchInstitutions,
 } from "@/services/api-study-institution";
 import { Institution } from "@/types/domain/Institution";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Modal, TextField } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function InstitutionsPage() {
   const [InstitutionsList, setInstitutionsList] = useState<Institution[]>([]);
-  const [filteredInstitutions, setFilteredInstitutions] = useState<
-    Institution[] | null
-  >(null);
+
+  const [searchTitle, setSearchTitle] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInstitution, setSelectedInstitution] =
     useState<Institution | null>(null);
@@ -35,9 +28,6 @@ export default function InstitutionsPage() {
   const token = session?.accessToken as string | undefined;
 
   // enquanto carrega a sessão, não renderize a tabela
-  if (status === "loading") return <div>Carregando…</div>;
-  if (!token)
-    return <div>Você precisa estar logado para acessar essa página.</div>;
 
   const loadHealth = useCallback(async () => {
     if (!token) return;
@@ -46,9 +36,11 @@ export default function InstitutionsPage() {
     try {
       const data = await fetchInstitutions({
         access_token: token,
+        title: searchTitle,
       });
       if (active) setInstitutionsList(data);
     } catch (e) {
+      console.error(e);
       if (active) toast.error("Erro ao carregar unidades de saúde");
     } finally {
       setLoading(false);
@@ -56,7 +48,7 @@ export default function InstitutionsPage() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [token, searchTitle]);
 
   useEffect(() => {
     loadHealth();
@@ -74,27 +66,54 @@ export default function InstitutionsPage() {
         toast.error("Erro ao deletar instituição de ensino.");
       }
     },
-    [token, loadHealth]
+    [loadHealth]
   );
 
-  const handleSelectPatient = (id: string) => {
-    const Institution = InstitutionsList.find((unit) => unit.id === id) || null;
-    setSelectedInstitution(Institution);
-    setIsModalOpen(true);
-  };
+  const handleSelectPatient = useCallback(
+    (id: string) => {
+      const Institution =
+        InstitutionsList.find((unit) => unit.id === id) || null;
+      setSelectedInstitution(Institution);
+      setIsModalOpen(true);
+    },
+    [InstitutionsList]
+  );
 
-  const handleSelectInstitution = (id?: string) => {
-    const institution = id
-      ? InstitutionsList.find((unit) => unit.id === id) || null
-      : null;
-    setSelectedInstitution(institution);
-    setIsModalOpen(true);
+  const handleSuccess = async () => {
+    await loadHealth();
+    handleCloseModal();
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedInstitution(null);
   };
+
+  const memoizedTable = useMemo(
+    () => (
+      <GenericTable
+        rows={InstitutionsList}
+        columns={[{ key: "title", header: "Nome do Ensino" }]}
+        getRowId={(row) => row.id}
+        showActions
+        onEdit={(u) => handleSelectPatient(u.id)}
+        onDelete={(u) => handleDeleteHealth(u.id)}
+        onView={(u) => router.push(`/institutions/${u.id}`)}
+        pageSize={5}
+        autoHeight
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.title}?</>
+        )}
+        deleteConfirmTitle="Excluir Instituição de Ensino"
+        loading={loading}
+      />
+    ),
+    [InstitutionsList, loading, router, handleDeleteHealth, handleSelectPatient]
+  );
+
+  if (status === "loading") return <div>Carregando…</div>;
+  if (!token)
+    return <div>Você precisa estar logado para acessar essa página.</div>;
 
   return (
     <Box>
@@ -111,7 +130,7 @@ export default function InstitutionsPage() {
         <TextField
           size="small"
           placeholder="Buscar Instituição de Ensino"
-          onChange={(e) => handleSelectInstitution(e.target.value)}
+          onChange={(e) => setSearchTitle(e.target.value)}
         />
         <Button
           variant="contained"
@@ -123,35 +142,17 @@ export default function InstitutionsPage() {
         </Button>
       </Box>
 
-      <GenericTable
-        rows={filteredInstitutions ?? InstitutionsList}
-        columns={[{ key: "title", header: "Nome do Ensino" }]}
-        getRowId={(row) => row.id}
-        showActions
-        onEdit={(u) => handleSelectPatient(u.id)}
-        onDelete={(u) => handleDeleteHealth(u.id)}
-        onView={(u) => router.push(`/institutions/${u.id}`)}
-        pageSize={5}
-        autoHeight
-        deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.title}?</>
-        )}
-        deleteConfirmTitle="Excluir Instituição de Ensino"
-        loading={loading}
-      />
+      {memoizedTable}
 
-      <Dialog open={isModalOpen} onClose={handleCloseModal}>
-        <DialogTitle>
-          {selectedInstitution
-            ? "Editar Instituição de Ensino"
-            : "Adicionar Instituição de Ensino"}
-        </DialogTitle>
-        <InstitutionForm
-          initialData={selectedInstitution}
-          onSuccess={handleSelectInstitution}
-          onClose={handleCloseModal}
-        />
-      </Dialog>
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+        <FormRoot>
+          <InstitutionForm
+            initialData={selectedInstitution}
+            onSuccess={handleSuccess}
+            onClose={handleCloseModal}
+          />
+        </FormRoot>
+      </Modal>
     </Box>
   );
 }

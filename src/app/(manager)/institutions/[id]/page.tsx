@@ -43,7 +43,7 @@ export default function Page() {
         access_token: session.accessToken,
       });
       setData(res as Institution);
-    } catch (e: any) {
+    } catch (e) {
       setErr(e?.message || "Erro ao carregar instituição.");
       setData(null);
     } finally {
@@ -78,8 +78,7 @@ export default function Page() {
 
   // Normalização dos campos
   const title = data?.title ?? "—";
-  const updatedAt = (data as any)?.updatedAt as string | undefined;
-  const active = (data as any)?.active as boolean | undefined;
+  const updatedAt = data?.updatedAt as string | undefined;
   const instId = data?.id ?? strId ?? "—";
 
   return (

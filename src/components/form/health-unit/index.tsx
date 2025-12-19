@@ -10,10 +10,12 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
+import { FormContainer } from "../container/FormProvider";
 
 const onlyDigits = (v: string) => (v || "").replace(/\D/g, "");
 const formatCEP = (v: string) => {
@@ -45,8 +47,7 @@ export function HealthUnitForm({
       number: initialValues?.number?.toString?.() ?? "",
       complement: initialValues?.complement ?? "",
       city: initialValues?.city ?? "",
-      state:
-        (initialValues?.state as HealthUnitFormData["state"]) ?? ("" as any),
+      state: (initialValues?.state as HealthUnitFormData["state"]) ?? "",
       neighborhood: initialValues?.neighborhood ?? "",
     }),
     [initialValues]
@@ -89,7 +90,7 @@ export function HealthUnitForm({
           setValue("street", "");
           setValue("neighborhood", "");
           setValue("city", "");
-          setValue("state", "" as any);
+          setValue("state", "");
           return;
         }
 
@@ -111,12 +112,22 @@ export function HealthUnitForm({
   );
 
   return (
-    <Box
-      component="form"
-      noValidate
-      onSubmit={handleSubmit((values) => onSubmit?.(values))}
-    >
-      <Grid container spacing={2}>
+    <FormContainer onSubmit={handleSubmit(onSubmit || (() => {}))}>
+      <Box mb={3}>
+        <Typography variant="h6">
+          {initialValues
+            ? `Editar Unidade de Saúde`
+            : `Cadastrar Unidade de Saúde`}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {initialValues
+            ? "Altere as informações necessárias e salve as alterações."
+            : "Preencha os dados abaixo para registrar uma nova unidade no sistema."}
+        </Typography>
+      </Box>
+
+      <Grid container spacing={2.5}>
+        {/* --- Informações Básicas --- */}
         <Grid size={12}>
           <Controller
             name="name"
@@ -135,87 +146,62 @@ export function HealthUnitForm({
           />
         </Grid>
 
-        {/* CEP */}
-        <Grid size={12}>
+        {/* --- Localização --- */}
+        {/* CEP - Ocupa menos espaço que a rua */}
+        <Grid size={{ xs: 12, sm: 4 }}>
           <Controller
             name="zipCode"
             control={control}
             rules={{
               required: "CEP é obrigatório",
-              validate: (v) =>
-                onlyDigits(v).length === 8 || "CEP deve ter 8 dígitos",
+              validate: (v) => onlyDigits(v).length === 8 || "CEP inválido",
             }}
-            render={({ field }) => {
-              const masked = formatCEP(field.value ?? "");
-              return (
-                <TextField
-                  label="CEP"
-                  margin="normal"
-                  required
-                  fullWidth
-                  value={masked}
-                  onChange={(e) => {
-                    const digits = onlyDigits(e.target.value).slice(0, 8);
-                    field.onChange(digits);
-                    if (errors.zipCode) clearErrors("zipCode");
-                  }}
-                  onBlur={() => handleCepLookup(field.value ?? "")}
-                  error={!!errors.zipCode}
-                  helperText={errors.zipCode?.message}
-                  inputProps={{
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                    maxLength: 9,
-                    autoComplete: "postal-code",
-                  }}
-                  onKeyDown={(e) => {
-                    const allowed = [
-                      "Backspace",
-                      "Delete",
-                      "ArrowLeft",
-                      "ArrowRight",
-                      "Tab",
-                      "Home",
-                      "End",
-                    ];
-                    if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                  InputProps={{
-                    endAdornment: cepLoading ? (
-                      <InputAdornment position="end">
-                        <CircularProgress size={18} />
-                      </InputAdornment>
-                    ) : null,
-                  }}
-                />
-              );
-            }}
+            render={({ field }) => (
+              <TextField
+                label="CEP"
+                required
+                fullWidth
+                value={formatCEP(field.value ?? "")}
+                onChange={(e) => {
+                  const digits = onlyDigits(e.target.value).slice(0, 8);
+                  field.onChange(digits);
+                  if (errors.zipCode) clearErrors("zipCode");
+                }}
+                onBlur={() => handleCepLookup(field.value ?? "")}
+                error={!!errors.zipCode}
+                helperText={errors.zipCode?.message}
+                InputProps={{
+                  endAdornment: cepLoading && (
+                    <InputAdornment position="end">
+                      <CircularProgress size={18} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            )}
           />
         </Grid>
 
-        {/* Rua */}
-        <Grid size={12}>
+        {/* Rua - Ocupa o restante da linha do CEP */}
+        <Grid size={{ xs: 12, sm: 8 }}>
           <Controller
             name="street"
             control={control}
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
-                label="Rua"
+                label="Logradouro (Rua/Avenida)"
                 fullWidth
                 required
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
-                autoComplete="address-line1"
               />
             )}
           />
         </Grid>
 
-        {/* Número */}
-        <Grid size={12}>
+        {/* Número - Curto */}
+        <Grid size={{ xs: 12, sm: 3 }}>
           <Controller
             name="number"
             control={control}
@@ -225,22 +211,18 @@ export function HealthUnitForm({
                 label="Número"
                 fullWidth
                 required
-                inputProps={{ inputMode: "numeric" }}
-                onChange={(e) => {
-                  // mantém como string mas só com dígitos
-                  const onlyDigits = e.target.value.replace(/\D/g, "");
-                  field.onChange(onlyDigits);
-                }}
+                onChange={(e) =>
+                  field.onChange(e.target.value.replace(/\D/g, ""))
+                }
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
-                autoComplete="address-line2"
               />
             )}
           />
         </Grid>
 
-        {/* Complemento */}
-        <Grid size={12}>
+        {/* Complemento - Médio */}
+        <Grid size={{ xs: 12, sm: 4 }}>
           <Controller
             name="complement"
             control={control}
@@ -251,33 +233,13 @@ export function HealthUnitForm({
                 fullWidth
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
-                autoComplete="address-line3"
               />
             )}
           />
         </Grid>
 
-        {/* Cidade */}
-        <Grid size={12}>
-          <Controller
-            name="city"
-            control={control}
-            render={({ field, fieldState }) => (
-              <TextField
-                {...field}
-                label="Cidade"
-                fullWidth
-                required
-                error={!!fieldState.error}
-                helperText={fieldState.error?.message}
-                autoComplete="address-level2"
-              />
-            )}
-          />
-        </Grid>
-
-        {/* Bairro */}
-        <Grid size={12}>
+        {/* Bairro - Médio */}
+        <Grid size={{ xs: 12, sm: 5 }}>
           <Controller
             name="neighborhood"
             control={control}
@@ -289,14 +251,31 @@ export function HealthUnitForm({
                 required
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}
-                autoComplete="address-level3"
               />
             )}
           />
         </Grid>
 
-        {/* UF */}
-        <Grid size={12}>
+        {/* Cidade - Largo */}
+        <Grid size={{ xs: 12, sm: 9 }}>
+          <Controller
+            name="city"
+            control={control}
+            render={({ field, fieldState }) => (
+              <TextField
+                {...field}
+                label="Cidade"
+                fullWidth
+                required
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        {/* UF - Pequeno */}
+        <Grid size={{ xs: 12, sm: 3 }}>
           <Controller
             name="state"
             control={control}
@@ -322,11 +301,17 @@ export function HealthUnitForm({
         </Grid>
       </Grid>
 
-      <Stack direction="row" spacing={2} mt={3} justifyContent="flex-end">
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
-          {submitLabel}
+      <Stack direction="row" spacing={2} mt={4} justifyContent="flex-end">
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          disabled={isSubmitting}
+          sx={{ px: 4 }}
+        >
+          {isSubmitting ? "Salvando..." : submitLabel}
         </Button>
       </Stack>
-    </Box>
+    </FormContainer>
   );
 }

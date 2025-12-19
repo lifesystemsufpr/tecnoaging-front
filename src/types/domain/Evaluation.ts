@@ -33,6 +33,9 @@ export interface EvaluationRaw {
   time_end: string; // ISO
   totalTime: string; // seconds
   updatedAt: string; // ISO
+
+  profissional_nome?: string;
+  unidade_nome?: string;
 }
 
 export interface Evaluation extends EvaluationRaw {

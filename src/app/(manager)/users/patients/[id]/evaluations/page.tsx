@@ -1,6 +1,5 @@
 "use client";
 
-import NextLink from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   ColumnConfig,
@@ -12,14 +11,7 @@ import { EvaluationRaw } from "@/types/domain/Evaluation";
 import { Patient } from "@/types/domain/Patient";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { formatDateTime } from "@/utils/dates";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -27,13 +19,13 @@ import { toast } from "sonner";
 const columns: ColumnConfig<EvaluationRaw>[] = [
   { key: "type", header: "Tipo", width: 110 },
   {
-    key: "profissional_nome" as any,
+    key: "profissional_nome",
     header: "Profissional",
     flex: 1.2,
     valueGetter: (row) => row.healthProfessional?.fullName ?? "",
   },
   {
-    key: "unidade_nome" as any,
+    key: "unidade_nome",
     header: "Unidade",
     width: 220,
     flex: 1.1,
@@ -129,31 +121,6 @@ export default function PatientsEvaluationsPage() {
 
   //Atualmente terei que implementar um api composition para buscar os dados do paciente e depois as avaliações
   //(necessario endpoint de avaliações com filtro por ID do paciente)
-  const loadPatients = async () => {
-    try {
-      setIsLoading(true);
-      const resp = await fetchPatientById({
-        id: patientId as string,
-      });
-      setPatientData(resp);
-      const patientEvaluations = await fetchEvaluations({
-        filters: {
-          startDate: initDate || undefined,
-          endDate: endDate || undefined,
-          patientCpf: resp.cpf,
-          page: paginationModel.page + 1,
-          pageSize: paginationModel.pageSize,
-        },
-      });
-      setEvaluations(patientEvaluations.data);
-      setTotalRows(patientEvaluations.meta.total || 0);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Erro ao carregar avaliações do paciente:", error);
-      toast.error("Erro ao carregar avaliações do paciente");
-      setIsLoading(false);
-    }
-  };
 
   const handleOnViewEvaluation = (evaluation: EvaluationRaw) => {
     const evaluationType = evaluation.type;
@@ -169,6 +136,31 @@ export default function PatientsEvaluationsPage() {
   };
 
   useEffect(() => {
+    const loadPatients = async () => {
+      try {
+        setIsLoading(true);
+        const resp = await fetchPatientById({
+          id: patientId as string,
+        });
+        setPatientData(resp);
+        const patientEvaluations = await fetchEvaluations({
+          filters: {
+            startDate: initDate || undefined,
+            endDate: endDate || undefined,
+            patientCpf: resp.cpf,
+            page: paginationModel.page + 1,
+            pageSize: paginationModel.pageSize,
+          },
+        });
+        setEvaluations(patientEvaluations.data);
+        setTotalRows(patientEvaluations.meta.total || 0);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Erro ao carregar avaliações do paciente:", error);
+        toast.error("Erro ao carregar avaliações do paciente");
+        setIsLoading(false);
+      }
+    };
     loadPatients();
   }, [patientId, initDate, endDate, paginationModel]);
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function parseJwt(token: string): Record<string, any> {
   try {
     const base64Url = token.split(".")[1];

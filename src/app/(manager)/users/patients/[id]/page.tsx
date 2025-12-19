@@ -18,13 +18,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  fmtNumber,
-  formatCpf,
-  formatDateBr,
-  formatPhoneBR,
-  genderPt,
-} from "@/utils/format";
+import { fmtNumber, formatDateBr } from "@/utils/format";
 import { Copyable } from "@/components/Compyable";
 import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 import { socioLabel } from "@/utils/socioEconomic";
@@ -54,7 +48,7 @@ export default function Page() {
         access_token: session.accessToken,
       });
       setData(res as Patient);
-    } catch (e: any) {
+    } catch (e) {
       setErr(e?.message || "Erro ao carregar paciente.");
       setData(null);
     } finally {
@@ -87,19 +81,13 @@ export default function Page() {
     );
   }
 
-  // Normalização (Patient é flat, mas deixo com "fallbacks" seguros)
   const name = data?.fullName ?? "—";
-  const cpf = data?.cpf;
-  const phone = data?.phone ?? null;
-  const gender = data?.gender;
   const birthday = data?.birthday;
   const scholarship = data?.scholarship;
   const socio = data?.socio_economic_level as SocioEconomicLevel | undefined;
   const updatedAt = data?.updatedAt;
-
   const heightCm = data?.height;
   const weightKg = data?.weight;
-  const heightM = typeof heightCm === "number" ? heightCm / 100 : undefined;
 
   const addressLine1 =
     [

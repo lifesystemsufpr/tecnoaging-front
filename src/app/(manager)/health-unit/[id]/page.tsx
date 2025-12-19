@@ -56,7 +56,7 @@ export default function HealthUnitDetailPage() {
     try {
       const res = await fetchHealthUnitById(String(strId), token);
       setData(res as HealthUnitWithMeta);
-    } catch (error: any) {
+    } catch (error) {
       setErr(error?.message || "Erro ao carregar unidade de saude.");
       setData(null);
     } finally {

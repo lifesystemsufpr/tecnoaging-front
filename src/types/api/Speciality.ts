@@ -6,4 +6,6 @@ export type SpecialityRequest = {
   title: string;
 };
 
-export interface SpecialityResponse extends Speciality {}
+export interface SpecialityResponse extends Speciality {
+  children?: React.ReactNode;
+}

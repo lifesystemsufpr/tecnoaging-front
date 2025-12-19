@@ -18,7 +18,9 @@ export interface PatientRequest {
   state: string;
 }
 
-export interface PatientResponse extends Patient {}
+export interface PatientResponse extends Patient {
+  children?: React.ReactNode;
+}
 
 export interface PatientPaginatedResponse {
   data: Patient[];

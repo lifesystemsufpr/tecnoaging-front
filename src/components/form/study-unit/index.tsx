@@ -1,7 +1,7 @@
 // components/InstitutionForm.tsx
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Institution } from "@/types/domain/Institution";
@@ -11,6 +11,7 @@ import {
 } from "@/services/api-study-institution";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { FormContainer } from "../container/FormProvider";
 
 const InstitutionSchema = z.object({
   title: z
@@ -78,17 +79,20 @@ export function InstitutionForm({
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{
-        p: 3,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        minWidth: 400,
-      }}
-    >
+    <FormContainer onSubmit={handleSubmit(onSubmit)}>
+      <Box mb={3}>
+        <Typography variant="h6">
+          {initialData
+            ? `Editar Instituição de Ensino`
+            : `Cadastrar Instituição de Ensino`}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {initialData
+            ? "Altere as informações necessárias e salve as alterações."
+            : "Preencha os dados abaixo para registrar uma nova instituição no sistema."}
+        </Typography>
+      </Box>
+
       <TextField
         label="Nome da Instituição"
         fullWidth
@@ -112,6 +116,6 @@ export function InstitutionForm({
               : "Criar Instituição"}
         </Button>
       </Box>
-    </Box>
+    </FormContainer>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 import { GenericTable } from "@/components/datatable/GenericTable";
+import { SearchInput } from "@/components/form/input/SearchInput";
 import { UserCreateForm } from "@/components/form/user-create";
 import {
   deleteHealthProfessional,
@@ -8,26 +9,17 @@ import {
 import { HealthProfessional } from "@/types/domain/Health-professional";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { SystemRoles } from "@/types/enums/system-roles";
-import {
-  Box,
-  Button,
-  Modal,
-  TextField,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, Modal, useMediaQuery, useTheme } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function HealthProfessionalsCRUDPage() {
   const [HealthProfessionalsList, setHealthProfessionalsList] = useState<
     HealthProfessional[]
   >([]);
-  const [filteredHealthProfessionals, setFilteredHealthProfessionals] =
-    useState<HealthProfessional[] | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
   const [paginationModel, setPaginationModel] = useState<{
@@ -50,98 +42,74 @@ export default function HealthProfessionalsCRUDPage() {
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
-  if (!session) {
-    return (
-      <Typography>
-        Você precisa estar logado para acessar essa página.
-      </Typography>
-    );
-  }
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const searchProfessionals = (query: string) => {
-    if (!query) {
-      loadHealthProfessionals();
-      return;
-    }
-    const onlyLetters = /^[A-Za-z\s]+$/.test(query);
-    const onlyNumbers = /^[0-9]+$/.test(query);
-    if (onlyLetters || onlyNumbers) {
-      loadHealthProfessionals(query);
-    }
-  };
-
-  const loadHealthProfessionals = useCallback(
-    async (query?: string) => {
-      setLoading(true);
-      fetchHealthProfessionals({
-        accessToken: session.accessToken,
-        page: paginationModel.page + 1,
-        pageSize: paginationModel.pageSize,
-        query,
+  const loadHealthProfessionals = useCallback(async () => {
+    setLoading(true);
+    fetchHealthProfessionals({
+      accessToken: session.accessToken,
+      page: paginationModel.page + 1,
+      pageSize: paginationModel.pageSize,
+      query: searchQuery || undefined,
+    })
+      .then((response) => {
+        const { data, meta } = response;
+        setHealthProfessionalsList(data);
+        setTotalRows(meta.total);
       })
-        .then((response) => {
-          const { data, meta } = response;
-          setHealthProfessionalsList(data);
-          setTotalRows(meta.total);
-        })
-        .catch((error) => {
-          console.error("Error fetching health professionals:", error);
-          toast.error("Erro ao carregar profissionais de saúde.");
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      .catch((error) => {
+        console.error("Error fetching health professionals:", error);
+        toast.error("Erro ao carregar profissionais de saúde.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [session?.accessToken, paginationModel, searchQuery]);
+
+  const searchProfessionals = useCallback((query: string) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      setSearchQuery(query);
+      setPaginationModel((prev) => ({ ...prev, page: 0 }));
+    }, 800);
+  }, []);
+
+  const handleDeleteHealthProfessional = useCallback(
+    async (id: string) => {
+      try {
+        await deleteHealthProfessional({
+          accessToken: session.accessToken,
+          id,
+        }).then(() => loadHealthProfessionals());
+      } catch (error) {
+        console.error("Error deleting health professional:", error);
+        toast.error("Erro ao deletar profissional de saúde.");
+      }
     },
-    [session, paginationModel]
+    [session?.accessToken, loadHealthProfessionals]
   );
 
-  const handleDeleteHealthProfessional = async (id: string) => {
-    try {
-      await deleteHealthProfessional({
-        accessToken: session.accessToken,
-        id,
-      }).then(() => loadHealthProfessionals());
-    } catch (error) {
-      console.error("Error deleting health professional:", error);
-      toast.error("Erro ao deletar profissional de saúde.");
-    }
-  };
-
-  const handleUpdateHealthProfessional = (id: string) => {
-    setSelectedHealthProfessional(
-      HealthProfessionalsList.find(
-        (HealthProfessional) => HealthProfessional.id === id
-      ) || null
-    );
-    setOpenModal(true);
-  };
+  const handleUpdateHealthProfessional = useCallback(
+    (id: string) => {
+      setSelectedHealthProfessional(
+        HealthProfessionalsList.find(
+          (HealthProfessional) => HealthProfessional.id === id
+        ) || null
+      );
+      setOpenModal(true);
+    },
+    [HealthProfessionalsList]
+  );
 
   useEffect(() => {
     loadHealthProfessionals();
-  }, [paginationModel]);
+  }, [loadHealthProfessionals]);
 
-  return (
-    <Box>
-      <h1>Gerenciar Profissionais de Saúde</h1>
-      <Box
-        mb={1}
-        mt={1}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <TextField
-          size="small"
-          label="Buscar Profissional"
-          variant="outlined"
-          onChange={(e) => searchProfessionals(e.target.value)}
-        />
-        <Button variant="contained" onClick={() => setOpenModal(true)}>
-          Adicionar Profissional
-        </Button>
-      </Box>
+  const memoizedTable = useMemo(
+    () => (
       <GenericTable
         rows={HealthProfessionalsList}
         columns={[
@@ -161,7 +129,7 @@ export default function HealthProfessionalsCRUDPage() {
           },
           {
             key: "cpf",
-            header: "cpf",
+            header: "CPF",
             render(p) {
               return <>{p.row?.cpf}</>;
             },
@@ -189,6 +157,37 @@ export default function HealthProfessionalsCRUDPage() {
         )}
         deleteConfirmTitle="Excluir profissional de saúde"
       />
+    ),
+    [
+      HealthProfessionalsList,
+      loading,
+      paginationModel,
+      totalRows,
+      router,
+      handleDeleteHealthProfessional,
+      handleUpdateHealthProfessional,
+    ]
+  );
+
+  return (
+    <Box>
+      <h1>Gerenciar Profissionais de Saúde</h1>
+      <Box
+        mb={1}
+        mt={1}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <SearchInput onSearch={searchProfessionals} />
+        <Button variant="contained" onClick={() => setOpenModal(true)}>
+          Adicionar Profissional
+        </Button>
+      </Box>
+
+      {memoizedTable}
 
       <Modal
         open={openModal}
@@ -209,10 +208,6 @@ export default function HealthProfessionalsCRUDPage() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: isNotebook ? "90%" : "50%",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
           }}
         >
           <UserCreateForm

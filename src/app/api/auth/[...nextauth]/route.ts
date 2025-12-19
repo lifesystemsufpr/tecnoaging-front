@@ -6,7 +6,9 @@ import { parseJwt } from "@/lib/parseJwt";
 import { userFromAuthorize, userFromClaims } from "@/lib/userAdapter";
 import { API_BASE_URL } from "@/services/Routes";
 
-async function refreshAccessToken(token: any) {
+import { JWT } from "next-auth/jwt";
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
@@ -16,9 +18,7 @@ async function refreshAccessToken(token: any) {
     if (!res.ok) throw new Error("Falha ao atualizar token");
 
     const data: LoginResponse = await res.json();
-
     const claims: TokenPayload = parseJwt(data.access_token);
-
     const appUser = userFromClaims(claims);
 
     return {
@@ -100,9 +100,9 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         token.user = userFromAuthorize(user);
-        token.accessToken = (user as any).accessToken;
-        token.refreshToken = (user as any).refreshToken;
-        token.accessTokenExpires = (user as any).accessTokenExpires;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.accessTokenExpires = user.accessTokenExpires;
         return token;
       }
 
@@ -140,9 +140,9 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      (session as any).accessToken = token.accessToken as string | undefined;
-      (session as any).error = token.error;
-      session.user = (token.user as any) ?? session.user;
+      session.accessToken = token.accessToken as string | undefined;
+      session.error = token.error;
+      session.user = token.user ?? session.user;
       return session;
     },
   },
