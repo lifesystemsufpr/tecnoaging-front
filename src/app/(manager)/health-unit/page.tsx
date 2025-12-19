@@ -1,7 +1,10 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
-import { Box, Button, Modal, TextField } from "@mui/material";
-import { GenericTable } from "@/components/datatable/GenericTable";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { Box, Button, Modal, useMediaQuery, useTheme } from "@mui/material";
+import {
+  ColumnConfig,
+  GenericTable,
+} from "@/components/datatable/GenericTable";
 import {
   createHealthUnit,
   deleteHealthUnit,
@@ -13,6 +16,8 @@ import { HealthUnit } from "@/types/domain/Health-unit";
 import { HealthUnitForm } from "@/components/form/health-unit";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { SearchInput } from "@/components/form/input/SearchInput";
+import { FormRoot } from "@/components/form/container/FormProvider";
 
 export default function HealthUnitCRUDPage() {
   const [healthUnitsList, setHealthUnitsList] = useState<HealthUnit[]>([]);
@@ -24,6 +29,8 @@ export default function HealthUnitCRUDPage() {
     useState<HealthUnit | null>(null);
 
   const router = useRouter();
+  const theme = useTheme();
+  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const { data: session, status } = useSession();
   const token = session?.accessToken as string | undefined;
 
@@ -31,7 +38,10 @@ export default function HealthUnitCRUDPage() {
     if (!token) return;
     let active = true;
     try {
-      const data = await fetchHealthUnits(token);
+      const data = await fetchHealthUnits({
+        access_token: token,
+        name: "UBS Gabrafdiel",
+      });
       if (active) setHealthUnitsList(data);
     } catch (e) {
       console.error(e);
@@ -59,11 +69,14 @@ export default function HealthUnitCRUDPage() {
     [token, loadHealth]
   );
 
-  const handleSelectPatient = (id: string) => {
-    const healthUnit = healthUnitsList.find((unit) => unit.id === id) || null;
-    setSelectedHealthUnit(healthUnit);
-    setIsModalOpen(true);
-  };
+  const handleSelectPatient = useCallback(
+    (id: string) => {
+      const healthUnit = healthUnitsList.find((unit) => unit.id === id) || null;
+      setSelectedHealthUnit(healthUnit);
+      setIsModalOpen(true);
+    },
+    [healthUnitsList]
+  );
 
   const handleSearchHealth = (query: string) => {
     if (!query) return setFilteredHealthUnits(null);
@@ -82,6 +95,51 @@ export default function HealthUnitCRUDPage() {
     );
   };
 
+  const colums: ColumnConfig<HealthUnit>[] = useMemo(
+    () =>
+      isNotebook
+        ? [
+            { key: "name", header: "Nome Unidade" },
+            { key: "city", header: "Cidade" },
+          ]
+        : [
+            { key: "name", header: "Nome Unidade" },
+            { key: "number", header: "Número" },
+            { key: "street", header: "Rua" },
+            { key: "city", header: "Cidade" },
+            { key: "state", header: "Estado" },
+          ],
+    [isNotebook]
+  );
+
+  const memoizedTable = useMemo(
+    () => (
+      <GenericTable
+        rows={filteredHealthUnits ?? healthUnitsList}
+        columns={colums}
+        getRowId={(row) => row.id}
+        showActions
+        onEdit={(u) => handleSelectPatient(u.id)}
+        onDelete={(u) => handleDeleteHealth(u.id)}
+        onView={(u) => router.push(`/health-unit/${u.id}`)}
+        pageSize={5}
+        autoHeight
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.name}?</>
+        )}
+        deleteConfirmTitle="Excluir unidade de saúde"
+      />
+    ),
+    [
+      filteredHealthUnits,
+      healthUnitsList,
+      handleDeleteHealth,
+      router,
+      colums,
+      handleSelectPatient,
+    ]
+  );
+
   if (status === "loading") return <div>Carregando…</div>;
   if (!token)
     return <div>Você precisa estar logado para acessar essa página.</div>;
@@ -98,11 +156,7 @@ export default function HealthUnitCRUDPage() {
           alignItems: "center",
         }}
       >
-        <TextField
-          size="small"
-          placeholder="Buscar unidades de saúde"
-          onChange={(e) => handleSearchHealth(e.target.value)}
-        />
+        <SearchInput onSearch={handleSearchHealth} />
         <Button
           variant="contained"
           color="primary"
@@ -113,27 +167,7 @@ export default function HealthUnitCRUDPage() {
         </Button>
       </Box>
 
-      <GenericTable
-        rows={filteredHealthUnits ?? healthUnitsList}
-        columns={[
-          { key: "name", header: "Nome Unidade" },
-          { key: "number", header: "Número" },
-          { key: "street", header: "Rua" },
-          { key: "city", header: "Cidade" },
-          { key: "state", header: "Estado" },
-        ]}
-        getRowId={(row) => row.id}
-        showActions
-        onEdit={(u) => handleSelectPatient(u.id)}
-        onDelete={(u) => handleDeleteHealth(u.id)}
-        onView={(u) => router.push(`/health-unit/${u.id}`)}
-        pageSize={5}
-        autoHeight
-        deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.name}?</>
-        )}
-        deleteConfirmTitle="Excluir unidade de saúde"
-      />
+      {memoizedTable}
 
       <Modal
         open={isModalOpen}
@@ -142,19 +176,7 @@ export default function HealthUnitCRUDPage() {
           setSelectedHealthUnit(null);
         }}
       >
-        <Box
-          sx={{
-            position: "absolute" as const,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
+        <FormRoot>
           <HealthUnitForm
             onSubmit={async (data) => {
               try {
@@ -183,7 +205,7 @@ export default function HealthUnitCRUDPage() {
                 : "Criar Unidade de Saúde"
             }
           />
-        </Box>
+        </FormRoot>
       </Modal>
     </Box>
   );

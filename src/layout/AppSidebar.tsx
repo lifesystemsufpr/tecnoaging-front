@@ -163,6 +163,7 @@ const AppSidebar = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, isActive]);
 
   useEffect(() => {

@@ -1,15 +1,11 @@
 "use client";
 
-import { GenericTable } from "@/components/datatable/GenericTable";
 import {
-  Box,
-  Button,
-  Modal,
-  TextField,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+  ColumnConfig,
+  GenericTable,
+} from "@/components/datatable/GenericTable";
+import { Box, Button, Modal, useMediaQuery, useTheme } from "@mui/material";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { deleteResearcher, fetchResearchers } from "@/services/api-researcher";
 import type { Researcher } from "@/types/domain/Reseracher";
@@ -18,6 +14,7 @@ import { SystemRoles } from "@/types/enums/system-roles";
 import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { toast } from "sonner";
+import { SearchInput } from "@/components/form/input/SearchInput";
 
 export default function ResearcherCRUDPage() {
   const [researchersList, setResearchersList] = useState<Researcher[]>([]);
@@ -43,6 +40,7 @@ export default function ResearcherCRUDPage() {
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
 
   const mountedRef = useRef(false);
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -110,64 +108,61 @@ export default function ResearcherCRUDPage() {
     loadResearchers();
   }, [loadResearchers]);
 
-  const handleDeleteResearcher = (id: string) => {
-    try {
-      deleteResearcher({
-        id,
-        access_token: session?.accessToken ?? "",
-      }).then(async () => {
-        await loadResearchers();
-        setSelectedResearcher(null);
-        toast.success("Pesquisador deletado com sucesso.");
-      });
-    } catch (error) {
-      console.error("Error deleting researcher:", error);
-    }
-  };
+  const handleDeleteResearcher = useCallback(
+    (id: string) => {
+      try {
+        deleteResearcher({
+          id,
+          access_token: session?.accessToken ?? "",
+        }).then(async () => {
+          await loadResearchers();
+          setSelectedResearcher(null);
+          toast.success("Pesquisador deletado com sucesso.");
+        });
+      } catch (error) {
+        console.error("Error deleting researcher:", error);
+      }
+    },
+    [session?.accessToken, loadResearchers]
+  );
 
-  return (
-    <Box>
-      <h1>Gerenciar Pesquisadores</h1>
-      <Box
-        mb={1}
-        mt={1}
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <TextField
-          size="small"
-          label="Buscar Pesquisador"
-          onChange={(e) => searchResearchers(e.target.value)}
-        />
-        <Button variant="contained" onClick={() => setOpenModal(true)}>
-          Adicionar Pesquisador
-        </Button>
-      </Box>
+  const colums: ColumnConfig<Researcher>[] = useMemo(
+    () =>
+      isNotebook
+        ? [
+            {
+              key: "fullName",
+              header: "Nome",
+              render: (p) => <>{p.row.fullName ?? "—"}</>,
+            },
+            {
+              key: "institution",
+              header: "Instituição",
+              render: (p) => <>{p.row?.institutionName ?? "—"}</>,
+            },
+          ]
+        : [
+            {
+              key: "fullName",
+              header: "Nome",
+              render: (p) => <>{p.row.fullName ?? "—"}</>,
+            },
+            { key: "email", header: "Email" },
+            { key: "cpf", header: "CPF" },
+            {
+              key: "institution",
+              header: "Instituição",
+              render: (p) => <>{p.row?.institutionName ?? "—"}</>,
+            },
+          ],
+    [isNotebook]
+  );
 
+  const memoizedTable = useMemo(
+    () => (
       <GenericTable<Researcher>
         rows={researchersList}
-        columns={[
-          {
-            key: "fullName",
-            header: "Nome",
-            render: (p) => <>{p.row.fullName ?? "—"}</>,
-          },
-          { key: "email", header: "Email" },
-          { key: "cpf", header: "CPF" },
-          {
-            key: "institution",
-            header: "Instituição",
-            render: (p) => <>{p.row?.institutionName ?? "—"}</>,
-          },
-          {
-            key: "fieldOfStudy",
-            header: "Campo de Estudo",
-            render: (p) => <>{p.row.fieldOfStudy ?? "—"}</>,
-          },
-        ]}
+        columns={colums}
         getRowId={(r) => r.id}
         showActions
         onView={(r) => {
@@ -187,6 +182,38 @@ export default function ResearcherCRUDPage() {
         )}
         deleteConfirmTitle="Excluir pesquisador"
       />
+    ),
+    [
+      researchersList,
+      loading,
+      colums,
+      paginationModel,
+      totalRows,
+      router,
+      safeSetOpenModal,
+      handleDeleteResearcher,
+    ]
+  );
+
+  return (
+    <Box>
+      <h1>Gerenciar Pesquisadores</h1>
+      <Box
+        mb={1}
+        mt={1}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <SearchInput onSearch={searchResearchers} />
+        <Button variant="contained" onClick={() => setOpenModal(true)}>
+          Adicionar Pesquisador
+        </Button>
+      </Box>
+
+      {memoizedTable}
 
       <Modal
         open={openModal}
@@ -204,10 +231,6 @@ export default function ResearcherCRUDPage() {
             left: "50%",
             transform: "translate(-50%, -50%)",
             width: isNotebook ? "90%" : "50%",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
           }}
         >
           <UserCreateForm

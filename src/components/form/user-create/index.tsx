@@ -42,6 +42,7 @@ import {
   createHealthProfessional,
   updateHealthProfessional,
 } from "@/services/api-health-professional";
+import { FormContainer } from "../container/FormProvider";
 
 interface UserUpsertFormProps {
   lockedRole?: SystemRoles;
@@ -195,11 +196,7 @@ export function UserCreateForm({
 
   return (
     <FormProvider {...methods}>
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit, onError)}
-        noValidate
-      >
+      <FormContainer onSubmit={handleSubmit(onSubmit, onError)}>
         <Box>
           <Typography variant="h6" gutterBottom>
             {isEdit
@@ -267,7 +264,7 @@ export function UserCreateForm({
             </Button>
           </Box>
         )}
-      </Box>
+      </FormContainer>
     </FormProvider>
   );
 }
