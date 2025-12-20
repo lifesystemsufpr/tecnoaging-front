@@ -13,9 +13,24 @@ export function FormContainer({ children, ...props }: FormContainerProps) {
         borderRadius: 2,
         width: "100%",
         mx: "auto",
+        maxHeight: "90vh",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}
     >
-      <Box component="form" noValidate {...props}>
+      <Box
+        component="form"
+        noValidate
+        {...props}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
         {children}
       </Box>
     </Paper>

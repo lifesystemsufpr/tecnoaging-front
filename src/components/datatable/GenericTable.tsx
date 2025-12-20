@@ -365,6 +365,11 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
   );
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteDialogLoading, setDeleteDialogLoading] = React.useState(false);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleDeleteRequest = React.useCallback(
     (row: T) => {
@@ -459,6 +464,18 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     () => createLoadingOverlay(gridColumns.length, skeletonRowCount),
     [gridColumns.length, skeletonRowCount]
   );
+
+  if (!isMounted) {
+    return (
+      <Box>
+        {toolbar && <Box sx={{ mb: 1 }}>{toolbar}</Box>}
+        <LoadingSkeletonOverlay
+          columnCount={gridColumns.length}
+          rowCount={skeletonRowCount}
+        />
+      </Box>
+    );
+  }
 
   return (
     <Box>

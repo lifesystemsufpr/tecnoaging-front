@@ -203,7 +203,7 @@ export default function PatientsCRUDPage() {
           alignItems: "center",
         }}
       >
-        <SearchInput onSearch={setSearchQuery} />
+        <SearchInput onSearch={setSearchQuery} placeholder="Buscar Paciente" />
         <Button variant="contained" onClick={() => setOpenModal(true)}>
           Adicionar Paciente
         </Button>

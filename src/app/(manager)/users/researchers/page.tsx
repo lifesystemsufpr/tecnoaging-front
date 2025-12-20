@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { toast } from "sonner";
 import { SearchInput } from "@/components/form/input/SearchInput";
+import { FormRoot } from "@/components/form/container/FormProvider";
 
 export default function ResearcherCRUDPage() {
   const [researchersList, setResearchersList] = useState<Researcher[]>([]);
@@ -207,7 +208,10 @@ export default function ResearcherCRUDPage() {
           alignItems: "center",
         }}
       >
-        <SearchInput onSearch={searchResearchers} />
+        <SearchInput
+          onSearch={searchResearchers}
+          placeholder="Buscar Pesquisador"
+        />
         <Button variant="contained" onClick={() => setOpenModal(true)}>
           Adicionar Pesquisador
         </Button>
@@ -224,15 +228,7 @@ export default function ResearcherCRUDPage() {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <Box
-          sx={{
-            position: "absolute" as const,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: isNotebook ? "90%" : "50%",
-          }}
-        >
+        <FormRoot>
           <UserCreateForm
             lockedRole={SystemRoles.RESEARCHER}
             editUser={selectedResearcher}
@@ -242,7 +238,7 @@ export default function ResearcherCRUDPage() {
               loadResearchers();
             }}
           />
-        </Box>
+        </FormRoot>
       </Modal>
     </Box>
   );

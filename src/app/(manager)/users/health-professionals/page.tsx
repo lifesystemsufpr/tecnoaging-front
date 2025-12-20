@@ -181,7 +181,10 @@ export default function HealthProfessionalsCRUDPage() {
           alignItems: "center",
         }}
       >
-        <SearchInput onSearch={searchProfessionals} />
+        <SearchInput
+          onSearch={searchProfessionals}
+          placeholder="Buscar Profissional de Saúde"
+        />
         <Button variant="contained" onClick={() => setOpenModal(true)}>
           Adicionar Profissional
         </Button>

@@ -2,6 +2,7 @@
 
 import { GenericTable } from "@/components/datatable/GenericTable";
 import { FormRoot } from "@/components/form/container/FormProvider";
+import { SearchInput } from "@/components/form/input/SearchInput";
 import { InstitutionForm } from "@/components/form/study-unit";
 import {
   deleteInstitution,
@@ -34,7 +35,7 @@ export default function InstitutionsPage() {
     let active = true;
     setLoading(true);
     try {
-      const data = await fetchInstitutions({
+      const { data } = await fetchInstitutions({
         access_token: token,
         title: searchTitle,
       });
@@ -89,6 +90,11 @@ export default function InstitutionsPage() {
     setSelectedInstitution(null);
   };
 
+  const handleSearchInstitution = useCallback((queryResult: string) => {
+    if (!queryResult) return;
+    setSearchTitle(queryResult);
+  }, []);
+
   const memoizedTable = useMemo(
     () => (
       <GenericTable
@@ -127,10 +133,9 @@ export default function InstitutionsPage() {
           alignItems: "center",
         }}
       >
-        <TextField
-          size="small"
-          placeholder="Buscar Instituição de Ensino"
-          onChange={(e) => setSearchTitle(e.target.value)}
+        <SearchInput
+          onSearch={handleSearchInstitution}
+          placeholder="Buscar Instituição"
         />
         <Button
           variant="contained"
