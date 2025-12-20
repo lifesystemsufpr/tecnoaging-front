@@ -30,7 +30,7 @@ export default function HealthUnitCRUDPage() {
   const router = useRouter();
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const token = session?.accessToken as string | undefined;
 
   const reloadHealth = useCallback(async () => {
@@ -43,6 +43,7 @@ export default function HealthUnitCRUDPage() {
       });
       setHealthUnitsList(data);
     } catch (e) {
+      console.error(e);
       toast.error("Erro ao carregar unidades de saúde");
     } finally {
       setIsLoading(false);

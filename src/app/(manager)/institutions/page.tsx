@@ -9,7 +9,7 @@ import {
   fetchInstitutions,
 } from "@/services/api-study-institution";
 import { Institution } from "@/types/domain/Institution";
-import { Box, Button, Modal, TextField } from "@mui/material";
+import { Box, Button, Modal } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
