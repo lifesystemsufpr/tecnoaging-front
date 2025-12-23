@@ -506,7 +506,7 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
           noRowsOverlay: EmptyStateOverlay,
         }}
         paginationMode="server"
-        rowCount={props.totalRows ?? rows.length}
+        rowCount={props.totalRows ?? (rows?.length || 0)}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
       />
