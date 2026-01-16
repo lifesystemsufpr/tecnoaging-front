@@ -21,52 +21,52 @@ import { FormRoot } from "@/components/form/container/FormProvider";
 
 export default function HealthUnitCRUDPage() {
   const [healthUnitsList, setHealthUnitsList] = useState<HealthUnit[]>([]);
-  const [filteredHealthUnits, setFilteredHealthUnits] = useState<
-    HealthUnit[] | null
-  >(null);
+  const [query, setQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHealthUnit, setSelectedHealthUnit] =
     useState<HealthUnit | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const token = session?.accessToken as string | undefined;
 
-  const loadHealth = useCallback(async () => {
+  const reloadHealth = useCallback(async () => {
     if (!token) return;
-    let active = true;
+    setIsLoading(true);
     try {
-      const data = await fetchHealthUnits({
+      const { data } = await fetchHealthUnits({
         access_token: token,
-        name: "UBS Gabrafdiel",
+        name: query,
       });
-      if (active) setHealthUnitsList(data);
+      setHealthUnitsList(data);
     } catch (e) {
       console.error(e);
-      if (active) toast.error("Erro ao carregar unidades de saúde");
+      toast.error("Erro ao carregar unidades de saúde");
+    } finally {
+      setIsLoading(false);
     }
-    return () => {
-      active = false; // cancela setState após unmount
-    };
-  }, [token]);
+  }, [token, query]);
 
   useEffect(() => {
-    loadHealth();
-  }, [loadHealth]);
+    if (token) {
+      reloadHealth();
+    }
+  }, [token, reloadHealth, query]);
 
   const handleDeleteHealth = useCallback(
     async (id: string) => {
       try {
         await deleteHealthUnit(id, token);
-        await loadHealth();
+        await reloadHealth();
       } catch (error) {
         console.error("Failed to delete health unit:", error);
         toast.error("Erro ao deletar unidade de saúde");
       }
     },
-    [token, loadHealth]
+    [token, reloadHealth]
   );
 
   const handleSelectPatient = useCallback(
@@ -78,24 +78,12 @@ export default function HealthUnitCRUDPage() {
     [healthUnitsList]
   );
 
-  const handleSearchHealth = (query: string) => {
-    if (!query) return setFilteredHealthUnits(null);
-    const normalizedQuery = query
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
-    setFilteredHealthUnits(
-      healthUnitsList.filter((u) =>
-        u.name
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .includes(normalizedQuery)
-      )
-    );
+  const handleSearchHealth = (queryResult: string) => {
+    if (!queryResult) return;
+    setQuery(queryResult);
   };
 
-  const colums: ColumnConfig<HealthUnit>[] = useMemo(
+  const columns: ColumnConfig<HealthUnit>[] = useMemo(
     () =>
       isNotebook
         ? [
@@ -112,38 +100,6 @@ export default function HealthUnitCRUDPage() {
     [isNotebook]
   );
 
-  const memoizedTable = useMemo(
-    () => (
-      <GenericTable
-        rows={filteredHealthUnits ?? healthUnitsList}
-        columns={colums}
-        getRowId={(row) => row.id}
-        showActions
-        onEdit={(u) => handleSelectPatient(u.id)}
-        onDelete={(u) => handleDeleteHealth(u.id)}
-        onView={(u) => router.push(`/health-unit/${u.id}`)}
-        pageSize={5}
-        autoHeight
-        deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.name}?</>
-        )}
-        deleteConfirmTitle="Excluir unidade de saúde"
-      />
-    ),
-    [
-      filteredHealthUnits,
-      healthUnitsList,
-      handleDeleteHealth,
-      router,
-      colums,
-      handleSelectPatient,
-    ]
-  );
-
-  if (status === "loading") return <div>Carregando…</div>;
-  if (!token)
-    return <div>Você precisa estar logado para acessar essa página.</div>;
-
   return (
     <Box>
       <h1>Gerenciar Unidades de Saúde</h1>
@@ -156,7 +112,10 @@ export default function HealthUnitCRUDPage() {
           alignItems: "center",
         }}
       >
-        <SearchInput onSearch={handleSearchHealth} />
+        <SearchInput
+          onSearch={handleSearchHealth}
+          placeholder="Buscar unidade de saúde"
+        />
         <Button
           variant="contained"
           color="primary"
@@ -167,7 +126,22 @@ export default function HealthUnitCRUDPage() {
         </Button>
       </Box>
 
-      {memoizedTable}
+      <GenericTable
+        rows={healthUnitsList}
+        columns={columns}
+        getRowId={(row) => row.id}
+        showActions
+        onEdit={(u) => handleSelectPatient(u.id)}
+        onDelete={(u) => handleDeleteHealth(u.id)}
+        onView={(u) => router.push(`/health-unit/${u.id}`)}
+        pageSize={5}
+        autoHeight
+        deleteConfirmMessage={(row) => (
+          <>Tem certeza que deseja excluir {row.name}?</>
+        )}
+        deleteConfirmTitle="Excluir unidade de saúde"
+        loading={isLoading}
+      />
 
       <Modal
         open={isModalOpen}
@@ -192,7 +166,7 @@ export default function HealthUnitCRUDPage() {
                   toast.success("Unidade de saúde criada com sucesso!");
                 }
                 setIsModalOpen(false);
-                await loadHealth();
+                await reloadHealth();
               } catch (error) {
                 console.error("Failed to create health unit:", error);
                 toast.error("Erro ao salvar unidade de saúde");

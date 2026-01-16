@@ -6,6 +6,11 @@ export interface InstitutionRequest {
   title?: string;
 }
 
-export interface InstitutionResponse extends Institution {
-  children?: React.ReactNode;
+export interface InstitutionResponse {
+  data: Institution[];
+  meta: {
+    total: number;
+    page: number;
+    per_page: number;
+  };
 }

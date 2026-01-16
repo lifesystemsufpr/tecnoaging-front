@@ -210,60 +210,71 @@ export function UserCreateForm({
           </Typography>
         </Box>
 
-        <Box mt={2} sx={{ display: "none" }}>
-          <FormControl sx={{ width: "100%" }}>
-            <FormLabel id="user-role-radio-group-label">Perfil</FormLabel>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup
-                  row
-                  {...field}
-                  aria-labelledby="user-role-radio-group-label"
-                >
-                  <FormControlLabel
-                    value={SystemRoles.PATIENT}
-                    control={<Radio />}
-                    label="Paciente"
-                    disabled={roleDisabled}
-                  />
-                  <FormControlLabel
-                    value={SystemRoles.RESEARCHER}
-                    control={<Radio />}
-                    label="Pesquisador"
-                    disabled={roleDisabled}
-                  />
-                  <FormControlLabel
-                    value={SystemRoles.HEALTH_PROFESSIONAL}
-                    control={<Radio />}
-                    label="Profissional de Saúde"
-                    disabled={roleDisabled}
-                  />
-                </RadioGroup>
-              )}
-            />
-          </FormControl>
-        </Box>
-
-        <Box mt={2}>
-          {/* Renderização condicional do sub-form */}
-          {role === SystemRoles.RESEARCHER && (
-            <ResearcherForm isEdit={isEdit} />
-          )}
-          {role === SystemRoles.PATIENT && <PatientForm isEdit={isEdit} />}
-          {role === SystemRoles.HEALTH_PROFESSIONAL && (
-            <HealthProfessionalForm />
-          )}
-        </Box>
-
-        {lockedRole && lockedRole !== SystemRoles.PATIENT && (
-          <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
-            <Button type="submit" variant="contained">
-              {isEdit ? "Salvar alterações" : "Cadastrar"}
-            </Button>
+        <Box
+          mt={2}
+          sx={{
+            flexGrow: 1,
+            overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
+          <Box mt={2} sx={{ display: "none" }}>
+            <FormControl sx={{ width: "100%" }}>
+              <FormLabel id="user-role-radio-group-label">Perfil</FormLabel>
+              <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                  <RadioGroup
+                    row
+                    {...field}
+                    aria-labelledby="user-role-radio-group-label"
+                  >
+                    <FormControlLabel
+                      value={SystemRoles.PATIENT}
+                      control={<Radio />}
+                      label="Paciente"
+                      disabled={roleDisabled}
+                    />
+                    <FormControlLabel
+                      value={SystemRoles.RESEARCHER}
+                      control={<Radio />}
+                      label="Pesquisador"
+                      disabled={roleDisabled}
+                    />
+                    <FormControlLabel
+                      value={SystemRoles.HEALTH_PROFESSIONAL}
+                      control={<Radio />}
+                      label="Profissional de Saúde"
+                      disabled={roleDisabled}
+                    />
+                  </RadioGroup>
+                )}
+              />
+            </FormControl>
           </Box>
-        )}
+
+          <Box mt={2}>
+            {/* Renderização condicional do sub-form */}
+            {role === SystemRoles.RESEARCHER && (
+              <ResearcherForm isEdit={isEdit} />
+            )}
+            {role === SystemRoles.PATIENT && <PatientForm isEdit={isEdit} />}
+            {role === SystemRoles.HEALTH_PROFESSIONAL && (
+              <HealthProfessionalForm />
+            )}
+          </Box>
+
+          {lockedRole && lockedRole !== SystemRoles.PATIENT && (
+            <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+              <Button type="submit" variant="contained">
+                {isEdit ? "Salvar alterações" : "Cadastrar"}
+              </Button>
+            </Box>
+          )}
+        </Box>
       </FormContainer>
     </FormProvider>
   );

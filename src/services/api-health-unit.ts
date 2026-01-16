@@ -12,7 +12,7 @@ export const fetchHealthUnits = async ({
 }: FetchHealthUnitsParams) => {
   const url = new URL(API_ROUTES.HEALTH_UNITS);
   if (name) {
-    url.searchParams.append("name", name);
+    url.searchParams.append("search", name);
   }
   const res = await fetch(url.toString(), {
     method: "GET",

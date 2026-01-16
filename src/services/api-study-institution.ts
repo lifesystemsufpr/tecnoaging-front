@@ -10,7 +10,7 @@ export async function fetchInstitutions({
   title,
 }: InstitutionRequest): Promise<InstitutionResponse[]> {
   const url = new URL(API_ROUTES.INSTITUTIONS);
-  if (title) url.searchParams.append("title", title);
+  if (title) url.searchParams.append("search", title);
   const res = await fetch(url.toString(), {
     method: "GET",
     headers: { Authorization: `Bearer ${access_token}` },

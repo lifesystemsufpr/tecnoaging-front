@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 
 export const SearchInput = ({
   onSearch,
+  placeholder = "Buscar",
 }: {
   onSearch: (val: string) => void;
+  placeholder?: string;
 }) => {
   const [localValue, setLocalValue] = useState("");
 
@@ -17,7 +19,7 @@ export const SearchInput = ({
 
   return (
     <TextField
-      label="Buscar Paciente"
+      label={placeholder}
       variant="outlined"
       size="small"
       value={localValue}
