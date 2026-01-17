@@ -11,7 +11,7 @@ jobs:
 
     steps:
       # -------------------------------
-      # Checkout do código
+      # Checkout
       # -------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,48 +32,53 @@ jobs:
         run: npm ci
 
       # -------------------------------
-      # Build frontend (Next.js)
+      # Build frontend
       # -------------------------------
       - name: Build frontend
         run: npm run build
 
       # -------------------------------
-      # Garantir diretório no servidor
+      # Configure SSH (EXPLÍCITO)
       # -------------------------------
-      - name: Prepare server directories
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEVENV_SSH_HOST }}
-          username: ${{ secrets.DEVENV_SSH_USER }}
-          key: ${{ secrets.DEVENV_SSH_KEY }}
-          script: |
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEVENV_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEVENV_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      # -------------------------------
+      # Prepare server directory
+      # -------------------------------
+      - name: Prepare server directory
+        run: |
+          ssh ${{ secrets.DEVENV_SSH_USER }}@${{ secrets.DEVENV_SSH_HOST }} << 'EOF'
+            set -e
             mkdir -p /opt/tecnoaging/front/current
             chown -R $USER:$USER /opt/tecnoaging/front
+          EOF
 
       # -------------------------------
-      # Sincronizar arquivos (rsync)
+      # Rsync files (determinístico)
       # -------------------------------
-      - name: Deploy files via rsync
-        uses: burnett01/rsync-deployments@v6.0.0
-        with:
-          switches: -avz --delete
-          path: ./
-          remote_path: /opt/tecnoaging/front/current
-          remote_host: ${{ secrets.DEVENV_SSH_HOST }}
-          remote_user: ${{ secrets.DEVENV_SSH_USER }}
-          remote_key: ${{ secrets.DEVENV_SSH_KEY }}
+      - name: Sync files to server
+        run: |
+          rsync -avz --delete \
+            --exclude=".git" \
+            --exclude="node_modules" \
+            --exclude=".env*" \
+            ./ \
+            ${{ secrets.DEVENV_SSH_USER }}@${{ secrets.DEVENV_SSH_HOST }}:/opt/tecnoaging/front/current
 
       # -------------------------------
-      # Instalar dependências de produção
-      # e iniciar/recarregar PM2
+      # Install prod deps & restart PM2
       # -------------------------------
       - name: Install prod deps and restart PM2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEVENV_SSH_HOST }}
-          username: ${{ secrets.DEVENV_SSH_USER }}
-          key: ${{ secrets.DEVENV_SSH_KEY }}
-          script: |
+        run: |
+          ssh ${{ secrets.DEVENV_SSH_USER }}@${{ secrets.DEVENV_SSH_HOST }} << 'EOF'
+            set -e
             cd /opt/tecnoaging/front/current
             npm ci --omit=dev
             pm2 startOrReload ecosystem.config.js || pm2 start ecosystem.config.js
+            pm2 save
+          EOF
