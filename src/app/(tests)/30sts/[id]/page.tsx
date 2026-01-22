@@ -40,6 +40,7 @@ import {
 } from "@/services/api-evaluation";
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 import { useParams } from "next/navigation";
+import { formatDateAndTime } from "@/utils/format";
 
 export default function Page() {
   const paramsParsed = useParams();
@@ -143,12 +144,7 @@ export default function Page() {
             <Grid size={4}>
               <InfoItem
                 label="Data"
-                value={new Date(evaluationDetails.date).toLocaleString(
-                  "pt-BR",
-                  {
-                    timeZone: "UTC",
-                  }
-                )}
+                value={formatDateAndTime(evaluationDetails.time_end)}
               />
             </Grid>
             <Grid size={4}>
