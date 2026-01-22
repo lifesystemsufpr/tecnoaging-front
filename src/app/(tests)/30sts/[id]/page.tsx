@@ -40,6 +40,7 @@ import {
 } from "@/services/api-evaluation";
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 import { useParams } from "next/navigation";
+import { formatDateAndTime } from "@/utils/format";
 
 export default function Page() {
   const paramsParsed = useParams();
@@ -135,6 +136,7 @@ export default function Page() {
           <Typography variant="h6" sx={{ mb: 2 }}>
             Informações da Avaliação
           </Typography>
+
           <Grid container spacing={2}>
             <Grid size={4}>
               <InfoItem label="Tipo" value={"30SSTS"} />
@@ -142,12 +144,7 @@ export default function Page() {
             <Grid size={4}>
               <InfoItem
                 label="Data"
-                value={new Date(evaluationDetails.date).toLocaleString(
-                  "pt-BR",
-                  {
-                    timeZone: "UTC",
-                  }
-                )}
+                value={formatDateAndTime(evaluationDetails.time_end)}
               />
             </Grid>
             <Grid size={4}>
@@ -159,6 +156,41 @@ export default function Page() {
           </Grid>
         </CardContent>
       </Card>
+
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid size={6}>
+          {extraEvaluations.derived.indicators
+            .filter((ind) => ind.name === "Power")
+            .map((ind, idx) => (
+              <Card variant="outlined" key={idx}>
+                <CardContent>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    Potência Muscular
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    {ind.value.toFixed(2)} mW
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+        </Grid>
+        <Grid size={6}>
+          {extraEvaluations.derived.indicators
+            .filter((ind) => ind.name === "Total Energy")
+            .map((ind, idx) => (
+              <Card variant="outlined" key={idx}>
+                <CardContent>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    Energia Total
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    {ind.value.toFixed(2)} mJ
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+        </Grid>
+      </Grid>
 
       {/* Análise Funcional */}
       {indicadoresRadar && (
