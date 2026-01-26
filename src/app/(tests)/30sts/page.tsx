@@ -23,7 +23,6 @@ import { Evaluation } from "@/types/domain/Evaluation";
 import { formatDateTime, toISODateEnd, toISODateStart } from "@/utils/dates";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { PageSizeOption } from "@/types/enums/page-size-options";
-import { formatDateAndTime } from "@/utils/format";
 
 type Option = { id: string; name: string };
 
@@ -341,7 +340,7 @@ export default function TestsPage() {
       {
         key: "time_init",
         header: "Inicio",
-        render: (params) => formatDateAndTime(params.value as string),
+        render: (params) => formatDateTime(params.value as string),
       },
     ],
     []
