@@ -26,6 +26,7 @@ import { SocioEconomicLevel } from "@/types/enums/socio-economic-level";
 import { fetchPatientById } from "@/services/api-patient";
 import { ScholarShip } from "@/types/enums/scholar-ship";
 import { UserDetailContent } from "@/components/common/user/UserDetailContent";
+import ROUTES from "@/config/routes";
 
 export default function Page() {
   const { id } = useParams();
@@ -115,11 +116,11 @@ export default function Page() {
         <Breadcrumbs aria-label="breadcrumb">
           <MUILink
             component="button"
-            onClick={() => router.push("/users/patients")}
+            onClick={() => router.push(ROUTES.USERS.PARTICIPANTS.MAIN)}
             underline="hover"
             color="inherit"
           >
-            Pacientes
+            Participantes
           </MUILink>
           <Typography color="text.primary">
             {name !== "—" ? name : "Detalhes"}
@@ -129,7 +130,7 @@ export default function Page() {
         <Stack direction="row" spacing={1}>
           <Button
             startIcon={<ArrowBackIcon />}
-            onClick={() => router.push("/users/patients")}
+            onClick={() => router.push(ROUTES.USERS.PARTICIPANTS.MAIN)}
           >
             Voltar
           </Button>
@@ -138,7 +139,7 @@ export default function Page() {
             startIcon={<EditIcon />}
             onClick={() =>
               router.push(
-                `/users/patients/${encodeURIComponent(String(strId))}/edit`
+                ROUTES.USERS.PARTICIPANTS.DETAIL(String(strId)) + "/edit"
               )
             }
             disabled={true}

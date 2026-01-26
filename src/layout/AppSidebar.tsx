@@ -205,14 +205,14 @@ const AppSidebar = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo-bg-white.png"
+                src="/images/logo-white.png"
                 alt="Logo"
-                width={150}
+                width={250}
                 height={40}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-bg-blue.png"
+                src="/images/logo-white.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -222,14 +222,14 @@ const AppSidebar = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo-icon-bg-white.png"
+                src="/images/icon-white.png"
                 alt="Logo"
                 width={32}
                 height={32}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/logo-icon-bg-blue.png"
+                src="/images/icon-white.png"
                 alt="Logo"
                 width={32}
                 height={32}

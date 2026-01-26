@@ -55,7 +55,7 @@ const mapRoleToTitle = (role: SystemRoles | undefined) => {
     case SystemRoles.RESEARCHER:
       return "Pesquisador";
     case SystemRoles.PATIENT:
-      return "Paciente";
+      return "Participante";
     case SystemRoles.HEALTH_PROFESSIONAL:
       return "Profissional de Saúde";
     default:

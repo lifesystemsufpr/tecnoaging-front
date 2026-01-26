@@ -23,6 +23,7 @@ import { Evaluation } from "@/types/domain/Evaluation";
 import { formatDateTime, toISODateEnd, toISODateStart } from "@/utils/dates";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { PageSizeOption } from "@/types/enums/page-size-options";
+import { formatDateAndTime } from "@/utils/format";
 
 type Option = { id: string; name: string };
 
@@ -158,7 +159,7 @@ function FiltersSection({
       .catch((error) => {
         if (!active) return;
         console.error(error);
-        toast.error("Erro ao buscar pacientes.");
+        toast.error("Erro ao buscar participantes.");
       })
       .finally(() => {
         if (active) setSearchingPatients(false);
@@ -237,13 +238,13 @@ function FiltersSection({
             typeof value !== "string" && !!value && option.id === value.id
           }
           renderInput={(params) => (
-            <TextField {...params} label="Paciente" placeholder="Nome" />
+            <TextField {...params} label="Participante" placeholder="Nome" />
           )}
           clearOnBlur={false}
           freeSolo
           loading={searchingPatients}
           loadingText="Buscando..."
-          noOptionsText="Nenhum paciente encontrado"
+          noOptionsText="Nenhum participante encontrado"
         />
       </Grid>
       <Grid size={6}>
@@ -334,13 +335,13 @@ export default function TestsPage() {
   const columns = useMemo<ColumnConfig<TableRow>[]>(
     () => [
       { key: "type", header: "Tipo", width: 110 },
-      { key: "patientName", header: "Paciente", flex: 1.2 },
+      { key: "patientName", header: "Participante", flex: 1.2 },
       { key: "professionalName", header: "Profissional", flex: 1.2 },
       { key: "healthUnitName", header: "Unidade", width: 220, flex: 1.1 },
       {
         key: "time_init",
         header: "Inicio",
-        render: (params) => formatDateTime(params.value as string),
+        render: (params) => formatDateAndTime(params.value as string),
       },
     ],
     []
