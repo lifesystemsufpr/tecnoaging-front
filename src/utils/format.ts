@@ -9,6 +9,26 @@ export function formatCpf(value?: string): string {
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 }
 
+export const formatData = (dateStr?: string): string => {
+  if (!dateStr) return "Sem informação";
+  const date = new Date(dateStr);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+export const formatDateAndTime = (dateStr?: string): string => {
+  if (!dateStr) return "Sem informação";
+  const date = new Date(dateStr);
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const hours = String(date.getUTCHours()).padStart(2, "0");
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year}, ${hours}:${minutes}`;
+};
+
 export const formatDateBr = (dateStr?: string): string => {
   if (!dateStr) return "Sem informação";
   const date = new Date(dateStr);

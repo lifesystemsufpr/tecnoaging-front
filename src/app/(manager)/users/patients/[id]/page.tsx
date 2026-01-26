@@ -18,7 +18,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fmtNumber, formatDateBr } from "@/utils/format";
+import { fmtNumber, formatData, formatDateBr } from "@/utils/format";
 import { Copyable } from "@/components/Compyable";
 import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
 import { socioLabel } from "@/utils/socioEconomic";
@@ -196,7 +196,7 @@ export default function Page() {
               <Typography variant="subtitle2" color="text.secondary">
                 Data de nascimento
               </Typography>
-              <Typography variant="body1">{formatDateBr(birthday)}</Typography>
+              <Typography variant="body1">{formatData(birthday)}</Typography>
             </Grid>
           </Grid>
 
