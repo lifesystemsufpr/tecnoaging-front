@@ -20,6 +20,7 @@ import { deletePatient, fetchPatients } from "@/services/api-patient";
 import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { SearchInput } from "@/components/form/input/SearchInput";
+import ROUTES from "@/config/routes";
 
 const columnsConfig: ColumnConfig<Patient>[] = [
   { key: "fullName", header: "Nome Completo" },
@@ -52,14 +53,14 @@ export default function PatientsCRUDPage() {
 
   const handleViewTests = useCallback(
     (id: string) => {
-      router.push(`patients/${id}/evaluations`);
+      router.push(ROUTES.USERS.PARTICIPANTS.EVALUATIONS(id));
     },
     [router]
   );
 
   const handleViewQuestionnaires = useCallback(
     (id: string) => {
-      router.push(`patients/${id}/questionnaires`);
+      router.push(ROUTES.USERS.PARTICIPANTS.QUESTIONNAIRES(id));
     },
     [router]
   );
@@ -152,7 +153,9 @@ export default function PatientsCRUDPage() {
         showActions
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onView={(patient) => router.push(`/users/patients/${patient.id}`)}
+        onView={(patient) =>
+          router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(patient.id))
+        }
         onTests={(patient) => handleViewTests(patient.id)}
         onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
         pageSize={5}
@@ -193,7 +196,7 @@ export default function PatientsCRUDPage() {
 
   return (
     <Box>
-      <h1>Gerenciar Pacientes</h1>
+      <h1>Gerenciar Participantes</h1>
       <Box
         mb={1}
         mt={1}
@@ -203,9 +206,12 @@ export default function PatientsCRUDPage() {
           alignItems: "center",
         }}
       >
-        <SearchInput onSearch={setSearchQuery} placeholder="Buscar Paciente" />
+        <SearchInput
+          onSearch={setSearchQuery}
+          placeholder="Buscar Participante"
+        />
         <Button variant="contained" onClick={() => setOpenModal(true)}>
-          Adicionar Paciente
+          Adicionar Participante
         </Button>
       </Box>
 

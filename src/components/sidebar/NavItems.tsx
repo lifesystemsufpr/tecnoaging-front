@@ -37,16 +37,16 @@ export const navItems: NavItem[] = [
         pro: false,
       },
       {
-        name: "Pacientes",
-        path: "/users/patients",
+        name: "Participantes",
+        path: "/users/participants",
         pro: false,
       },
     ],
   },
   {
     icon: <User size={18} />,
-    name: "Pacientes",
-    path: "/users/patients",
+    name: "Participantes",
+    path: "/users/participants",
     roles: [SystemRoles.HEALTH_PROFESSIONAL],
   },
   {
