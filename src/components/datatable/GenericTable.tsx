@@ -1,5 +1,4 @@
 import * as React from "react";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -81,7 +80,6 @@ export type GenericTableProps<T> = {
 
 type ActionsCellProps<T> = {
   row: T;
-  onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   onTests?: (row: T) => void;
@@ -97,7 +95,6 @@ const createLoadingOverlay = (columnCount: number, rowCount: number) =>
 
 function ActionsCell<T>({
   row,
-  onView,
   onEdit,
   onDelete,
   onTests,
@@ -123,12 +120,18 @@ function ActionsCell<T>({
 
   const handleClose = () => setAnchorEl(null);
 
+  const stopRowClick =
+    (handler: () => void) => (event: React.MouseEvent<HTMLElement>) => {
+      event.stopPropagation();
+      handler();
+    };
+
   return (
     <Stack direction="row" spacing={0.5} justifyContent="center">
       {(hasTests || hasQuestionnaires) && (
         <>
           <Tooltip title="Avaliações">
-            <IconButton size="small" onClick={handleEvalClick}>
+            <IconButton size="small" onClick={stopRowClick(handleEvalClick)}>
               <AssignmentIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -158,17 +161,9 @@ function ActionsCell<T>({
         </>
       )}
 
-      {onView && (
-        <Tooltip title="Visualizar">
-          <IconButton size="small" onClick={() => onView(row)}>
-            <VisibilityIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )}
-
       {onEdit && (
         <Tooltip title="Editar">
-          <IconButton size="small" onClick={() => onEdit(row)}>
+          <IconButton size="small" onClick={stopRowClick(() => onEdit(row))}>
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
@@ -176,7 +171,11 @@ function ActionsCell<T>({
 
       {onDelete && (
         <Tooltip title="Excluir">
-          <IconButton size="small" color="error" onClick={() => onDelete(row)}>
+          <IconButton
+            size="small"
+            color="error"
+            onClick={stopRowClick(() => onDelete(row))}
+          >
             <DeleteIcon fontSize="small" />
           </IconButton>
         </Tooltip>
@@ -193,13 +192,12 @@ function humanizeKey(k: string) {
 }
 
 function actionsColumn<T>(opts: {
-  onView?: (row: T) => void;
   onEdit?: (row: T) => void;
   onDelete?: (row: T) => void;
   onTests?: (row: T) => void;
   onQuestionnaires?: (row: T) => void;
 }): GridColDef<T> {
-  const { onView, onEdit, onDelete, onTests, onQuestionnaires } = opts;
+  const { onEdit, onDelete, onTests, onQuestionnaires } = opts;
 
   return {
     field: "__actions__",
@@ -212,7 +210,6 @@ function actionsColumn<T>(opts: {
     renderCell: (params) => (
       <ActionsCell
         row={params.row}
-        onView={onView}
         onEdit={onEdit}
         onDelete={onDelete}
         onTests={onTests}
@@ -389,7 +386,6 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     ) {
       cols.push(
         actionsColumn<T>({
-          onView,
           onEdit,
           onDelete: onDelete ? handleDeleteRequest : undefined,
           onTests: onTests,
@@ -429,6 +425,14 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
       if (href) window.location.href = href; // simples e eficaz
     },
     [rowHref]
+  );
+
+  const handleRowClick = React.useCallback(
+    (params: GridRowParams<T>) => {
+      if (!onView) return;
+      onView(params.row);
+    },
+    [onView]
   );
 
   const handleCloseDeleteDialog = React.useCallback(() => {
@@ -496,8 +500,9 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
         loading={loading}
         density={density}
         onRowDoubleClick={rowHref ? handleRowDoubleClick : undefined}
+        onRowClick={onView ? handleRowClick : undefined}
         sx={{
-          ...(rowHref && {
+          ...((rowHref || onView) && {
             "& .MuiDataGrid-row": { cursor: "pointer" },
           }),
         }}

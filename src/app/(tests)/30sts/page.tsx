@@ -8,6 +8,7 @@ import {
   Button,
   Chip,
   Grid,
+  MenuItem,
   TextField,
 } from "@mui/material";
 import { toast } from "sonner";
@@ -47,7 +48,7 @@ const DEFAULT_FILTERS: RequestFilters = {
   healthProfessionalName: null,
   startDate: null,
   endDate: null,
-  type: null,
+  type: "TTSTS",
 };
 
 type FiltersSectionProps = {
@@ -55,6 +56,17 @@ type FiltersSectionProps = {
   onSearch: (filters: RequestFilters) => void;
   onReset: () => void;
   disabled?: boolean;
+};
+
+const formatEvaluationName = (type: string) => {
+  switch (type) {
+    case "TTSTS":
+      return "30STS";
+    case "FTSTS":
+      return "5TSTS";
+    default:
+      return type;
+  }
 };
 
 function FiltersSection({
@@ -67,7 +79,7 @@ function FiltersSection({
   const [professional, setProfessional] = useState<Option | null>(null);
   const [dateFrom, setDateFrom] = useState<string | null>(null);
   const [dateTo, setDateTo] = useState<string | null>(null);
-  const [type, setType] = useState("");
+  const [type, setType] = useState("TTSTS");
 
   const [patientQuery, setPatientQuery] = useState("");
   const [professionalQuery, setProfessionalQuery] = useState("");
@@ -109,7 +121,7 @@ function FiltersSection({
         professional?.name?.trim() || professionalQuery.trim() || null,
       startDate: dateFrom ? toISODateStart(dateFrom) : null,
       endDate: dateTo ? toISODateEnd(dateTo) : null,
-      type: type.trim() ? type.trim() : null,
+      type: type === "Todos" ? null : type,
     });
   }, [
     onSearch,
@@ -129,7 +141,7 @@ function FiltersSection({
     setProfessionalQuery("");
     setDateFrom(null);
     setDateTo(null);
-    setType("");
+    setType("Todos");
     setPatientOptions([]);
     setProfessionalOptions([]);
     onReset();
@@ -284,6 +296,20 @@ function FiltersSection({
       </Grid>
       <Grid size={6}>
         <TextField
+          select
+          size="small"
+          label="Tipo"
+          value={type}
+          onChange={(event) => setType(event.target.value)}
+          fullWidth
+        >
+          <MenuItem value="Todos">Todos</MenuItem>
+          <MenuItem value="TTSTS">30STS</MenuItem>
+          <MenuItem value="FTSTS">5TSTS</MenuItem>
+        </TextField>
+      </Grid>
+      <Grid size={3}>
+        <TextField
           size="small"
           label="Data de"
           type="date"
@@ -293,7 +319,7 @@ function FiltersSection({
           fullWidth
         />
       </Grid>
-      <Grid size={6}>
+      <Grid size={3}>
         <TextField
           size="small"
           label="Data ate"
@@ -333,7 +359,12 @@ export default function TestsPage() {
 
   const columns = useMemo<ColumnConfig<TableRow>[]>(
     () => [
-      { key: "type", header: "Tipo", width: 110 },
+      {
+        key: "type",
+        header: "Tipo",
+        width: 110,
+        render: (params) => formatEvaluationName(params.value as string),
+      },
       { key: "patientName", header: "Participante", flex: 1.2 },
       { key: "professionalName", header: "Profissional", flex: 1.2 },
       { key: "healthUnitName", header: "Unidade", width: 220, flex: 1.1 },
@@ -367,7 +398,7 @@ export default function TestsPage() {
               normalizedFilters.healthProfessionalName ?? undefined,
             startDate: normalizedFilters.startDate ?? undefined,
             endDate: normalizedFilters.endDate ?? undefined,
-            type: "TTSTS",
+            type: normalizedFilters.type ?? undefined,
             pageSize: normalizedFilters.pageSize ?? pageSize,
             page: normalizedFilters.page ?? 1,
           },
