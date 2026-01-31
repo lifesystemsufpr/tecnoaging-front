@@ -1,24 +1,14 @@
 "use client";
 
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
+import { Box, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import QuestionnaireItem from "@/features/questionnaires/components/QuestionnaireItem";
 import QuestionnaireDetailDialog from "@/features/questionnaires/components/QuestionnaireDetailDialog";
 import { useQuestionnaires } from "../contexts/QuestionnairesContext";
-import ROUTES from "@/core/config/routes";
+import QuestionnaireHeader from "../components/QuestionnaireHeader";
 
-export default function ParticipantQuestionnairesContent() {
-  const router = useRouter();
+export default function ParticipantQuestionnaires({ withHeader = true }) {
   const {
     questionnaires,
     loading,
@@ -37,39 +27,14 @@ export default function ParticipantQuestionnairesContent() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            component="button"
-            onClick={() => router.push(ROUTES.USERS.PARTICIPANTS.MAIN)}
-            underline="hover"
-            color="inherit"
-          >
-            Pacientes
-          </Link>
-          <Typography color="text.primary">
-            Questionários do Paciente
-          </Typography>
-        </Breadcrumbs>
-
-        <Stack direction="row" spacing={1}>
-          <Button startIcon={<ArrowBackIcon />} onClick={() => router.back()}>
-            Voltar
-          </Button>
-        </Stack>
-      </Stack>
+      {withHeader && <QuestionnaireHeader />}
       {loading ? (
         <Typography variant="body1" sx={{ p: 2 }}>
           Carregando questionários...
         </Typography>
       ) : isEmpty ? (
         <Typography variant="body1">
-          Nenhum questionário encontrado para este paciente.
+          Nenhum questionário encontrado para este participante.
         </Typography>
       ) : (
         questionnaires.map((q) => (

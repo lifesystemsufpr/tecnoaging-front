@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import { QuestionnairesProvider } from "@/features/questionnaires";
-import ParticipantQuestionnairesContent from "@/features/questionnaires/containers/ParticipantQuestionnaires";
+import ParticipantQuestionnaires from "@/features/questionnaires/containers/ParticipantQuestionnaires";
 
 export default function PatientQuestionnairesPage() {
   const params = useParams();
@@ -9,7 +9,7 @@ export default function PatientQuestionnairesPage() {
 
   return (
     <QuestionnairesProvider patientId={patientId}>
-      <ParticipantQuestionnairesContent />
+      <ParticipantQuestionnaires />
     </QuestionnairesProvider>
   );
 }
