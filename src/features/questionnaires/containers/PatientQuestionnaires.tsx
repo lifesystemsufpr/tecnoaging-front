@@ -1,17 +1,11 @@
 "use client";
 
 import { fetchPatientQuestionnaires } from "@/services/api-questionnaires";
-import {
-  classification,
-  PatientQuestionnaire,
-  PatientQuestionnaireList,
-} from "@/types/domain/Questionnaire";
+import { PatientQuestionnaireList } from "@/types/domain/Questionnaire";
 import {
   Box,
   Breadcrumbs,
   Button,
-  Card,
-  CardContent,
   Link,
   Stack,
   Typography,
@@ -22,7 +16,7 @@ import { toast } from "sonner";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import QuestionnaireItem from "@/features/questionnaires/components/QuestionnaireItem";
 
-export default function PatientQuestionnairesPage() {
+export default function PatientQuestionnaires() {
   const params = useParams();
   const patientId = params.id as string;
   const router = useRouter();
