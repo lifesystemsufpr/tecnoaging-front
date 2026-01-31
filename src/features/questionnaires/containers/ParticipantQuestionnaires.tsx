@@ -1,7 +1,5 @@
 "use client";
 
-import { fetchPatientQuestionnaires } from "@/services/api-questionnaires";
-import { PatientQuestionnaireList } from "@/types/domain/Questionnaire";
 import {
   Box,
   Breadcrumbs,
@@ -10,41 +8,32 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import QuestionnaireItem from "@/features/questionnaires/components/QuestionnaireItem";
+import QuestionnaireDetailDialog from "@/features/questionnaires/components/QuestionnaireDetailDialog";
+import { useQuestionnaires } from "../contexts/QuestionnairesContext";
+import ROUTES from "@/core/config/routes";
 
-export default function PatientQuestionnaires() {
-  const params = useParams();
-  const patientId = params.id as string;
+export default function ParticipantQuestionnairesContent() {
   const router = useRouter();
-
-  const [questionnaires, setQuestionnaires] =
-    useState<PatientQuestionnaireList>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {
+    questionnaires,
+    loading,
+    isEmpty,
+    error,
+    selectedQuestionnaire,
+    openQuestionnaire,
+    closeQuestionnaire,
+  } = useQuestionnaires();
 
   useEffect(() => {
-    const loadQuestionnaires = async () => {
-      setLoading(true);
-      try {
-        const resp = await fetchPatientQuestionnaires(patientId);
-        setQuestionnaires(resp);
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to load patient questionnaires");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQuestionnaires();
-  }, [patientId]);
-
-  if (loading) {
-    return <Box sx={{ p: 4 }}>Carregando questionários...</Box>;
-  }
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <Box sx={{ p: 2 }}>
@@ -57,7 +46,7 @@ export default function PatientQuestionnaires() {
         <Breadcrumbs aria-label="breadcrumb">
           <Link
             component="button"
-            onClick={() => router.push("/users/patients")}
+            onClick={() => router.push(ROUTES.USERS.PARTICIPANTS.MAIN)}
             underline="hover"
             color="inherit"
           >
@@ -74,13 +63,25 @@ export default function PatientQuestionnaires() {
           </Button>
         </Stack>
       </Stack>
-      {questionnaires.length === 0 ? (
+      {loading ? (
+        <Typography variant="body1" sx={{ p: 2 }}>
+          Carregando questionários...
+        </Typography>
+      ) : isEmpty ? (
         <Typography variant="body1">
           Nenhum questionário encontrado para este paciente.
         </Typography>
       ) : (
-        questionnaires.map((q) => <QuestionnaireItem key={q.id} item={q} />)
+        questionnaires.map((q) => (
+          <QuestionnaireItem key={q.id} item={q} onClick={openQuestionnaire} />
+        ))
       )}
+
+      <QuestionnaireDetailDialog
+        open={Boolean(selectedQuestionnaire)}
+        questionnaire={selectedQuestionnaire}
+        onClose={closeQuestionnaire}
+      />
     </Box>
   );
 }

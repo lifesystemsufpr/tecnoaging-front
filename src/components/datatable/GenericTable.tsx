@@ -121,9 +121,10 @@ function ActionsCell<T>({
   const handleClose = () => setAnchorEl(null);
 
   const stopRowClick =
-    (handler: () => void) => (event: React.MouseEvent<HTMLElement>) => {
+    (handler: (event: React.MouseEvent<HTMLElement>) => void) =>
+    (event: React.MouseEvent<HTMLElement>) => {
       event.stopPropagation();
-      handler();
+      handler(event);
     };
 
   return (
