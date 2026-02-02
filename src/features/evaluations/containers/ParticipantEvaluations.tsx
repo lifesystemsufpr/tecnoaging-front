@@ -60,17 +60,17 @@ export default function ParticipantEvaluations({
         </>
       )}
 
-      <Box my={2}>
-        <ParticipantFilters
-          onSearch={({ dateFrom, dateTo }) => handleSearch(dateFrom, dateTo)}
-        />
-      </Box>
+      {evaluations.length !== 0 && !isLoading && (
+        <Box my={2}>
+          <ParticipantFilters
+            onSearch={({ dateFrom, dateTo }) => handleSearch(dateFrom, dateTo)}
+          />
+        </Box>
+      )}
 
       <Box my={1}>
         {evaluations.length === 0 && !isLoading ? (
-          <Typography color="textSecondary">
-            Nenhuma avaliação encontrada.
-          </Typography>
+          <Typography>Nenhuma avaliação encontrada.</Typography>
         ) : (
           <GenericTable<EvaluationRaw>
             columns={participantColumns}
