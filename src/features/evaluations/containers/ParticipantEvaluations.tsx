@@ -12,8 +12,10 @@ import ROUTES from "@/core/config/client.routes";
 
 export default function ParticipantEvaluations({
   participantId,
+  withHeader = true,
 }: {
   participantId: string;
+  withHeader?: boolean;
 }) {
   const router = useRouter();
 
@@ -39,20 +41,24 @@ export default function ParticipantEvaluations({
 
   return (
     <Box padding={2}>
-      <Box sx={{ mb: 2 }}>
-        <Button
-          onClick={() => router.back()}
-          startIcon={<ArrowBackIcon />}
-          size="small"
-          variant="text"
-        >
-          Voltar
-        </Button>
-      </Box>
+      {withHeader && (
+        <>
+          <Box sx={{ mb: 2 }}>
+            <Button
+              onClick={() => router.back()}
+              startIcon={<ArrowBackIcon />}
+              size="small"
+              variant="text"
+            >
+              Voltar
+            </Button>
+          </Box>
 
-      <Typography variant="body1" component="h1" gutterBottom>
-        Avaliações do Paciente: {patientData?.fullName || "Carregando..."}
-      </Typography>
+          <Typography variant="body1" component="h1" gutterBottom>
+            Avaliações do Paciente: {patientData?.fullName || "Carregando..."}
+          </Typography>
+        </>
+      )}
 
       <Box my={2}>
         <ParticipantFilters
