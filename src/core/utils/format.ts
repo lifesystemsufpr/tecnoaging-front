@@ -87,3 +87,14 @@ export const fmtBRL = (n: number) =>
     currency: "BRL",
     maximumFractionDigits: 0,
   }).format(n);
+
+export const formatEvaluationName = (type: string) => {
+  switch (type) {
+    case "TTSTS":
+      return "30STS";
+    case "FTSTS":
+      return "5TSTS";
+    default:
+      return type;
+  }
+};

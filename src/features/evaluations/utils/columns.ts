@@ -1,9 +1,14 @@
 import { ColumnConfig } from "@/core/components/layout";
 import { EvaluationRaw } from "../types/Evaluation.types";
-import { formatDateTime } from "@/core/utils/format";
+import { formatDateTime, formatEvaluationName } from "@/core/utils/format";
 
 export const participantColumns: ColumnConfig<EvaluationRaw>[] = [
-  { key: "type", header: "Tipo", width: 110 },
+  {
+    key: "type",
+    header: "Tipo",
+    width: 110,
+    render: (params) => formatEvaluationName(params.value as string),
+  },
   {
     key: "profissional_nome",
     header: "Profissional",

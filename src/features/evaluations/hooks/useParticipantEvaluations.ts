@@ -17,7 +17,7 @@ export function useParticipantEvaluations(participantId: string) {
   });
 
   const [pagination, setPagination] = useState({
-    pageSize: 20,
+    pageSize: 5,
     page: 0,
   });
 
