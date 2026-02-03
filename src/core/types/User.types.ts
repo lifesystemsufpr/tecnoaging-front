@@ -49,3 +49,7 @@ export type UserList = User[];
 export type ParticipantList = Participant[];
 export type HealthProfessionalList = HealthProfessional[];
 export type ResearcherList = Researcher[];
+
+export interface FetchListResponse<T> {
+  [page: number]: T[];
+}

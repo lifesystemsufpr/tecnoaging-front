@@ -21,6 +21,7 @@ import { Toaster } from "sonner";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import MuiThemeProvider from "@/context/MuiThemeProvider";
+import TanstackProvider from "@/providers/tanstack-provider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -32,14 +33,16 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
-        <Providers session={session}>
-          <Toaster position="top-center" richColors />
-          <MuiThemeProvider>
-            <ThemeProvider>
-              <SidebarProvider>{children}</SidebarProvider>
-            </ThemeProvider>
-          </MuiThemeProvider>
-        </Providers>
+        <TanstackProvider>
+          <Providers session={session}>
+            <Toaster position="top-center" richColors />
+            <MuiThemeProvider>
+              <ThemeProvider>
+                <SidebarProvider>{children}</SidebarProvider>
+              </ThemeProvider>
+            </MuiThemeProvider>
+          </Providers>
+        </TanstackProvider>
       </body>
     </html>
   );

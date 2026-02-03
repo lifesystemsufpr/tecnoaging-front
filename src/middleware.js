@@ -21,6 +21,7 @@ const roleAccess = {
     "/5tsts",
     "/30sts",
     "/profile",
+    "/questionnaires",
   ],
   RESEARCHER: [
     "/login",
