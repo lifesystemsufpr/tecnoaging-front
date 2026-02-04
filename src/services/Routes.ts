@@ -72,4 +72,6 @@ export const API_ROUTES = {
   QUESTIONNAIRES: `${API_BASE_URL}/questionnaires`,
   QUESTIONNAIRES_BY_PATIENT_ID: (patientId: string) =>
     `${API_BASE_URL}/questionnaires/participant/${patientId}`,
+  QUESTIONNAIRE_BY_ID: (questionnaireId: string) =>
+    `${API_BASE_URL}/questionnaires/response/${questionnaireId}`,
 } as const;

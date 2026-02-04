@@ -1,18 +1,29 @@
 "use client";
-import { HealthProfessional, Participant } from "@/core/types";
 import { ParticipantAutocomplete } from "@/features/participants/components/ParticipantAutocomplete";
 import ProfessionalAutocomplete from "@/features/professionals/components/ProfessionalAutocomplete";
-import { Grid } from "@mui/material";
-import { useState } from "react";
+import { Button, Grid } from "@mui/material";
+import { useQuestionnairesListContext } from "../contexts/QuestionnairesListContext";
 
 export default function QuestionnaireListFilters() {
-  const [selectedParticipant, setSelectedParticipant] =
-    useState<Participant | null>(null);
-  const [selectedProfessional, setSelectedProfessional] =
-    useState<HealthProfessional | null>(null);
+  const {
+    selectedParticipant,
+    setSelectedParticipant,
+    selectedProfessional,
+    setSelectedProfessional,
+    applyFilters,
+    isLoading,
+    isFetching,
+  } = useQuestionnairesListContext();
+
+  const handleApplyFilters = () => {
+    applyFilters({
+      participantCpf: selectedParticipant?.cpf,
+      healthProfessionalCpf: selectedProfessional?.cpf,
+    });
+  };
 
   return (
-    <Grid container spacing={2} mb={2}>
+    <Grid container spacing={2} mb={2} alignItems="center">
       <Grid size={6}>
         <ParticipantAutocomplete
           value={selectedParticipant}
@@ -24,6 +35,16 @@ export default function QuestionnaireListFilters() {
           value={selectedProfessional}
           onChange={setSelectedProfessional}
         />
+      </Grid>
+      <Grid size={12}>
+        <Button
+          fullWidth
+          variant="contained"
+          onClick={handleApplyFilters}
+          disabled={isLoading || isFetching}
+        >
+          Aplicar filtro
+        </Button>
       </Grid>
     </Grid>
   );

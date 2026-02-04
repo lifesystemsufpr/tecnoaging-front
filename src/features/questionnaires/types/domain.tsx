@@ -46,4 +46,20 @@ export interface PatientQuestionnaire {
   answers: Answer[];
 }
 
+export interface QuestionnaireListItem {
+  id: string;
+  date: string;
+  totalScore: number;
+  classification: Classification;
+  questionnaireTitle: string;
+  questionnaireSlug: string;
+  participantId: string;
+  participantName: string;
+  participantCpf: string;
+  healthProfessionalId: string;
+  healthProfessionalName: string;
+  healthProfessionalSpeciality: string;
+}
+
 export type PatientQuestionnaireList = PatientQuestionnaire[];
+export type QuestionnaireList = QuestionnaireListItem[];

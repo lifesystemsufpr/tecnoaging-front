@@ -1,10 +1,14 @@
-import { useFetchListParticipant } from "@/features/participants/hooks/useFetchListParticipant";
 import { createContext, useContext } from "react";
+import { Participant, HealthProfessional } from "@/core/types";
+import useFetchQuestionnairesList from "../hooks/useFetchQuestionnairesList";
 
-interface QuestionnairesListContextValue {
-  // Defina aqui os tipos dos valores que o contexto irá fornecer
-  // Por exemplo:
-  // questionnaires: PatientQuestionnaireList;
+export interface QuestionnairesListContextValue extends ReturnType<
+  typeof useFetchQuestionnairesList
+> {
+  selectedParticipant: Participant | null;
+  setSelectedParticipant: (participant: Participant | null) => void;
+  selectedProfessional: HealthProfessional | null;
+  setSelectedProfessional: (professional: HealthProfessional | null) => void;
 }
 
 interface QuestionnairesListProviderProps {
@@ -12,15 +16,13 @@ interface QuestionnairesListProviderProps {
   value: QuestionnairesListContextValue;
 }
 
-export const QuestionnairesListContext = createContext(null);
+export const QuestionnairesListContext =
+  createContext<QuestionnairesListContextValue | null>(null);
 
 export function QuestionnairesListProvider({
   children,
   value,
-}: {
-  children: React.ReactNode;
-  value: any;
-}) {
+}: QuestionnairesListProviderProps) {
   return (
     <QuestionnairesListContext.Provider value={value}>
       {children}

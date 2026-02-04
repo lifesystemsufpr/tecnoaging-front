@@ -14,48 +14,85 @@ import {
 } from "@mui/material";
 import { PatientQuestionnaire } from "../types/domain";
 import { getBadgeStyles, getSeverityColor } from "../utils/color";
+import { useFetchQuestionnaire } from "../hooks/useFetchQuestionnaire";
 
 interface QuestionnaireDetailDialogProps {
   open: boolean;
-  questionnaire: PatientQuestionnaire | null;
+  questionnaire?: PatientQuestionnaire | null;
+  questionnaireId?: string | null;
   onClose: () => void;
 }
 
 export default function QuestionnaireDetailDialog({
   open,
   questionnaire,
+  questionnaireId,
   onClose,
 }: QuestionnaireDetailDialogProps) {
-  if (!questionnaire) {
+  const shouldFetch = open && !questionnaire && !!questionnaireId;
+
+  const { data: fetchedQuestionnaire, isLoading } = useFetchQuestionnaire({
+    questionnaireId,
+    enabled: shouldFetch,
+  });
+
+  const questionnaireData = questionnaire ?? fetchedQuestionnaire;
+
+  if (!open) {
     return null;
   }
 
-  const badgeStyle = getBadgeStyles(questionnaire.classification);
-  const borderColor = getSeverityColor(questionnaire.classification);
+  if (isLoading && !questionnaireData) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogTitle
+          sx={{ display: "flex", justifyContent: "space-between", pr: 1 }}
+        >
+          <Typography variant="h6" fontWeight={700}>
+            Carregando...
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body1" color="text.secondary">
+            Por favor, aguarde enquanto carregamos os detalhes do questionário.
+          </Typography>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (!questionnaireData) {
+    return null;
+  }
+
+  const badgeStyle = getBadgeStyles(questionnaireData.classification);
+  const borderColor = getSeverityColor(questionnaireData.classification);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle
-        sx={{ display: "flex", justifyContent: "space-between", pr: 1 }}
-      >
-        <Box>
-          <Typography variant="h6" fontWeight={700}>
-            {questionnaire.questionnaire.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Aplicado por {questionnaire.healthProfessional.user.fullName} em{" "}
-            {new Date(questionnaire.date).toLocaleDateString()}
-          </Typography>
-        </Box>
-        <IconButton aria-label="Fechar" onClick={onClose} size="small">
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+      {questionnaire && (
+        <DialogTitle
+          sx={{ display: "flex", justifyContent: "space-between", pr: 1 }}
+        >
+          <Box>
+            <Typography variant="h6" fontWeight={700}>
+              {questionnaireData.questionnaire.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Aplicado por {questionnaireData.healthProfessional.user.fullName}{" "}
+              em {new Date(questionnaireData.date).toLocaleDateString()}
+            </Typography>
+          </Box>
+          <IconButton aria-label="Fechar" onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+      )}
 
       <DialogContent dividers>
         <Stack direction="row" spacing={2} alignItems="center" mb={3}>
           <Chip
-            label={questionnaire.classification}
+            label={questionnaireData.classification}
             sx={{
               ...badgeStyle,
               border: `1px solid ${badgeStyle.borderColor}`,
@@ -63,7 +100,7 @@ export default function QuestionnaireDetailDialog({
             }}
           />
           <Typography variant="body1" fontWeight={700}>
-            Pontuação total: {questionnaire.totalScore}
+            Pontuação total: {questionnaireData.totalScore}
           </Typography>
           <Box
             sx={{
@@ -82,16 +119,17 @@ export default function QuestionnaireDetailDialog({
           </Typography>
           <Divider />
 
-          {questionnaire.answers.length === 0 ? (
+          {questionnaireData.answers.length === 0 ? (
             <Typography variant="body2" color="text.secondary" mt={2}>
               Nenhuma resposta registrada para este questionário.
             </Typography>
           ) : (
-            questionnaire.answers.map((answer) => {
+            questionnaireData.answers.map((answer) => {
               const answerLabel =
                 answer.selectedOption?.label ??
                 answer.valueText ??
                 "Sem resposta";
+
               const score = answer.selectedOption?.score;
 
               return (
@@ -110,7 +148,6 @@ export default function QuestionnaireDetailDialog({
                       <Chip
                         size="small"
                         label={`Pontuação ${score}`}
-                        color="default"
                         sx={{ fontWeight: 600, backgroundColor: "#f5f5f5" }}
                       />
                     )}

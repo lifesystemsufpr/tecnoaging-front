@@ -1,7 +1,7 @@
 import { API_ROUTES } from "@/services/Routes";
 import { clientService } from "@/core/services/client.service";
 import { ApiResponse } from "@/core/services/api.type";
-import { HealthProfessionalList } from "@/core/types";
+import { PatientQuestionnaire, QuestionnaireList } from "../types/domain";
 
 interface FetchQuestionnairesParams {
   pageSize?: number;
@@ -16,9 +16,7 @@ export const questionnairesService = {
     page,
     participantCpf,
     healthProfessionalCpf,
-  }: FetchQuestionnairesParams): Promise<
-    ApiResponse<HealthProfessionalList>
-  > => {
+  }: FetchQuestionnairesParams): Promise<ApiResponse<QuestionnaireList>> => {
     try {
       const endpoint = API_ROUTES.QUESTIONNAIRES;
       const url = new URL(endpoint);
@@ -34,9 +32,22 @@ export const questionnairesService = {
       if (healthProfessionalCpf) {
         url.searchParams.append("healthProfessionalCpf", healthProfessionalCpf);
       }
-      const resp: ApiResponse<HealthProfessionalList> = await clientService({
+      const resp: ApiResponse<QuestionnaireList> = await clientService({
         method: "GET",
         endpoint: url.toString(),
+      });
+      return resp;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+
+  questionnaireById: async (questionnaireId: string) => {
+    try {
+      const endpoint = API_ROUTES.QUESTIONNAIRE_BY_ID(questionnaireId);
+      const resp: PatientQuestionnaire = await clientService({
+        method: "GET",
+        endpoint,
       });
       return resp;
     } catch (error) {
