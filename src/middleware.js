@@ -32,6 +32,7 @@ const roleAccess = {
     "/5tsts",
     "/population-analysis",
     "/profile",
+    "/questionnaires",
   ],
   HEALTH_PROFESSIONAL: [
     "/home",
@@ -41,6 +42,7 @@ const roleAccess = {
     "/5tsts/*",
     "/30sts/*",
     "/profile",
+    "/questionnaires",
   ],
   PARTICIPANT: ["/home", "/evaluations", "/profile"],
 };

@@ -36,9 +36,8 @@ export default function QuestionnaireListFilters() {
           onChange={setSelectedProfessional}
         />
       </Grid>
-      <Grid size={12}>
+      <Grid size={2}>
         <Button
-          fullWidth
           variant="contained"
           onClick={handleApplyFilters}
           disabled={isLoading || isFetching}

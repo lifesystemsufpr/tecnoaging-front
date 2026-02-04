@@ -156,8 +156,6 @@ export default function PatientsCRUDPage() {
         onView={(patient) =>
           router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(patient.id))
         }
-        onTests={(patient) => handleViewTests(patient.id)}
-        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
         pageSize={5}
         autoHeight
         totalRows={totalRows}

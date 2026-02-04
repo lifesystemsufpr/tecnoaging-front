@@ -68,7 +68,9 @@ export function QuestionnairesList() {
   return (
     <QuestionnairesListProvider value={contextValue}>
       <Box>
-        <Typography variant="body1">Questionarios</Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          Questionarios
+        </Typography>
         <QuestionnaireListFilters />
         <GenericTable<QuestionnaireListItem>
           columns={questionnaireListColumns}
