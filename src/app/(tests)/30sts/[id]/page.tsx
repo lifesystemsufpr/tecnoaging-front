@@ -40,7 +40,6 @@ import {
 } from "@/services/api-evaluation";
 import ContinuityChart30s from "@/components/evaluations/charts/ContinuityChart30s";
 import { useParams } from "next/navigation";
-import { formatDateAndTime } from "@/utils/format";
 import { formatDateTime } from "@/utils/dates";
 
 export default function Page() {

@@ -51,20 +51,6 @@ export default function PatientsCRUDPage() {
 
   const [totalRows, setTotalRows] = useState(0);
 
-  const handleViewTests = useCallback(
-    (id: string) => {
-      router.push(ROUTES.USERS.PARTICIPANTS.EVALUATIONS(id));
-    },
-    [router]
-  );
-
-  const handleViewQuestionnaires = useCallback(
-    (id: string) => {
-      router.push(ROUTES.USERS.PARTICIPANTS.QUESTIONNAIRES(id));
-    },
-    [router]
-  );
-
   const loadPatients = useCallback(
     async (
       token: string,
@@ -156,8 +142,6 @@ export default function PatientsCRUDPage() {
         onView={(patient) =>
           router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(patient.id))
         }
-        onTests={(patient) => handleViewTests(patient.id)}
-        onQuestionnaires={(patient) => handleViewQuestionnaires(patient.id)}
         pageSize={5}
         autoHeight
         totalRows={totalRows}
@@ -177,8 +161,6 @@ export default function PatientsCRUDPage() {
       totalRows,
       handleDelete,
       handleEdit,
-      handleViewQuestionnaires,
-      handleViewTests,
       router,
     ]
   );

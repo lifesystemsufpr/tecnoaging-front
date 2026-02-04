@@ -18,8 +18,10 @@ const roleAccess = {
     "/specialities",
     "/study-areas",
     "/health-unit",
+    "/5tsts",
     "/30sts",
     "/profile",
+    "/questionnaires",
   ],
   RESEARCHER: [
     "/login",
@@ -27,18 +29,22 @@ const roleAccess = {
     "/evaluations",
     "/home",
     "/30sts",
+    "/5tsts",
     "/population-analysis",
     "/profile",
+    "/questionnaires",
   ],
   HEALTH_PROFESSIONAL: [
     "/home",
     "/users",
     "/users/profile",
     "/users/participants/*",
+    "/5tsts/*",
     "/30sts/*",
     "/profile",
+    "/questionnaires",
   ],
-  PATIENT: ["/home", "/evaluations", "/profile"],
+  PARTICIPANT: ["/home", "/evaluations", "/profile"],
 };
 
 function getUserFromToken(nextAuthToken) {
@@ -92,7 +98,7 @@ export async function middleware(request) {
           return NextResponse.redirect(new URL("/home", request.url));
         case "HEALTH_PROFESSIONAL":
           return NextResponse.redirect(new URL("/home", request.url));
-        case "PATIENT":
+        case "PARTICIPANT":
           return NextResponse.redirect(new URL("/home", request.url));
         default:
           break;
