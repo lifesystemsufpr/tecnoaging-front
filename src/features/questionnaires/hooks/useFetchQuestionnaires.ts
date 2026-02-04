@@ -33,6 +33,7 @@ export function useFetchQuestionnaires({
           : [];
       setQuestionnaires(data);
     } catch (err) {
+      console.error("Erro ao buscar questionários:", err);
       setError("Não foi possível carregar os questionários.");
     } finally {
       setLoading(false);

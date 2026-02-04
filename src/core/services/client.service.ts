@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSession } from "next-auth/react";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo, ReactNode } from "react";
-import { DataGrid, GridRowId, GridRowParams } from "@mui/x-data-grid";
+import { DataGrid, GridRowId } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { pageSizeOptions } from "@/types/enums/page-size-options";
 
@@ -108,15 +108,16 @@ export function GenericTable<T>(props: GenericTableProps<T>) {
     return (row: T & { id?: GridRowId }) => row.id ?? JSON.stringify(row);
   }, [getRowId]);
 
-  const LoadingOverlaySlot = useMemo(
-    () => () => (
+  const LoadingOverlaySlot = useMemo(() => {
+    const GenericTableLoadingOverlay = () => (
       <LoadingSkeletonOverlay
         columnCount={gridColumns.length}
         rowCount={skeletonRowCount}
       />
-    ),
-    [gridColumns.length, skeletonRowCount]
-  );
+    );
+    GenericTableLoadingOverlay.displayName = "GenericTableLoadingOverlay";
+    return GenericTableLoadingOverlay;
+  }, [gridColumns.length, skeletonRowCount]);
 
   const resolvedDeleteMessage = useMemo<ReactNode>(() => {
     if (typeof deleteConfirmMessage === "function") {

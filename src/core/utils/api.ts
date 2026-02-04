@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const buildQueryString = (params: Record<string, any>) => {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
