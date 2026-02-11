@@ -137,7 +137,10 @@ export default function HealthUnitCRUDPage() {
         pageSize={5}
         autoHeight
         deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.name}?</>
+          <>
+            Tem certeza que deseja excluir {row.name}?{" "}
+            {row.hasRelations ? "Esta unidade possui testes relacionados." : ""}
+          </>
         )}
         deleteConfirmTitle="Excluir unidade de saúde"
         loading={isLoading}

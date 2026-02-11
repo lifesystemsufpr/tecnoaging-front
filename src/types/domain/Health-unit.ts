@@ -8,4 +8,5 @@ export interface HealthUnit {
   city: string;
   state: string;
   neighborhood: string;
+  hasRelations?: boolean;
 }

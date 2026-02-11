@@ -149,7 +149,10 @@ export default function PatientsCRUDPage() {
         setPaginationModel={setPaginationModel}
         loading={loading}
         deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.fullName}?</>
+          <>
+            Tem certeza que deseja excluir {row.fullName}?{" "}
+            {row.hasRelations ? "Este paciente possui relações." : ""}
+          </>
         )}
         deleteConfirmTitle="Excluir paciente"
       />

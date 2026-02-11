@@ -108,7 +108,10 @@ export default function InstitutionsPage() {
         pageSize={5}
         autoHeight
         deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.title}?</>
+          <>
+            Tem certeza que deseja excluir {row.title}?{" "}
+            {row.hasRelations ? "Esta instituição possui relações." : ""}
+          </>
         )}
         deleteConfirmTitle="Excluir Instituição de Ensino"
         loading={loading}
