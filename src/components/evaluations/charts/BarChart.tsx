@@ -17,7 +17,7 @@ export default function BarChart({
   const parseTimeInSeconds = (totalTime?: string) => {
     if (!totalTime) return 0;
     const parts = totalTime.split(":").map(Number);
-    return parts[2] || 0; // mantido exatamente como no original
+    return parts[2] || 0;
   };
 
   const sorted = evaluations

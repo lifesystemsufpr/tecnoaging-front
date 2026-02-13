@@ -1,6 +1,6 @@
 import { HealthProfessional, HealthUnit, Participant } from "@/core/types";
 
-export type EvaluationType = "FTSTS" | string;
+export type EvaluationType = "FTSTS" | "TTSTS";
 
 export interface SensorData {
   id: string;
@@ -66,6 +66,7 @@ export interface Indicator {
   value: number;
   maxValue: number;
   classification: string;
+  unit?: string;
 }
 
 export interface DerivedData {
