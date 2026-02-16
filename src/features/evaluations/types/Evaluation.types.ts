@@ -4,7 +4,7 @@ export type EvaluationType = "FTSTS" | "TTSTS";
 
 export interface SensorData {
   id: string;
-  timestamp: string; // ISO
+  timestamp: string;
   accel_x: number;
   accel_y: number;
   accel_z: number;
@@ -81,6 +81,16 @@ export interface CyclePhases {
   sit: number;
 }
 
+export interface CycleDataRaw {
+  cycle: number;
+  totalTime: number;
+  standUpTime: number;
+  sitDownTime: number;
+  power: number;
+  velocityExtension: number;
+  velocityFlexion: number;
+}
+
 export interface CycleData {
   min: CyclePhases;
   max: CyclePhases;
@@ -88,10 +98,21 @@ export interface CycleData {
   totalCycles: number;
 }
 
+
+export interface ProcessedData {
+  data: {
+    t: number;
+    val: number;
+  }[]
+  label: string;
+  unit: string;
+}
+
 export interface MotionAnalysisResponse {
+  processed: ProcessedData;
   sensor: SensorData;
   derived: DerivedData;
-  cycle: CycleData;
+  cycle: CycleDataRaw[];
 }
 
 export type EvaluationFilters = {
