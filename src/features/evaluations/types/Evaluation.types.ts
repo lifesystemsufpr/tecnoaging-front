@@ -98,12 +98,11 @@ export interface CycleData {
   totalCycles: number;
 }
 
-
 export interface ProcessedData {
   data: {
     t: number;
     val: number;
-  }[]
+  }[];
   label: string;
   unit: string;
 }
@@ -125,3 +124,8 @@ export type EvaluationFilters = {
   page?: number;
   pageSize?: number;
 };
+
+export interface RepetitionHistory {
+  date: string;
+  repetitions: number;
+}

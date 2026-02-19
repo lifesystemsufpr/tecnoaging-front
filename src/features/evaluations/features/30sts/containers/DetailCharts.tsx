@@ -2,10 +2,15 @@ import { Box, Card, CardContent, Stack, useTheme } from "@mui/material";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
 import GenericChart from "@/core/components/layout/GenericChart";
-import { mockRepetitionData } from "../mocks";
+import { useFetchHistoryRepetitions } from "../hooks/useFetchHistoryRepetitions";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions } = useThirtySTSContext();
+  const { detailedData, repetitions, id } = useThirtySTSContext();
+  const { data: historyRepetitions, error: fetchError } =
+    useFetchHistoryRepetitions({
+      evaluationId: id,
+    });
+
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
 
@@ -55,15 +60,21 @@ export default function DetailCharts() {
             labelColor={labelColor}
           />
 
-          <GenericChart
-            data={mockRepetitionData}
-            xKey="day"
-            yKey="repetitions"
-            title={`Comparação de Repetições por Dia ${mockRepetitionData ? "de Dados Falsos" : ""}`}
-            valueFormatter={(v) => `${v} reps`}
-            seriesType="line"
-            showLabels
-          />
+          {!historyRepetitions && (
+            <p>Erro ao carregar histórico de repetições</p>
+          )}
+
+          {historyRepetitions && historyRepetitions.length > 0 && (
+            <GenericChart
+              data={historyRepetitions}
+              xKey="date"
+              yKey="repetitions"
+              title={`Comparação de Repetições por Dia`}
+              valueFormatter={(v) => `${v} reps`}
+              seriesType="line"
+              showLabels
+            />
+          )}
         </Stack>
       </CardContent>
     </Card>

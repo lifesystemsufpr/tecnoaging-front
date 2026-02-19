@@ -1,5 +1,3 @@
-// features/assessments/api/evaluation.service.ts
-
 import { clientService } from "@/core/services/client.service";
 import { API_ROUTES } from "@/core/config/api.routes";
 import { ApiResponse } from "@/core/services/api.type";
@@ -7,6 +5,7 @@ import {
   Evaluation,
   EvaluationFilters,
   MotionAnalysisResponse as EvaluationDetailedResponse,
+  RepetitionHistory,
 } from "../types/Evaluation.types";
 import { buildQueryString } from "@/core/utils/api";
 
@@ -47,6 +46,13 @@ export const evaluationService = {
     return clientService<void>({
       endpoint: API_ROUTES.EVALUATION_BY_ID(id),
       method: "DELETE",
+    });
+  },
+
+  async getRepetitionsHistory(id: string): Promise<RepetitionHistory[]> {
+    return clientService<RepetitionHistory[]>({
+      endpoint: API_ROUTES.EVALUATION_REPETITIONS_HISTORY(id),
+      method: "GET",
     });
   },
 };
