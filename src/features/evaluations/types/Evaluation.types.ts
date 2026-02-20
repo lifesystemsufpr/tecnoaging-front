@@ -1,10 +1,10 @@
 import { HealthProfessional, HealthUnit, Participant } from "@/core/types";
 
-export type EvaluationType = "FTSTS" | string;
+export type EvaluationType = "FTSTS" | "TTSTS";
 
 export interface SensorData {
   id: string;
-  timestamp: string; // ISO
+  timestamp: string;
   accel_x: number;
   accel_y: number;
   accel_z: number;
@@ -66,6 +66,7 @@ export interface Indicator {
   value: number;
   maxValue: number;
   classification: string;
+  unit?: string;
 }
 
 export interface DerivedData {
@@ -80,6 +81,16 @@ export interface CyclePhases {
   sit: number;
 }
 
+export interface CycleDataRaw {
+  cycle: number;
+  totalTime: number;
+  standUpTime: number;
+  sitDownTime: number;
+  power: number;
+  velocityExtension: number;
+  velocityFlexion: number;
+}
+
 export interface CycleData {
   min: CyclePhases;
   max: CyclePhases;
@@ -87,10 +98,20 @@ export interface CycleData {
   totalCycles: number;
 }
 
+export interface ProcessedData {
+  data: {
+    t: number;
+    val: number;
+  }[];
+  label: string;
+  unit: string;
+}
+
 export interface MotionAnalysisResponse {
+  processed: ProcessedData;
   sensor: SensorData;
   derived: DerivedData;
-  cycle: CycleData;
+  cycle: CycleDataRaw[];
 }
 
 export type EvaluationFilters = {
@@ -103,3 +124,8 @@ export type EvaluationFilters = {
   page?: number;
   pageSize?: number;
 };
+
+export interface RepetitionHistory {
+  date: string;
+  repetitions: number;
+}

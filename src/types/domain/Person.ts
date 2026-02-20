@@ -10,4 +10,5 @@ export interface User {
   password?: string;
   active?: boolean;
   updatedAt?: string;
+  hasRelations?: boolean;
 }

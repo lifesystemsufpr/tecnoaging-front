@@ -4,11 +4,12 @@ import {
 } from "@/types/api/Institution";
 import { API_ROUTES } from "./Routes";
 import { fetchClient } from "./api-client";
+import { ApiResponse } from "@/core/services/api.type";
 
 export async function fetchInstitutions({
   access_token,
   title,
-}: InstitutionRequest): Promise<InstitutionResponse[]> {
+}: InstitutionRequest): Promise<ApiResponse<InstitutionResponse[]>> {
   const url = new URL(API_ROUTES.INSTITUTIONS);
   if (title) url.searchParams.append("search", title);
   const res = await fetch(url.toString(), {

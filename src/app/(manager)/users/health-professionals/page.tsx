@@ -153,7 +153,10 @@ export default function HealthProfessionalsCRUDPage() {
         setPaginationModel={setPaginationModel}
         loading={loading}
         deleteConfirmMessage={(row) => (
-          <>Tem certeza que deseja excluir {row.fullName}?</>
+          <>
+            Tem certeza que deseja excluir {row.fullName}?{" "}
+            {row.hasRelations ? "Este profissional possui relações." : ""}
+          </>
         )}
         deleteConfirmTitle="Excluir profissional de saúde"
       />
