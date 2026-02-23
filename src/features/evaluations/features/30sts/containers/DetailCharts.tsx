@@ -6,10 +6,9 @@ import { useFetchHistoryRepetitions } from "../hooks/useFetchHistoryRepetitions"
 
 export default function DetailCharts() {
   const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
-  const { data: historyRepetitions, error: fetchError } =
-    useFetchHistoryRepetitions({
-      patientId: evaluationData?.participantId || "",
-    });
+  const { data: historyRepetitions } = useFetchHistoryRepetitions({
+    patientId: evaluationData?.participantId || "",
+  });
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
