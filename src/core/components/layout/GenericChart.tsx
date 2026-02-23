@@ -12,8 +12,8 @@ type GenericChartProps<T> = {
   seriesType?: "bar" | "line";
 
   highlightKey?: keyof T;
-  highlightValue?: any;
-  valueFormatter?: (value: any) => string;
+  highlightValue?: unknown;
+  valueFormatter?: (value: unknown) => string;
 
   showLabels?: boolean;
 
@@ -43,7 +43,7 @@ export default function GenericChart<T>({
   if (!data || data.length === 0) return null;
 
   const formattedData = timeSeries
-    ? data.map((item) => [item[xKey] as any, Number(item[yKey])])
+    ? data.map((item) => [item[xKey] as unknown, Number(item[yKey])])
     : data.map((item) => ({
         value: Number(item[yKey]),
         itemStyle: highlightKey
@@ -63,7 +63,7 @@ export default function GenericChart<T>({
 
     tooltip: {
       trigger: "axis",
-      formatter: (params: any) => {
+      formatter: (params: unknown) => {
         const point = params[0];
         const value = timeSeries ? point.value[1] : point.value;
 
@@ -76,12 +76,12 @@ export default function GenericChart<T>({
 
     xAxis: {
       data: timeSeries ? undefined : data.map((item) => String(item[xKey])),
-      type: timeSeries ? 'value' : 'category', 
-  axisLabel: { 
-    color: labelColor,
-    // Opcional: Adicionar o sufixo "s" para indicar segundos
-    formatter: (value: any) => timeSeries ? `${value}s` : value 
-  },
+      type: timeSeries ? "value" : "category",
+      axisLabel: {
+        color: labelColor,
+        // Opcional: Adicionar o sufixo "s" para indicar segundos
+        formatter: (value: unknown) => (timeSeries ? `${value}s` : value),
+      },
     },
 
     yAxis: {
@@ -105,6 +105,7 @@ export default function GenericChart<T>({
         label: {
           show: showLabels,
           position: "top",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formatter: (params: any) => {
             const value = timeSeries ? params.value[1] : params.value;
             return valueFormatter ? valueFormatter(value) : value;
