@@ -49,9 +49,11 @@ export const evaluationService = {
     });
   },
 
-  async getRepetitionsHistory(id: string): Promise<RepetitionHistory[]> {
-    return clientService<RepetitionHistory[]>({
-      endpoint: API_ROUTES.EVALUATION_REPETITIONS_HISTORY(id),
+  async getRepetitionsHistory(
+    participantId: string
+  ): Promise<ApiResponse<RepetitionHistory[]>> {
+    return clientService<ApiResponse<RepetitionHistory[]>>({
+      endpoint: API_ROUTES.EVALUATION_REPETITIONS_HISTORY(participantId),
       method: "GET",
     });
   },

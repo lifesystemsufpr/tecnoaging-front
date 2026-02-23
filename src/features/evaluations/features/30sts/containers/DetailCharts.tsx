@@ -5,10 +5,10 @@ import GenericChart from "@/core/components/layout/GenericChart";
 import { useFetchHistoryRepetitions } from "../hooks/useFetchHistoryRepetitions";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions, id } = useThirtySTSContext();
+  const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
   const { data: historyRepetitions, error: fetchError } =
     useFetchHistoryRepetitions({
-      evaluationId: id,
+      patientId: evaluationData?.participantId || "",
     });
 
   const theme = useTheme();
@@ -67,12 +67,11 @@ export default function DetailCharts() {
           {historyRepetitions && historyRepetitions.length > 0 && (
             <GenericChart
               data={historyRepetitions}
-              xKey="date"
+              xKey="day"
               yKey="repetitions"
               title={`Comparação de Repetições por Dia`}
               valueFormatter={(v) => `${v} reps`}
               seriesType="line"
-              showLabels
             />
           )}
         </Stack>

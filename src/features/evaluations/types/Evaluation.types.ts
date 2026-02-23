@@ -18,7 +18,7 @@ export interface EvaluationRaw {
   id?: string;
   type: EvaluationType;
 
-  patientId: string;
+  participantId: string;
   healthProfessionalId: string;
   healthcareUnitId: string;
 
@@ -126,6 +126,6 @@ export type EvaluationFilters = {
 };
 
 export interface RepetitionHistory {
-  date: string;
+  day: string;
   repetitions: number;
 }
