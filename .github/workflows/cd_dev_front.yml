@@ -3,7 +3,7 @@ name: DEVENV - Deploy Frontend
 on:
   push:
     branches:
-      - dev
+      - devOld
 
 jobs:
   deploy:
