@@ -3,7 +3,7 @@ name: Deploy TecnoAging (web/dev)
 on:
   push:
     branches:
-      - devV2
+      - dev
 
 env:
   PM2_APP_NAME: TecnoAging-front
