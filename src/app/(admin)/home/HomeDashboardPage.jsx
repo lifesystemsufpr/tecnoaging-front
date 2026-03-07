@@ -4,6 +4,7 @@ import HomePacientContent from "@/components/pages/homePacient/HomePacientConten
 import HomeResearchContent from "@/components/pages/homeResearch/HomeResearchContent";
 import HomeHealth from "@/components/pages/homeHealth/HomeContent";
 import { SystemRoles } from "@/types/enums/system-roles";
+import ProfessionalDashboardPage from "@/features/professionals/pages/DashboardPage";
 
 export default function HomeDashboardPage() {
   const { data: session, status } = useSession();
@@ -25,6 +26,6 @@ export default function HomeDashboardPage() {
   ) : tipo === SystemRoles.RESEARCHER ? (
     <HomeResearchContent />
   ) : (
-    <HomeHealth />
+    <ProfessionalDashboardPage />
   );
 }
