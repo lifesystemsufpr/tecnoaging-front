@@ -118,6 +118,7 @@ export function useBarScatterPlotOptions({
       },
       tooltip: {
         trigger: "item",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter: (params: any) => {
           if (params.seriesType === "boxplot") {
             const ageGroup = AGE_GROUPS[params.dataIndex];

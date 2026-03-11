@@ -54,8 +54,10 @@ export default function ContinuityChart({
       },
       tooltip: {
         trigger: "axis",
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
         formatter: (params: any) => {
           let res = `<strong>Idade: ${params[0].axisValue}</strong><br/>`;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           params.forEach((item: any) => {
             if (item.seriesName && !item.seriesName.startsWith("_")) {
               res += `${item.marker} ${item.seriesName}: ${item.value[1]} reps<br/>`;
@@ -118,10 +120,7 @@ export default function ContinuityChart({
         {
           name: "_areaP25_P50",
           type: "line",
-          data: p50Data.map((point, i) => [
-            point[0],
-            point[1] - p25Data[i][1],
-          ]),
+          data: p50Data.map((point, i) => [point[0], point[1] - p25Data[i][1]]),
           smooth: true,
           stack: "percentilArea",
           lineStyle: { opacity: 0 },
@@ -135,10 +134,7 @@ export default function ContinuityChart({
         {
           name: "_areaP50_P75",
           type: "line",
-          data: p75Data.map((point, i) => [
-            point[0],
-            point[1] - p50Data[i][1],
-          ]),
+          data: p75Data.map((point, i) => [point[0], point[1] - p50Data[i][1]]),
           smooth: true,
           stack: "percentilArea",
           lineStyle: { opacity: 0 },
