@@ -47,7 +47,7 @@ export const navItems: NavItem[] = [
     icon: <User size={18} />,
     name: "Participantes",
     path: "/users/participants",
-    roles: [SystemRoles.HEALTH_PROFESSIONAL],
+    roles: [SystemRoles.HEALTH_PROFESSIONAL, SystemRoles.RESEARCHER],
   },
   {
     icon: <Building2 size={18} />,

@@ -103,7 +103,8 @@ export default function ParticipantEvaluations({
         />
       )}
 
-      {evaluations.length !== 0 && !isLoading && (
+      {((evaluations.length !== 0 && !isLoading) ||
+        (historyRepetitions && historyRepetitions.length > 0)) && (
         <Box my={2}>
           <ParticipantFilters
             onSearch={({ dateFrom, dateTo }) => handleSearch(dateFrom, dateTo)}
