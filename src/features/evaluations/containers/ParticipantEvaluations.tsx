@@ -9,6 +9,8 @@ import { participantColumns } from "../utils/columns";
 import { EvaluationRaw } from "../types/Evaluation.types";
 import { useParticipantEvaluations } from "../hooks/useParticipantEvaluations";
 import ROUTES from "@/core/config/client.routes";
+import { useFetchHistoryRepetitions } from "../features/30sts/hooks/useFetchHistoryRepetitions";
+import GenericChart from "@/core/components/layout/GenericChart";
 
 export default function ParticipantEvaluations({
   participantId,
@@ -28,6 +30,9 @@ export default function ParticipantEvaluations({
     setPagination,
     handleSearch,
   } = useParticipantEvaluations(participantId);
+  const { data: historyRepetitions } = useFetchHistoryRepetitions({
+    patientId: participantId || "",
+  });
 
   const handleOnViewEvaluation = (evaluation: EvaluationRaw) => {
     const routes: Record<string, string> = {
@@ -58,6 +63,19 @@ export default function ParticipantEvaluations({
             Avaliações do Paciente: {patientData?.fullName || "Carregando..."}
           </Typography>
         </>
+      )}
+
+      {!historyRepetitions && <p>Erro ao carregar histórico de repetições</p>}
+
+      {historyRepetitions && historyRepetitions.length > 0 && (
+        <GenericChart
+          data={historyRepetitions}
+          xKey="day"
+          yKey="repetitions"
+          title={`Histórico de Repetições do Paciente`}
+          valueFormatter={(v) => `${v} reps`}
+          seriesType="line"
+        />
       )}
 
       {evaluations.length !== 0 && !isLoading && (
