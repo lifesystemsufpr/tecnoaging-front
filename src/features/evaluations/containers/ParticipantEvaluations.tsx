@@ -12,8 +12,8 @@ import ROUTES from "@/core/config/client.routes";
 import { useFetchHistoryRepetitions } from "../features/30sts/hooks/useFetchHistoryRepetitions";
 import GenericChart from "@/core/components/layout/GenericChart";
 import TestTypeCard from "../components/TestTypeCard";
-import { TEST_TYPES } from "../components/testTypesConfig";
 import { useState } from "react";
+import { TEST_TYPES } from "../consts/types";
 
 export default function ParticipantEvaluations({
   participantId,
@@ -79,7 +79,7 @@ export default function ParticipantEvaluations({
         </Typography>
         <Grid container spacing={2}>
           {TEST_TYPES.map((test) => (
-            <Grid size={{xs: 6, sm: 3}} key={test.id}>
+            <Grid size={{ xs: 6, sm: 3 }} key={test.id}>
               <TestTypeCard
                 config={test}
                 selected={selectedTest === test.id}

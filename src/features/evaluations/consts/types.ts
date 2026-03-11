@@ -2,17 +2,9 @@ import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatRecline
 import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
 import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
-import { TestTypeConfig } from "./testTypeCard.types";
+import { TestTypeConfig } from "../components/testTypeCard.types";
 
 export const TEST_TYPES: TestTypeConfig[] = [
-  {
-    id: "FTSTS",
-    label: "5TSTS",
-    description: "Five Times Sit-to-Stand Test",
-    icon: AirlineSeatReclineNormalIcon,
-    active: false,
-    color: "#7E57C2",
-  },
   {
     id: "TTSTS",
     label: "30STS",
@@ -20,6 +12,14 @@ export const TEST_TYPES: TestTypeConfig[] = [
     icon: AccessibilityNewIcon,
     active: true,
     color: "#42A5F5",
+  },
+  {
+    id: "FTSTS",
+    label: "5TSTS",
+    description: "Five Times Sit-to-Stand Test",
+    icon: AirlineSeatReclineNormalIcon,
+    active: false,
+    color: "#7E57C2",
   },
   {
     id: "2MST",

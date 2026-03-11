@@ -65,7 +65,7 @@ export default function TestTypeCard({
           size="small"
           sx={{
             position: "absolute",
-            top: -10,
+            top: 10,
             right: 12,
             zIndex: 2,
             fontSize: 11,
@@ -150,21 +150,6 @@ export default function TestTypeCard({
         </Typography>
 
         {/* Indicador de ativo */}
-        {config.active && (
-          <Chip
-            label="Ativo"
-            size="small"
-            sx={{
-              mt: 0.5,
-              fontSize: 11,
-              fontWeight: 600,
-              height: 22,
-              bgcolor: alpha(config.color, 0.15),
-              color: config.color,
-              border: `1px solid ${alpha(config.color, 0.3)}`,
-            }}
-          />
-        )}
       </CardActionArea>
     </Card>
   );
