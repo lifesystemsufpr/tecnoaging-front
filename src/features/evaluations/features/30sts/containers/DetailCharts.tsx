@@ -62,6 +62,7 @@ export default function DetailCharts() {
           <ContinuityChart
             idadePaciente={detailedData.derived.participantAgeOnEvaluation}
             repeticoesPaciente={repetitions ? repetitions : 15}
+            participantGender={participantGender}
             labelColor={labelColor}
           />
         </Stack>
