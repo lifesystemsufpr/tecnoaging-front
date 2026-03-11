@@ -1,13 +1,16 @@
 import { Box, Card, CardContent, Stack, useTheme } from "@mui/material";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
+import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
+import { Gender } from "@/core/enums";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions } = useThirtySTSContext();
+  const { detailedData, repetitions , evaluationData} = useThirtySTSContext();
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+  const participantGender = evaluationData.participant.gender || Gender.FEMALE;
 
   return (
     <Card variant="outlined">
@@ -48,6 +51,13 @@ export default function DetailCharts() {
               padrao 15
             </p>
           )}
+
+          <BarScatterPlot
+            participantAge={detailedData.derived.participantAgeOnEvaluation}
+            participantRepetitions={repetitions ? repetitions : 15}
+            participantGender={participantGender}
+            labelColor={labelColor}
+          />
 
           <ContinuityChart
             idadePaciente={detailedData.derived.participantAgeOnEvaluation}
