@@ -110,9 +110,9 @@ export function useBarScatterPlotOptions({
 
     return {
       title: {
-        text: `30-Second Chair Stand Test (${genderLabel})`,
+        text: `Diagrama de caixa (${genderLabel})`,
         subtext: "(Número de levantadas completas em 30 segundos)",
-        left: "center",
+        left: "left",
         textStyle: { color: labelColor, fontSize: 16 },
         subtextStyle: { color: labelColor, fontSize: 12 },
       },
