@@ -27,6 +27,7 @@ const roleAccess = {
     "/login",
     "/home-researcher",
     "/evaluations",
+    "/users/participants/*",
     "/home",
     "/30sts",
     "/5tsts",

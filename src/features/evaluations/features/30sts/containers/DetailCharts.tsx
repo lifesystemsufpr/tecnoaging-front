@@ -1,17 +1,16 @@
 import { Box, Card, CardContent, Stack, useTheme } from "@mui/material";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
+import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
-import { useFetchHistoryRepetitions } from "../hooks/useFetchHistoryRepetitions";
+import { Gender } from "@/core/enums";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
-  const { data: historyRepetitions } = useFetchHistoryRepetitions({
-    patientId: evaluationData?.participantId || "",
-  });
+  const { detailedData, repetitions , evaluationData} = useThirtySTSContext();
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
+  const participantGender = evaluationData.participant.gender || Gender.FEMALE;
 
   return (
     <Card variant="outlined">
@@ -53,26 +52,19 @@ export default function DetailCharts() {
             </p>
           )}
 
-          <ContinuityChart
-            idadePaciente={detailedData.derived.participantAgeOnEvaluation}
-            repeticoesPaciente={repetitions ? repetitions : 15}
+          <BarScatterPlot
+            participantAge={detailedData.derived.participantAgeOnEvaluation}
+            participantRepetitions={repetitions ? repetitions : 15}
+            participantGender={participantGender}
             labelColor={labelColor}
           />
 
-          {!historyRepetitions && (
-            <p>Erro ao carregar histórico de repetições</p>
-          )}
-
-          {historyRepetitions && historyRepetitions.length > 0 && (
-            <GenericChart
-              data={historyRepetitions}
-              xKey="day"
-              yKey="repetitions"
-              title={`Comparação de Repetições por Dia`}
-              valueFormatter={(v) => `${v} reps`}
-              seriesType="line"
-            />
-          )}
+          <ContinuityChart
+            idadePaciente={detailedData.derived.participantAgeOnEvaluation}
+            repeticoesPaciente={repetitions ? repetitions : 15}
+            participantGender={participantGender}
+            labelColor={labelColor}
+          />
         </Stack>
       </CardContent>
     </Card>

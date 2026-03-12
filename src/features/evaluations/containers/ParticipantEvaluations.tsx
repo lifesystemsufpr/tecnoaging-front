@@ -1,7 +1,7 @@
 "use client";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { GenericTable } from "@/core/components/layout";
 import { ParticipantFilters } from "../components/ParticipantFilters";
@@ -9,6 +9,11 @@ import { participantColumns } from "../utils/columns";
 import { EvaluationRaw } from "../types/Evaluation.types";
 import { useParticipantEvaluations } from "../hooks/useParticipantEvaluations";
 import ROUTES from "@/core/config/client.routes";
+import { useFetchHistoryRepetitions } from "../features/30sts/hooks/useFetchHistoryRepetitions";
+import GenericChart from "@/core/components/layout/GenericChart";
+import TestTypeCard from "../components/TestTypeCard";
+import { useState } from "react";
+import { TEST_TYPES } from "../consts/types";
 
 export default function ParticipantEvaluations({
   participantId,
@@ -18,6 +23,7 @@ export default function ParticipantEvaluations({
   withHeader?: boolean;
 }) {
   const router = useRouter();
+  const [selectedTest, setSelectedTest] = useState<string>("TTSTS");
 
   const {
     patientData,
@@ -28,6 +34,9 @@ export default function ParticipantEvaluations({
     setPagination,
     handleSearch,
   } = useParticipantEvaluations(participantId);
+  const { data: historyRepetitions } = useFetchHistoryRepetitions({
+    patientId: participantId || "",
+  });
 
   const handleOnViewEvaluation = (evaluation: EvaluationRaw) => {
     const routes: Record<string, string> = {
@@ -60,7 +69,42 @@ export default function ParticipantEvaluations({
         </>
       )}
 
-      {evaluations.length !== 0 && !isLoading && (
+      {/* Cards de tipos de teste */}
+      <Box sx={{ mb: 3 }}>
+        <Typography
+          variant="subtitle2"
+          sx={{ mb: 1.5, fontWeight: 600, opacity: 0.7, letterSpacing: 0.5 }}
+        >
+          TESTES DISPONÍVEIS
+        </Typography>
+        <Grid container spacing={2}>
+          {TEST_TYPES.map((test) => (
+            <Grid size={{ xs: 6, sm: 3 }} key={test.id}>
+              <TestTypeCard
+                config={test}
+                selected={selectedTest === test.id}
+                onClick={() => setSelectedTest(test.id)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {!historyRepetitions && <p>Erro ao carregar histórico de repetições</p>}
+
+      {historyRepetitions && historyRepetitions.length > 0 && (
+        <GenericChart
+          data={historyRepetitions}
+          xKey="day"
+          yKey="repetitions"
+          title={`Histórico de Repetições do Paciente`}
+          valueFormatter={(v) => `${v} reps`}
+          seriesType="line"
+        />
+      )}
+
+      {((evaluations.length !== 0 && !isLoading) ||
+        (historyRepetitions && historyRepetitions.length > 0)) && (
         <Box my={2}>
           <ParticipantFilters
             onSearch={({ dateFrom, dateTo }) => handleSearch(dateFrom, dateTo)}
