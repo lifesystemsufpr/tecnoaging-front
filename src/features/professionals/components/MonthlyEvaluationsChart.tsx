@@ -11,14 +11,14 @@ export default function MonthlyEvaluationsChart({ data }) {
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar" as const,
-      height: 180,
+      height: 250,
       toolbar: { show: false },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "39%",
-        borderRadius: 5,
+        columnWidth: "45%",
+        borderRadius: 8,
         borderRadiusApplication: "end",
       },
     },
@@ -87,7 +87,7 @@ export default function MonthlyEvaluationsChart({ data }) {
             options={options}
             series={series}
             type="bar"
-            height={180}
+            height={250}
           />
         </div>
       </div>

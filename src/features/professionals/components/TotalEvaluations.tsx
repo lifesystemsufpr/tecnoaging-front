@@ -47,8 +47,10 @@ export default function TotalEvaluations() {
         borderRadius: 4,
         border: "1px solid",
         borderColor: "divider",
-        maxWidth: 400,
+        width: "100%",
+        boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
         bgcolor: "background.paper",
+        "&:hover": { transform: "translateY(-2px)" },
       }}
     >
       <CardContent sx={{ p: 3 }}>

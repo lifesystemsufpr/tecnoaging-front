@@ -102,18 +102,27 @@ export default function ProfessionalDashboardPage() {
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6">
-      {/* Container da Esquerda: Agora com sub-grid para os cards ficarem lado a lado */}
-      <div className="col-span-12 xl:col-span-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <TotalEvaluations />
-          <PerformanceEvaluations />
-        </div>
+    <div className="p-6 mx-auto space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">
+          Dashboard de Performance
+        </h1>
+        <p className="text-gray-500 text-sm">
+          Acompanhe seus indicadores em tempo real
+        </p>
       </div>
 
-      {/* Container da Direita: Gráfico */}
-      <div className="col-span-12 xl:col-span-4">
-        <MonthlyEvaluationsChart data={evaluationsByMonth} />
+      <div className="grid grid-cols-12 gap-8">
+        <div className="col-span-12 lg:col-span-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <TotalEvaluations />
+            <PerformanceEvaluations />
+          </div>
+        </div>
+
+        <div className="col-span-12">
+          <MonthlyEvaluationsChart data={evaluationsByMonth} />
+        </div>
       </div>
     </div>
   );

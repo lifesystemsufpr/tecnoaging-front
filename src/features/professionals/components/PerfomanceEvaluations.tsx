@@ -51,7 +51,9 @@ export default function PerformanceEvaluations() {
         borderRadius: 4,
         border: "1px solid",
         borderColor: "divider",
-        maxWidth: 400,
+        boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
+        width: "100%",
+        "&:hover": { transform: "translateY(-2px)" },
       }}
     >
       <CardContent sx={{ p: 3 }}>
