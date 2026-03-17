@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "TecnoAging-front",
-      cwd: "/opt/tecnoaging/front/current",
+      cwd: "/var/www/tecnoaging-front",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
       instances: 1,
@@ -10,8 +10,8 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         NEXTAUTH_URL: "https://devenv.tecnoaging.com.br",
-        NEXT_PUBLIC_API_BASE_URL: "https://devenv.tecnoaging.com.br/api"
-      }
-    }
-  ]
-}
+        NEXT_PUBLIC_API_BASE_URL: "https://devenv.tecnoaging.com.br/api",
+      },
+    },
+  ],
+};

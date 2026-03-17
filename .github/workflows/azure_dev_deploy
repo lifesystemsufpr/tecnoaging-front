@@ -1,4 +1,4 @@
-name: Deploy TecnoAging (web/dev)
+name: Deploy TecnoAging Azure (web/dev)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 env:
   PM2_APP_NAME: TecnoAging-front
-  APP_DIR: /var/www/tecnoaging-front
+  APP_DIR: /opt/tecnoaging/front
 
 jobs:
   deploy:
@@ -36,17 +36,17 @@ jobs:
           switches: -az --delete --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='.next' --exclude='.env'
           path: ./
           remote_path: ${{ env.APP_DIR }}
-          remote_host: ${{ secrets.SSH_HOST_DEV  }}
-          remote_user: ${{ secrets.SSH_USER_DEV }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY_ENV  }}
+          remote_host: ${{ secrets.DEVENV_SSH_HOST  }}
+          remote_user: ${{ secrets.DEVENV_SSH_USER }}
+          remote_key: ${{ secrets.DEVENV_SSH_KEY  }}
 
       # 🧠 build real + restart
       - name: Build & restart no servidor
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST_DEV }}
-          username: ${{ secrets.SSH_USER_DEV }}
-          key: ${{ secrets.SSH_PRIVATE_KEY_ENV }}
+          host: ${{ secrets.DEVENV_SSH_HOST }}
+          username: ${{ secrets.DEVENV_SSH_USER }}
+          key: ${{ secrets.DEVENV_SSH_KEY }}
           script: |
             cd ${{ env.APP_DIR }}
 
@@ -54,12 +54,7 @@ jobs:
             ${{ secrets.DEVENV_FILE }}
             EOF
 
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-            nvm use default
-
             npm install
             npm run build
 
-            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start ecosystem.config.js --name ${{ env.PM2_APP_NAME }}
+            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start ecosystem.config.cjs --name ${{ env.PM2_APP_NAME }}
