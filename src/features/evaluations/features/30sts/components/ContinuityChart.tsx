@@ -48,7 +48,7 @@ export default function ContinuityChart({
 
     return {
       title: {
-        text: `Gráfico de Continuidade (${genderLabel})`,
+        text: `Comparativo de repetição por idade`,
         left: "left",
         textStyle: { color: labelColor },
       },

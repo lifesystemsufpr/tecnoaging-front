@@ -3,6 +3,7 @@ import { formatDateTime } from "@/core/utils/format";
 import { Card, CardContent, Grid, Typography } from "@mui/material";
 import { Evaluation } from "../types/Evaluation.types";
 import { formatEvaluationName } from "../utils/format";
+import { Gender } from "@/core/enums";
 
 export default function EvaluationDetail({
   evaluationDetails,
@@ -15,6 +16,43 @@ export default function EvaluationDetail({
         <Typography variant="h6" sx={{ mb: 2 }}>
           Informações da Avaliação
         </Typography>
+
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          <Grid size={4}>
+            <InfoItem
+              label="Nome"
+              value={evaluationDetails.participant.fullName}
+            />
+          </Grid>
+          <Grid size={4}>
+            <InfoItem
+              label="Sexo"
+              value={
+                evaluationDetails.participant.gender === Gender.MALE
+                  ? "Masculino"
+                  : "Feminino"
+              }
+            />
+          </Grid>
+          <Grid size={2}>
+            <InfoItem
+              label="Peso"
+              value={
+                evaluationDetails.participant.weight?.toString() + " kg" ||
+                "N/A"
+              }
+            />
+          </Grid>
+          <Grid size={2}>
+            <InfoItem
+              label="Altura"
+              value={
+                evaluationDetails.participant.height?.toString() + " cm" ||
+                "N/A"
+              }
+            />
+          </Grid>
+        </Grid>
 
         <Grid container spacing={2}>
           <Grid size={4}>
