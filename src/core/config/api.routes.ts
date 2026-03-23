@@ -45,6 +45,8 @@ export const API_ROUTES = {
   HEALTH_PROFESSIONALS: `${API_BASE_URL}/health-professional`,
   HEALTH_PROFESSIONAL_BY_ID: (id: string) =>
     `${API_BASE_URL}/health-professional/${id}`,
+  HEALTH_PROFESSIONAL_DASHBOARD_STATS: () =>
+    `${API_BASE_URL}/evaluation/dashboard/summary`,
 
   // Institution
   INSTITUTIONS: `${API_BASE_URL}/institution`,
