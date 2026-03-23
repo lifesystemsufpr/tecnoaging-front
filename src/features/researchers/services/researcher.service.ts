@@ -1,51 +1,55 @@
 import { API_ROUTES } from "@/core/config/api.routes";
 import { ApiResponse } from "@/core/services/api.type";
 import { clientService } from "@/core/services/client.service";
-import { HealthProfessional, HealthProfessionalList } from "@/core/types";
+import { Researcher, ResearcherList } from "@/core/types";
 
-interface FetchProfessionalsParams {
+interface FetchResearchersParams {
   pageSize?: number;
   page?: number;
   search?: string;
 }
 
-export const professionalService = {
-  fetchProfessionals: async ({
+export const researcherService = {
+  fetchResearchers: async ({
     pageSize,
     page,
     search,
-  }: FetchProfessionalsParams): Promise<
-    ApiResponse<HealthProfessionalList>
-  > => {
+  }: FetchResearchersParams): Promise<ApiResponse<ResearcherList>> => {
     try {
-      const endpoint = API_ROUTES.HEALTH_PROFESSIONALS;
+      const endpoint = API_ROUTES.RESEARCHERS;
       const url = new URL(endpoint);
+
       if (pageSize) {
         url.searchParams.append("pageSize", pageSize.toString());
       }
+
       if (page) {
         url.searchParams.append("page", page.toString());
       }
+
       if (search) {
         url.searchParams.append("search", search);
       }
-      const resp: ApiResponse<HealthProfessionalList> = await clientService({
+
+      const resp: ApiResponse<ResearcherList> = await clientService({
         method: "GET",
         endpoint: url.toString(),
       });
+
       return resp;
     } catch (error) {
       return Promise.reject(error);
     }
   },
 
-  fetchProfessionalById: async (id: string) => {
+  fetchResearcherById: async (id: string): Promise<Researcher> => {
     try {
-      const endpoint = `${API_ROUTES.HEALTH_PROFESSIONALS}/${id}`;
-      const resp: HealthProfessional = await clientService({
+      const endpoint = API_ROUTES.RESEARCHER_BY_ID(id);
+      const resp: Researcher = await clientService({
         method: "GET",
         endpoint,
       });
+
       return resp;
     } catch (error) {
       return Promise.reject(error);

@@ -1,5 +1,11 @@
 import { SystemRoles } from "../enums";
 
+export const formatDateBr = (dateStr?: string): string => {
+  if (!dateStr) return "Sem informação";
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("pt-BR");
+};
+
 export function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return "-";
   const d = new Date(iso);

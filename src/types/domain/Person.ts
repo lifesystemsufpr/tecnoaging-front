@@ -6,8 +6,10 @@ export interface User {
   cpf: string;
   gender: GENDER;
   phone?: string;
+
   role?: string;
   password?: string;
+
   active?: boolean;
   updatedAt?: string;
   hasRelations?: boolean;

@@ -15,23 +15,23 @@ import {
 import DatailLoading from "../components/DatailLoading";
 import { useFetchParticipant } from "../hooks/useFetchParticipant";
 
-import { fmtNumber, formatData } from "@/core/utils/format";
-import { UserDetailContent } from "@/core/components/shared/UserDetailContent";
-import { UserDetailHeader } from "@/core/components/shared/UseDetailHeader";
-import { ScholarShip, SocioEconomicLevel } from "@/core/enums";
-import { socioLabel } from "@/core/utils/label";
+import { fmtNumber } from "@/core/utils/format";
+
 import { DetailHeader } from "../components/HeaderDetail";
 import {
   formatAddressLine1,
   formatAddressLine2,
   formatZipCode,
 } from "../utils/format";
-import { InfoField } from "@/core/components/layout";
+
 import ParticipantQuestionnaires from "@/features/questionnaires/containers/ParticipantQuestionnaires";
 import ParticipantEvaluations from "@/features/evaluations/containers/ParticipantEvaluations";
 import { QuestionnairesProvider } from "@/features/questionnaires";
 
-export default function ParticipantDetail({
+import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
+import { DetailParticipantCard } from "../components/DetailParticipantCard";
+
+export default function ParticipantFullDetail({
   participantId,
 }: {
   participantId?: string;
@@ -117,36 +117,8 @@ export default function ParticipantDetail({
           <>
             <Divider sx={{ my: 3 }} />
 
-            <UserDetailContent {...data} />
-
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              <InfoField
-                label="Data de nascimento"
-                value={formatData(data.birthday)}
-              />
-              <InfoField label="Peso" value={weightFormatted} />
-              <InfoField label="Altura" value={heightFormatted} />
-              <InfoField
-                label="Escolaridade"
-                value={data.scholarship ? ScholarShip[data.scholarship] : null}
-              />
-              <InfoField
-                label="Nível socioeconômico"
-                value={
-                  data.socio_economic_level
-                    ? socioLabel(
-                        data.socio_economic_level as SocioEconomicLevel
-                      )
-                    : null
-                }
-              />
-              <InfoField
-                label="Endereço"
-                value={address1}
-                subValue={address2}
-              />
-              <InfoField label="CEP" value={zipFormatted} copyable />
-            </Grid>
+            <UserDetailContent userData={data} />
+            <DetailParticipantCard data={data} />
           </>
         )}
 

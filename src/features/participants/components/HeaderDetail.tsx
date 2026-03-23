@@ -49,7 +49,7 @@ export function DetailHeader({ title, participantId }: HeaderProps) {
           variant="contained"
           startIcon={<EditIcon />}
           onClick={handleEdit}
-          disabled={true} // Mantive conforme original
+          disabled={true}
         >
           Editar
         </Button>

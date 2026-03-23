@@ -1,12 +1,5 @@
 "use client";
 
-import { HealthProfessionalDetailContent } from "@/components/common/user/HealthProfessionalDetailContent";
-import { PatientDefailtContent } from "@/components/common/user/PatientDetailContent";
-import { UserDetailContent } from "@/components/common/user/UserDetailContent";
-import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
-import { fetchHealthProfessionalById } from "@/services/api-health-professional";
-import { fetchPatientById } from "@/services/api-patient";
-import { fetchResearcherById } from "@/services/api-researcher";
 import { HealthProfessionalResponse } from "@/types/api/Health-professional";
 import { PatientResponse } from "@/types/api/Patient";
 import { ResearcherResponse } from "@/types/api/Researcher";
@@ -14,25 +7,24 @@ import { SystemRoles } from "@/types/enums/system-roles";
 import { rolePt } from "@/utils/format";
 import {
   Box,
-  Breadcrumbs,
-  Button,
   Divider,
-  Link,
   Modal,
   Paper,
-  Stack,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useRouter } from "next/navigation";
-import { ResearcherDetailContent } from "@/components/common/user/ResearcherDetailContent";
-import ProfileSkeleton from "@/components/common/user/ProfileSkeleton";
+import { useMemo, useState } from "react";
+
+import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
 import { UserCreateForm } from "@/components/form/user-create";
+
+import {
+  ProfileNavigation,
+  UserDetailContent,
+  UserDetailHeader,
+  DetailFeature,
+} from "@/core/components/shared";
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState<
@@ -40,123 +32,26 @@ export default function ProfilePage() {
   >(null);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const router = useRouter();
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const session = useSession();
 
-  const fetchUserData = useCallback(
-    async (accessToken: string) => {
-      try {
-        let resp:
-          | PatientResponse
-          | ResearcherResponse
-          | HealthProfessionalResponse
-          | undefined;
-
-        switch (session.data?.user?.role) {
-          case SystemRoles.HEALTH_PROFESSIONAL:
-            resp = await fetchHealthProfessionalById({
-              accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          case SystemRoles.PATIENT:
-            resp = await fetchPatientById({
-              access_token: accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          case SystemRoles.RESEARCHER:
-            resp = await fetchResearcherById({
-              access_token: accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          default:
-            return;
-        }
-
-        if (resp) {
-          setUserData(resp);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar dados do usuário:", error);
-      }
-    },
-    [session.data?.user?.role, session.data?.user?.id]
+  const userRole = useMemo(
+    () => session.data?.user?.role as SystemRoles,
+    [session.data?.user?.role]
+  );
+  const userId = useMemo(
+    () => session.data?.user?.id || "",
+    [session.data?.user?.id]
   );
 
-  useEffect(() => {
-    if (session.data?.user && session.data.accessToken) {
-      fetchUserData(session.data.accessToken);
-    }
-  }, [session.data?.user, session.data?.accessToken, fetchUserData]);
   return (
     <Box>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            component="button"
-            onClick={() => router.push("/")}
-            underline="hover"
-            color="inherit"
-          >
-            Perfil
-          </Link>
-          <Typography color="text.primary">{"Detalhes"}</Typography>
-        </Breadcrumbs>
+      <ProfileNavigation onEdit={() => setOpenEditModal(true)} />
 
-        <Stack direction="row" spacing={1}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => router.push("/")}
-          >
-            Voltar
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => setOpenEditModal(true)}
-            disabled={false}
-          >
-            Editar
-          </Button>
-        </Stack>
-      </Stack>
-      {userData ? (
-        <Paper sx={{ p: 3 }}>
-          <UserDetailHeader
-            active={userData.active}
-            name={userData.fullName}
-            entity={rolePt(userData.role)}
-            updatedAt={userData.updatedAt}
-          />
-
-          <Divider sx={{ my: 3 }} />
-
-          <UserDetailContent {...userData} />
-          {userData.role === SystemRoles.HEALTH_PROFESSIONAL ? (
-            <HealthProfessionalDetailContent
-              {...(userData as HealthProfessionalResponse)}
-            />
-          ) : userData.role === SystemRoles.PATIENT ? (
-            <PatientDefailtContent {...(userData as PatientResponse)} />
-          ) : userData.role === SystemRoles.RESEARCHER ? (
-            <ResearcherDetailContent {...(userData as ResearcherResponse)} />
-          ) : null}
-        </Paper>
-      ) : (
-        <ProfileSkeleton />
-      )}
+      <Paper sx={{ p: 3 }}>
+        <DetailFeature role={userRole} userId={userId} />
+      </Paper>
 
       <Modal
         open={openEditModal}
@@ -178,16 +73,7 @@ export default function ProfilePage() {
             p: 4,
             borderRadius: 2,
           }}
-        >
-          <UserCreateForm
-            lockedRole={userData?.role as SystemRoles}
-            editUser={userData}
-            onHandle={async () => {
-              setOpenEditModal(false);
-              fetchUserData(session.data.accessToken);
-            }}
-          />
-        </Box>
+        ></Box>
       </Modal>
     </Box>
   );
