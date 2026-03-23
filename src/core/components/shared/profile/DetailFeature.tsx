@@ -8,20 +8,38 @@ import { DetailResearcher } from "@/features/researchers";
 export interface DetailFeatureProps {
   userId: string;
   role: SystemRoles;
+  onUserDataLoaded?: (data: unknown) => void;
 }
 
-export function DetailFeature({ userId, role }: DetailFeatureProps) {
-  console.log("DetailFeature Props:", { userId, role }); // Debug log
-
+export function DetailFeature({
+  userId,
+  role,
+  onUserDataLoaded,
+}: DetailFeatureProps) {
   switch (role) {
     case SystemRoles.MANAGER:
       return <ManagerDetail managerId={userId} />;
     case SystemRoles.PATIENT:
-      return <ParticipantDetail participantId={userId} />;
+      return (
+        <ParticipantDetail
+          participantId={userId}
+          onDataLoaded={onUserDataLoaded}
+        />
+      );
     case SystemRoles.HEALTH_PROFESSIONAL:
-      return <DetailProfessional professionalId={userId} />;
+      return (
+        <DetailProfessional
+          professionalId={userId}
+          onDataLoaded={onUserDataLoaded}
+        />
+      );
     case SystemRoles.RESEARCHER:
-      return <DetailResearcher researcherId={userId} />;
+      return (
+        <DetailResearcher
+          researcherId={userId}
+          onDataLoaded={onUserDataLoaded}
+        />
+      );
 
     default:
       return null;

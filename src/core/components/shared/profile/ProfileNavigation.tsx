@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 
 export interface ProfileNavigationProps {
   onEdit: () => void;
+  disableEdit?: boolean;
 }
 
-export function ProfileNavigation({ onEdit }: ProfileNavigationProps) {
+export function ProfileNavigation({
+  onEdit,
+  disableEdit = false,
+}: ProfileNavigationProps) {
   const router = useRouter();
 
   return (
@@ -37,7 +41,7 @@ export function ProfileNavigation({ onEdit }: ProfileNavigationProps) {
           variant="contained"
           startIcon={<EditIcon />}
           onClick={onEdit}
-          disabled={false}
+          disabled={disableEdit}
         >
           Editar
         </Button>

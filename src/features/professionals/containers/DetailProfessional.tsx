@@ -3,17 +3,26 @@ import { DetailProfessionalCard } from "../components/DetailProfessionalCard";
 import { useDetailProfessional } from "../hooks/useDetailProfessional";
 import { Box, Button, Typography, Skeleton, Divider } from "@mui/material";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
+import { useEffect } from "react";
 
 interface DetailProfessionalProps {
   professionalId: string;
+  onDataLoaded?: (data: unknown) => void;
 }
 
 export function DetailProfessional({
   professionalId,
+  onDataLoaded,
 }: DetailProfessionalProps) {
   const { data, isLoading, error } = useDetailProfessional({
     professionalId,
   });
+
+  useEffect(() => {
+    if (data && onDataLoaded) {
+      onDataLoaded(data);
+    }
+  }, [data, onDataLoaded]);
 
   if (isLoading) {
     return <ProfileSkeleton />;

@@ -1,36 +1,29 @@
 "use client";
 
-import { HealthProfessionalResponse } from "@/types/api/Health-professional";
-import { PatientResponse } from "@/types/api/Patient";
-import { ResearcherResponse } from "@/types/api/Researcher";
-import { SystemRoles } from "@/types/enums/system-roles";
-import { rolePt } from "@/utils/format";
-import {
-  Box,
-  Divider,
-  Modal,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { SystemRoles } from "@/core/enums";
+import { Box, Modal, Paper, useMediaQuery, useTheme } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
 import { UserCreateForm } from "@/components/form/user-create";
+import { HealthProfessional } from "@/types/domain/Health-professional";
+import { Patient } from "@/types/domain/Patient";
+import { Researcher } from "@/types/domain/Reseracher";
 
-import {
-  ProfileNavigation,
-  UserDetailContent,
-  UserDetailHeader,
-  DetailFeature,
-} from "@/core/components/shared";
+import { ProfileNavigation, DetailFeature } from "@/core/components/shared";
+
+type EditableUser = Researcher | Patient | HealthProfessional;
+
+const EDITABLE_ROLES = new Set<SystemRoles>([
+  SystemRoles.RESEARCHER,
+  SystemRoles.PATIENT,
+  SystemRoles.HEALTH_PROFESSIONAL,
+]);
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState<
-    PatientResponse | ResearcherResponse | HealthProfessionalResponse
-  >(null);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [editableUser, setEditableUser] = useState<EditableUser | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
 
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
@@ -45,17 +38,42 @@ export default function ProfilePage() {
     [session.data?.user?.id]
   );
 
+  const canEditRole = useMemo(() => EDITABLE_ROLES.has(userRole), [userRole]);
+
+  const canOpenEdit = canEditRole && !!editableUser;
+
+  const handleUserDataLoaded = useCallback((data: unknown) => {
+    setEditableUser(data as EditableUser);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setOpenEditModal(false);
+  }, []);
+
+  const handleFormSuccess = useCallback(() => {
+    setOpenEditModal(false);
+    setRefreshTick((prev) => prev + 1);
+  }, []);
+
   return (
     <Box>
-      <ProfileNavigation onEdit={() => setOpenEditModal(true)} />
+      <ProfileNavigation
+        onEdit={() => setOpenEditModal(true)}
+        disableEdit={!canOpenEdit}
+      />
 
       <Paper sx={{ p: 3 }}>
-        <DetailFeature role={userRole} userId={userId} />
+        <DetailFeature
+          key={`${userRole}-${userId}-${refreshTick}`}
+          role={userRole}
+          userId={userId}
+          onUserDataLoaded={handleUserDataLoaded}
+        />
       </Paper>
 
       <Modal
         open={openEditModal}
-        onClose={() => setOpenEditModal(false)}
+        onClose={handleCloseModal}
         sx={{
           padding: 2,
         }}
@@ -73,7 +91,15 @@ export default function ProfilePage() {
             p: 4,
             borderRadius: 2,
           }}
-        ></Box>
+        >
+          {editableUser && canEditRole ? (
+            <UserCreateForm
+              lockedRole={userRole}
+              editUser={editableUser}
+              onHandle={handleFormSuccess}
+            />
+          ) : null}
+        </Box>
       </Modal>
     </Box>
   );

@@ -4,13 +4,24 @@ import { useDetailResearcher } from "../hooks/useDetailResearcher";
 import { UserDetailContent } from "@/core/components/shared/profile/UserDetailContent";
 import { UserDetailHeader } from "@/core/components/shared/profile/UserDetailHeader";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
+import { useEffect } from "react";
 
 interface DetailResearcherProps {
   researcherId: string;
+  onDataLoaded?: (data: unknown) => void;
 }
 
-export function DetailResearcher({ researcherId }: DetailResearcherProps) {
+export function DetailResearcher({
+  researcherId,
+  onDataLoaded,
+}: DetailResearcherProps) {
   const { data, isLoading, error } = useDetailResearcher({ researcherId });
+
+  useEffect(() => {
+    if (data && onDataLoaded) {
+      onDataLoaded(data);
+    }
+  }, [data, onDataLoaded]);
 
   if (isLoading) {
     return <ProfileSkeleton />;

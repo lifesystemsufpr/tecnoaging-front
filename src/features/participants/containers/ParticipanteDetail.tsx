@@ -3,12 +3,17 @@ import { useFetchParticipant } from "../hooks/useFetchParticipant";
 import { DetailParticipantCard } from "../components/DetailParticipantCard";
 import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
+import { useEffect } from "react";
 
 interface ParticipantDetailProps {
   participantId: string;
+  onDataLoaded?: (data: unknown) => void;
 }
 
-export function ParticipantDetail({ participantId }: ParticipantDetailProps) {
+export function ParticipantDetail({
+  participantId,
+  onDataLoaded,
+}: ParticipantDetailProps) {
   const {
     participantData: data,
     isLoading: loading,
@@ -16,6 +21,12 @@ export function ParticipantDetail({ participantId }: ParticipantDetailProps) {
   } = useFetchParticipant({
     participantId,
   });
+
+  useEffect(() => {
+    if (data && onDataLoaded) {
+      onDataLoaded(data);
+    }
+  }, [data, onDataLoaded]);
 
   if (loading) {
     return <ProfileSkeleton />;
