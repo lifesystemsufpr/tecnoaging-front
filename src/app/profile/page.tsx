@@ -1,166 +1,79 @@
 "use client";
 
-import { HealthProfessionalDetailContent } from "@/components/common/user/HealthProfessionalDetailContent";
-import { PatientDefailtContent } from "@/components/common/user/PatientDetailContent";
-import { UserDetailContent } from "@/components/common/user/UserDetailContent";
-import { UserDetailHeader } from "@/components/common/user/UserDetailHeader";
-import { fetchHealthProfessionalById } from "@/services/api-health-professional";
-import { fetchPatientById } from "@/services/api-patient";
-import { fetchResearcherById } from "@/services/api-researcher";
-import { HealthProfessionalResponse } from "@/types/api/Health-professional";
-import { PatientResponse } from "@/types/api/Patient";
-import { ResearcherResponse } from "@/types/api/Researcher";
-import { SystemRoles } from "@/types/enums/system-roles";
-import { rolePt } from "@/utils/format";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Divider,
-  Link,
-  Modal,
-  Paper,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { SystemRoles } from "@/core/enums";
+import { Box, Modal, Paper, useMediaQuery, useTheme } from "@mui/material";
 import { useSession } from "next-auth/react";
-import { useCallback, useEffect, useState } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useRouter } from "next/navigation";
-import { ResearcherDetailContent } from "@/components/common/user/ResearcherDetailContent";
-import ProfileSkeleton from "@/components/common/user/ProfileSkeleton";
+import { useCallback, useMemo, useState } from "react";
+
 import { UserCreateForm } from "@/components/form/user-create";
+import { HealthProfessional } from "@/types/domain/Health-professional";
+import { Patient } from "@/types/domain/Patient";
+import { Researcher } from "@/types/domain/Reseracher";
+
+import { ProfileNavigation, DetailFeature } from "@/core/components/shared";
+
+type EditableUser = Researcher | Patient | HealthProfessional;
+
+const EDITABLE_ROLES = new Set<SystemRoles>([
+  SystemRoles.RESEARCHER,
+  SystemRoles.PATIENT,
+  SystemRoles.HEALTH_PROFESSIONAL,
+]);
 
 export default function ProfilePage() {
-  const [userData, setUserData] = useState<
-    PatientResponse | ResearcherResponse | HealthProfessionalResponse
-  >(null);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [editableUser, setEditableUser] = useState<EditableUser | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
 
-  const router = useRouter();
   const theme = useTheme();
   const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const session = useSession();
 
-  const fetchUserData = useCallback(
-    async (accessToken: string) => {
-      try {
-        let resp:
-          | PatientResponse
-          | ResearcherResponse
-          | HealthProfessionalResponse
-          | undefined;
-
-        switch (session.data?.user?.role) {
-          case SystemRoles.HEALTH_PROFESSIONAL:
-            resp = await fetchHealthProfessionalById({
-              accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          case SystemRoles.PATIENT:
-            resp = await fetchPatientById({
-              access_token: accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          case SystemRoles.RESEARCHER:
-            resp = await fetchResearcherById({
-              access_token: accessToken,
-              id: session.data.user.id,
-            });
-            break;
-
-          default:
-            return;
-        }
-
-        if (resp) {
-          setUserData(resp);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar dados do usuário:", error);
-      }
-    },
-    [session.data?.user?.role, session.data?.user?.id]
+  const userRole = useMemo(
+    () => session.data?.user?.role as SystemRoles,
+    [session.data?.user?.role]
+  );
+  const userId = useMemo(
+    () => session.data?.user?.id || "",
+    [session.data?.user?.id]
   );
 
-  useEffect(() => {
-    if (session.data?.user && session.data.accessToken) {
-      fetchUserData(session.data.accessToken);
-    }
-  }, [session.data?.user, session.data?.accessToken, fetchUserData]);
+  const canEditRole = useMemo(() => EDITABLE_ROLES.has(userRole), [userRole]);
+
+  const canOpenEdit = canEditRole && !!editableUser;
+
+  const handleUserDataLoaded = useCallback((data: unknown) => {
+    setEditableUser(data as EditableUser);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setOpenEditModal(false);
+  }, []);
+
+  const handleFormSuccess = useCallback(() => {
+    setOpenEditModal(false);
+    setRefreshTick((prev) => prev + 1);
+  }, []);
+
   return (
     <Box>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            component="button"
-            onClick={() => router.push("/")}
-            underline="hover"
-            color="inherit"
-          >
-            Perfil
-          </Link>
-          <Typography color="text.primary">{"Detalhes"}</Typography>
-        </Breadcrumbs>
+      <ProfileNavigation
+        onEdit={() => setOpenEditModal(true)}
+        disableEdit={!canOpenEdit}
+      />
 
-        <Stack direction="row" spacing={1}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => router.push("/")}
-          >
-            Voltar
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => setOpenEditModal(true)}
-            disabled={false}
-          >
-            Editar
-          </Button>
-        </Stack>
-      </Stack>
-      {userData ? (
-        <Paper sx={{ p: 3 }}>
-          <UserDetailHeader
-            active={userData.active}
-            name={userData.fullName}
-            entity={rolePt(userData.role)}
-            updatedAt={userData.updatedAt}
-          />
-
-          <Divider sx={{ my: 3 }} />
-
-          <UserDetailContent {...userData} />
-          {userData.role === SystemRoles.HEALTH_PROFESSIONAL ? (
-            <HealthProfessionalDetailContent
-              {...(userData as HealthProfessionalResponse)}
-            />
-          ) : userData.role === SystemRoles.PATIENT ? (
-            <PatientDefailtContent {...(userData as PatientResponse)} />
-          ) : userData.role === SystemRoles.RESEARCHER ? (
-            <ResearcherDetailContent {...(userData as ResearcherResponse)} />
-          ) : null}
-        </Paper>
-      ) : (
-        <ProfileSkeleton />
-      )}
+      <Paper sx={{ p: 3 }}>
+        <DetailFeature
+          key={`${userRole}-${userId}-${refreshTick}`}
+          role={userRole}
+          userId={userId}
+          onUserDataLoaded={handleUserDataLoaded}
+        />
+      </Paper>
 
       <Modal
         open={openEditModal}
-        onClose={() => setOpenEditModal(false)}
+        onClose={handleCloseModal}
         sx={{
           padding: 2,
         }}
@@ -179,14 +92,13 @@ export default function ProfilePage() {
             borderRadius: 2,
           }}
         >
-          <UserCreateForm
-            lockedRole={userData?.role as SystemRoles}
-            editUser={userData}
-            onHandle={async () => {
-              setOpenEditModal(false);
-              fetchUserData(session.data.accessToken);
-            }}
-          />
+          {editableUser && canEditRole ? (
+            <UserCreateForm
+              lockedRole={userRole}
+              editUser={editableUser}
+              onHandle={handleFormSuccess}
+            />
+          ) : null}
         </Box>
       </Modal>
     </Box>

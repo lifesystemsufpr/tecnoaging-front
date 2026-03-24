@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
-import HomePacientContent from "@/components/pages/homePacient/HomePacientContent";
+import PatientDashboardPage from "@/features/participants/pages/PatientDashboardPage";
 import HomeResearchContent from "@/components/pages/homeResearch/HomeResearchContent";
 import HomeHealth from "@/components/pages/homeHealth/HomeContent";
 import { SystemRoles } from "@/types/enums/system-roles";
@@ -22,7 +22,7 @@ export default function HomeDashboardPage() {
   const tipo = session?.user?.role || "researcher";
 
   return tipo === SystemRoles.PATIENT ? (
-    <HomePacientContent />
+    <PatientDashboardPage />
   ) : tipo === SystemRoles.RESEARCHER ? (
     <HomeResearchContent />
   ) : (
