@@ -11,6 +11,7 @@ import { PatientRecentEvaluationChart } from "../components/PatientRecentEvaluat
 export default function PatientDashboardPage() {
   const { data: session } = useSession();
   const cpf = session?.user?.cpf as string | undefined;
+  console.log("CPF do paciente:", session);
   const { data, isLoading, error } = usePatientDashboard(cpf);
 
   if (isLoading) {
