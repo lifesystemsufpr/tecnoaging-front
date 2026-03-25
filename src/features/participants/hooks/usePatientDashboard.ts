@@ -51,9 +51,7 @@ function buildMonthlySeries(
 ): DashboardSeries {
   const monthIndex = Math.min(11, Math.max(0, month - 1));
 
-  const tugAverage = valuesByType.find(
-    ({ type }) => isTugTest(type)
-  );
+  const tugAverage = valuesByType.find(({ type }) => isTugTest(type));
 
   const fiveTstsAverage = valuesByType.find(({ type }) => {
     return isSitToStandTest(type);
