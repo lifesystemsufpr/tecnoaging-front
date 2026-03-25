@@ -11,7 +11,6 @@ import { PatientRecentEvaluationChart } from "../components/PatientRecentEvaluat
 export default function PatientDashboardPage() {
   const { data: session } = useSession();
   const cpf = session?.user?.cpf as string | undefined;
-  console.log("CPF do paciente:", session);
   const { data, isLoading, error } = usePatientDashboard(cpf);
 
   if (isLoading) {
@@ -33,20 +32,20 @@ export default function PatientDashboardPage() {
   return (
     <Box>
       <PatientTopInfoCards
-        total={data.evaluations.length}
-        mediaDuracao={data.mediaDuracao}
-        variacaoAvaliacoes={data.variacaoAvaliacoes}
+        total={data.totalEvaluations}
+        averageDuration={data.averageDuration}
+        evaluationVariation={data.evaluationVariation}
       />
 
       <Box mt={2}>
-        <PatientMonthlyChart data={data.evaluationsByMonth} />
+        <PatientMonthlyChart data={data.monthlyEvaluations} />
       </Box>
 
       <Grid container spacing={2} mt={0.5}>
         <Grid size={{ xs: 12, lg: 6 }}>
           <PatientTestIndicators
-            countTUG={data.countTUG}
-            count5TSTS={data.count5TSTS}
+            countTUG={data.tugCount}
+            count5TSTS={data.fiveTstsCount}
           />
         </Grid>
 

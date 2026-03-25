@@ -1,4 +1,4 @@
-import { Divider, Grid, Typography, Chip } from "@mui/material";
+import { Divider, Grid } from "@mui/material";
 import { ManagerProfile } from "../types";
 import { formatDateTime } from "@/core/utils/format";
 import { InfoField } from "@/core/components/layout";
@@ -8,8 +8,7 @@ export interface DetailManagerCardProps {
 }
 
 export function DetailManagerCard({ manager }: DetailManagerCardProps) {
-  const { cpf, fullName, gender, phone, active, createdAt, updatedAt } =
-    manager;
+  const { createdAt, updatedAt } = manager;
 
   return (
     <>

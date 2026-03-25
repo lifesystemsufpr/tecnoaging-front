@@ -2,6 +2,30 @@ import { API_ROUTES } from "@/core/config/api.routes";
 import { ApiResponse } from "@/core/services/api.type";
 import { clientService } from "@/core/services/client.service";
 import { Participant, ParticipantList } from "@/core/types";
+import {
+  AverageDurationResponse,
+  EvaluationCountResponse,
+  MonthlyAverageResponse,
+  MonthlyEvaluationsResponse,
+  MostPerformedTestsResponse,
+} from "../types/patient-dashboard.types";
+
+interface ParticipantDashboardParams {
+  participantCpf?: string;
+}
+
+function buildParticipantDashboardUrl(
+  endpoint: string,
+  { participantCpf }: ParticipantDashboardParams = {}
+): string {
+  if (!participantCpf) {
+    return endpoint;
+  }
+
+  const url = new URL(endpoint);
+  url.searchParams.append("cpf", participantCpf);
+  return url.toString();
+}
 
 export const participantService = {
   fetchParticipantById: async (participantId: string): Promise<Participant> => {
@@ -44,6 +68,95 @@ export const participantService = {
         method: "GET",
         endpoint: url.toString(),
       });
+      return resp;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+
+  fetchParticipantEvaluationCount:
+    async (): Promise<EvaluationCountResponse> => {
+      try {
+        const endpoint = buildParticipantDashboardUrl(
+          API_ROUTES.PARTICIPANT_DASHBOARDS.EVALUATION_COUNT
+        );
+
+        const resp: EvaluationCountResponse = await clientService({
+          method: "GET",
+          endpoint,
+        });
+
+        return resp;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+
+  fetchParticipantAverageDuration:
+    async (): Promise<AverageDurationResponse> => {
+      try {
+        const endpoint = buildParticipantDashboardUrl(
+          API_ROUTES.PARTICIPANT_DASHBOARDS.AVARAGE_DURATION
+        );
+
+        const resp: AverageDurationResponse = await clientService({
+          method: "GET",
+          endpoint,
+        });
+
+        return resp;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+
+  fetchParticipantMonthlyEvaluations:
+    async (): Promise<MonthlyEvaluationsResponse> => {
+      try {
+        const endpoint = buildParticipantDashboardUrl(
+          API_ROUTES.PARTICIPANT_DASHBOARDS.MONTHLY_EVALUATIONS
+        );
+
+        const resp: MonthlyEvaluationsResponse = await clientService({
+          method: "GET",
+          endpoint,
+        });
+
+        return resp;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+
+  fetchParticipantMostPerformedTests:
+    async (): Promise<MostPerformedTestsResponse> => {
+      try {
+        const endpoint = buildParticipantDashboardUrl(
+          API_ROUTES.PARTICIPANT_DASHBOARDS.MOST_PERFORMED_EVALUATIONS
+        );
+
+        const resp: MostPerformedTestsResponse = await clientService({
+          method: "GET",
+          endpoint,
+        });
+
+        return resp;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+
+  fetchParticipantMonthlyAverage: async (): Promise<MonthlyAverageResponse> => {
+    try {
+      const endpoint = buildParticipantDashboardUrl(
+        API_ROUTES.PARTICIPANT_DASHBOARDS.MONTHLY_AVERAGE
+      );
+
+      const resp: MonthlyAverageResponse = await clientService({
+        method: "GET",
+        endpoint,
+      });
+
       return resp;
     } catch (error) {
       return Promise.reject(error);

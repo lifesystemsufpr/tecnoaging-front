@@ -11,8 +11,8 @@ import { ReactNode } from "react";
 
 interface PatientTopInfoCardsProps {
   total: number;
-  mediaDuracao: string;
-  variacaoAvaliacoes: number;
+  averageDuration: string;
+  evaluationVariation: number;
 }
 
 interface InfoCardProps {
@@ -65,8 +65,8 @@ function InfoCard({
 
 export function PatientTopInfoCards({
   total,
-  mediaDuracao,
-  variacaoAvaliacoes,
+  averageDuration,
+  evaluationVariation,
 }: PatientTopInfoCardsProps) {
   return (
     <Grid container spacing={2}>
@@ -75,7 +75,7 @@ export function PatientTopInfoCards({
           icon={<Assessment fontSize="small" color="primary" />}
           label="Avaliações Realizadas"
           value={total}
-          variation={formatPercentVariation(variacaoAvaliacoes)}
+          variation={formatPercentVariation(evaluationVariation)}
           variationLabel="este mês"
         />
       </Grid>
@@ -84,7 +84,7 @@ export function PatientTopInfoCards({
         <InfoCard
           icon={<Timer fontSize="small" color="primary" />}
           label="Duração Média"
-          value={mediaDuracao}
+          value={averageDuration}
           variation="média"
           variationLabel="por teste"
         />
