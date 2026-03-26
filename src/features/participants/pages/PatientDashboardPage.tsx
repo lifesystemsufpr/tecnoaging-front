@@ -43,10 +43,7 @@ export default function PatientDashboardPage() {
 
       <Grid container spacing={2} mt={0.5}>
         <Grid size={{ xs: 12, lg: 6 }}>
-          <PatientTestIndicators
-            countTUG={data.tugCount}
-            count5TSTS={data.fiveTstsCount}
-          />
+          <PatientTestIndicators tests={data.mostPerformedTests} />
         </Grid>
 
         <Grid size={{ xs: 12, lg: 6 }}>

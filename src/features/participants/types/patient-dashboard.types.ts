@@ -18,9 +18,14 @@ export interface PatientProfile {
   birthday?: string;
 }
 
+export interface DashboardSeriesItem {
+  name: string;
+  data: number[];
+}
+
 export interface DashboardSeries {
-  tug: number[];
-  fiveTsts: number[];
+  subtitle: string;
+  series: DashboardSeriesItem[];
 }
 
 export interface PatientDashboardData {
@@ -28,8 +33,7 @@ export interface PatientDashboardData {
   monthlyEvaluations: number[];
   averageDuration: string;
   evaluationVariation: number;
-  tugCount: number;
-  fiveTstsCount: number;
+  mostPerformedTests: TestSummary[];
   recentSeries: DashboardSeries;
 }
 

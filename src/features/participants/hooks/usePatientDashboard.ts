@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { ApiError } from "@/core/services/client.service";
 import {
   DashboardSeries,
+  EvaluationTypeAverage,
   PatientDashboardData,
 } from "../types/patient-dashboard.types";
 import { useFetchParticipantAverageDuration } from "./useFetchParticipantAverageDuration";
@@ -15,30 +16,9 @@ const INITIAL_DATA: PatientDashboardData = {
   monthlyEvaluations: Array(12).fill(0),
   averageDuration: "0.0s",
   evaluationVariation: 0,
-  tugCount: 0,
-  fiveTstsCount: 0,
-  recentSeries: { tug: Array(12).fill(0), fiveTsts: Array(12).fill(0) },
+  mostPerformedTests: [],
+  recentSeries: { subtitle: "", series: [] },
 };
-
-const normalizeTestType = (value: string) =>
-  value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-
-function isTugTest(value: string): boolean {
-  const normalized = normalizeTestType(value);
-  return normalized.includes("TUG") || normalized.includes("TIMEDUPANDGO");
-}
-
-function isSitToStandTest(value: string): boolean {
-  const normalized = normalizeTestType(value);
-
-  return (
-    normalized.includes("5TSTS") ||
-    normalized.includes("FIVETIMESSITTOSTAND") ||
-    normalized.includes("TTSTS") ||
-    normalized.includes("THIRTYTIMESSITTOSTAND") ||
-    normalized.includes("30STS")
-  );
-}
 
 const toNumber = (value: string) => {
   const parsed = Number.parseFloat(value);
@@ -46,28 +26,23 @@ const toNumber = (value: string) => {
 };
 
 function buildMonthlySeries(
-  valuesByType: { type: string; value: string }[],
-  month: number
+  valuesByType: EvaluationTypeAverage[],
+  month: number,
+  subtitle?: string
 ): DashboardSeries {
   const monthIndex = Math.min(11, Math.max(0, month - 1));
 
-  const tugAverage = valuesByType.find(({ type }) => isTugTest(type));
-
-  const fiveTstsAverage = valuesByType.find(({ type }) => {
-    return isSitToStandTest(type);
-  });
-
-  const tugSeries = Array(12).fill(0);
-  tugSeries[monthIndex] = tugAverage ? toNumber(tugAverage.value) : 0;
-
-  const fiveTstsSeries = Array(12).fill(0);
-  fiveTstsSeries[monthIndex] = fiveTstsAverage
-    ? toNumber(fiveTstsAverage.value)
-    : 0;
-
   return {
-    tug: tugSeries,
-    fiveTsts: fiveTstsSeries,
+    subtitle: subtitle ?? "",
+    series: valuesByType.map(({ fullName, type, averageDuration }) => {
+      const monthlyData = Array(12).fill(0);
+      monthlyData[monthIndex] = toNumber(averageDuration);
+
+      return {
+        name: fullName || type,
+        data: monthlyData,
+      };
+    }),
   };
 }
 
@@ -119,31 +94,15 @@ export function usePatientDashboard(participantCpf?: string) {
     }
   );
 
-  const tugCount =
-    mostPerformedTestsQuery.data?.tests
-      ?.filter(({ name, fullName }) => {
-        return isTugTest(`${name} ${fullName}`);
-      })
-      .reduce((total, test) => total + test.count, 0) ?? 0;
-
-  const fiveTstsCount =
-    mostPerformedTestsQuery.data?.tests
-      ?.filter(({ name, fullName }) => {
-        return isSitToStandTest(`${name} ${fullName}`);
-      })
-      .reduce((total, test) => total + test.count, 0) ?? 0;
+  const mostPerformedTests = mostPerformedTestsQuery.data?.tests ?? [];
 
   const currentMonth =
     monthlyAverageQuery.data?.month ?? new Date().getMonth() + 1;
 
   const recentSeries = buildMonthlySeries(
-    monthlyAverageQuery.data?.evaluationTypes?.map(
-      ({ type, averageDuration }) => ({
-        type,
-        value: averageDuration,
-      })
-    ) ?? [],
-    currentMonth
+    monthlyAverageQuery.data?.evaluationTypes ?? [],
+    currentMonth,
+    monthlyAverageQuery.data?.subtitle
   );
 
   const data: PatientDashboardData = enabled
@@ -155,8 +114,7 @@ export function usePatientDashboard(participantCpf?: string) {
           INITIAL_DATA.averageDuration,
         evaluationVariation:
           evaluationCountQuery.data?.monthlyChange?.percentage ?? 0,
-        tugCount,
-        fiveTstsCount,
+        mostPerformedTests,
         recentSeries,
       }
     : INITIAL_DATA;
