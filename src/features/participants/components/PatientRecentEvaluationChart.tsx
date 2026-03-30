@@ -32,7 +32,6 @@ export function PatientRecentEvaluationChart({
   data,
 }: PatientRecentEvaluationChartProps) {
   const options: ApexOptions = {
-    colors: ["#4caf50", "#1565c0"],
     chart: {
       height: 310,
       type: "area",
@@ -82,16 +81,7 @@ export function PatientRecentEvaluationChart({
     },
   };
 
-  const series = [
-    {
-      name: "Média 5TSTS",
-      data: data.fiveTsts,
-    },
-    {
-      name: "Média TUG",
-      data: data.tug,
-    },
-  ];
+  const series = data.series;
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 3, height: "100%" }}>
@@ -99,9 +89,11 @@ export function PatientRecentEvaluationChart({
         <Typography variant="h6" fontWeight={600}>
           Média Mensal das Avaliações
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={2}>
-          TUG e 5TSTS em segundos
-        </Typography>
+        {data.subtitle ? (
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            {data.subtitle}
+          </Typography>
+        ) : null}
 
         <ReactApexChart
           options={options}

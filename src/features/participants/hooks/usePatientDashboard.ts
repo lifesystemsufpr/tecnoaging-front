@@ -1,134 +1,155 @@
-import { useCallback, useEffect, useState } from "react";
-import { api as apiEvaluations } from "@/services/apiEvaluations";
-import { api as apiPerson } from "@/services/apiPerson";
+import { useCallback } from "react";
+import { ApiError } from "@/core/services/client.service";
 import {
   DashboardSeries,
+  EvaluationTypeAverage,
   PatientDashboardData,
-  PatientEvaluation,
-  PatientProfile,
-  PerformanceClassification,
 } from "../types/patient-dashboard.types";
-import {
-  calcularIdadeAnos,
-  calcularMediaMensalPorTipo,
-  classificarTempoPorIdade,
-  formatMediaDuracao,
-  isFiveTstsType,
-  tempoStringParaSegundos,
-} from "../utils/patientDashboard.metrics";
+import { useFetchParticipantAverageDuration } from "./useFetchParticipantAverageDuration";
+import { useFetchParticipantEvaluationCount } from "./useFetchParticipantEvaluationCount";
+import { useFetchParticipantMonthlyAverage } from "./useFetchParticipantMonthlyAverage";
+import { useFetchParticipantMonthlyEvaluations } from "./useFetchParticipantMonthlyEvaluations";
+import { useFetchParticipantMostPerformedTests } from "./useFetchParticipantMostPerformedTests";
 
 const INITIAL_DATA: PatientDashboardData = {
-  evaluations: [],
-  evaluationsByMonth: Array(12).fill(0),
-  mediaDuracao: "0.0s",
-  variacaoAvaliacoes: 0,
-  countTUG: 0,
-  count5TSTS: 0,
-  recentSeries: { tug: Array(12).fill(0), fiveTsts: Array(12).fill(0) },
+  totalEvaluations: 0,
+  monthlyEvaluations: Array(12).fill(0),
+  averageDuration: "0.0s",
+  evaluationVariation: 0,
+  mostPerformedTests: [],
+  recentSeries: { subtitle: "", series: [] },
 };
 
-export function usePatientDashboard(cpf?: string) {
-  const [data, setData] = useState<PatientDashboardData>(INITIAL_DATA);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const toNumber = (value: string) => {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
 
-  const fetch = useCallback(async () => {
-    if (!cpf) {
-      setData(INITIAL_DATA);
-      setIsLoading(false);
-      return;
-    }
+function buildMonthlySeries(
+  valuesByType: EvaluationTypeAverage[],
+  month: number,
+  subtitle?: string
+): DashboardSeries {
+  const monthIndex = Math.min(11, Math.max(0, month - 1));
 
-    setIsLoading(true);
-    setError(null);
+  return {
+    subtitle: subtitle ?? "",
+    series: valuesByType.map(({ fullName, type, averageDuration }) => {
+      const monthlyData = Array(12).fill(0);
+      monthlyData[monthIndex] = toNumber(averageDuration);
 
-    try {
-      const [evalsRaw, personRaw] = await Promise.all([
-        apiEvaluations.getEvaluationsByPersonCpf(cpf),
-        apiPerson.getPerfilByCpf(`patient/${cpf}`),
-      ]);
-
-      const evals: PatientEvaluation[] = Array.isArray(evalsRaw)
-        ? evalsRaw
-        : [];
-      const person: PatientProfile = personRaw || {};
-
-      let tug = 0;
-      let five = 0;
-
-      evals.forEach((ev) => {
-        if (ev.type === "TUG") tug += 1;
-        if (isFiveTstsType(ev.type)) five += 1;
-      });
-
-      const mediaTug = calcularMediaMensalPorTipo(evals, "TUG");
-      const mediaFive = calcularMediaMensalPorTipo(evals, "5TSTS");
-      const recentSeries: DashboardSeries = {
-        tug: mediaTug,
-        fiveTsts: mediaFive,
+      return {
+        name: fullName || type,
+        data: monthlyData,
       };
+    }),
+  };
+}
 
-      const counts = Array(12).fill(0);
-      let totalSegundos = 0;
-      const classificacoes: {
-        mes: number;
-        classificacao: PerformanceClassification;
-      }[] = [];
-      const now = new Date();
-      const birthDate = person.dateOfBirth || person.birthday || "";
+function getErrorMessage(error: unknown): string {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
 
-      evals.forEach((ev) => {
-        const date = new Date(ev.date);
-        const month = date.getMonth();
-        counts[month] += 1;
+  if (error instanceof Error) {
+    return error.message;
+  }
 
-        const tempo = tempoStringParaSegundos(ev.totalTime);
-        totalSegundos += tempo;
+  return "Erro ao buscar dados do dashboard do participante";
+}
 
-        if (birthDate) {
-          const idade = calcularIdadeAnos(birthDate, ev.date);
-          const classificacao = classificarTempoPorIdade(tempo, idade, ev.type);
-          classificacoes.push({ mes: month, classificacao });
-        }
-      });
+export function usePatientDashboard(participantCpf?: string) {
+  const enabled = Boolean(participantCpf);
 
-      const mediaSegundos = evals.length ? totalSegundos / evals.length : 0;
-      const mediaDuracao = formatMediaDuracao(mediaSegundos);
+  const evaluationCountQuery = useFetchParticipantEvaluationCount({
+    participantCpf,
+    enabled,
+  });
 
-      const mesAtual = now.getMonth();
+  const averageDurationQuery = useFetchParticipantAverageDuration({
+    participantCpf,
+    enabled,
+  });
 
-      const avaliacoesMesAtual = counts[mesAtual];
-      const avaliacoesMesAnterior = counts[mesAtual - 1] || 0;
-      const variacaoAvaliacoes =
-        avaliacoesMesAnterior > 0
-          ? Number(
-              (
-                ((avaliacoesMesAtual - avaliacoesMesAnterior) /
-                  avaliacoesMesAnterior) *
-                100
-              ).toFixed(0)
-            )
-          : 0;
+  const monthlyEvaluationsQuery = useFetchParticipantMonthlyEvaluations({
+    participantCpf,
+    enabled,
+  });
 
-      setData({
-        evaluations: evals,
-        evaluationsByMonth: counts,
-        mediaDuracao,
-        variacaoAvaliacoes,
-        countTUG: tug,
-        count5TSTS: five,
-        recentSeries,
-      });
-    } catch (err) {
-      console.error("Erro ao buscar dados do dashboard do participante:", err);
-    } finally {
-      setIsLoading(false);
+  const mostPerformedTestsQuery = useFetchParticipantMostPerformedTests({
+    participantCpf,
+    enabled,
+  });
+
+  const monthlyAverageQuery = useFetchParticipantMonthlyAverage({
+    participantCpf,
+    enabled,
+  });
+
+  const monthlyEvaluations = Array(12).fill(0);
+  monthlyEvaluationsQuery.data?.monthlyData?.forEach(
+    ({ monthNumber, count }) => {
+      const monthIndex = Math.min(11, Math.max(0, monthNumber - 1));
+      monthlyEvaluations[monthIndex] = count;
     }
-  }, [cpf]);
+  );
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const mostPerformedTests = mostPerformedTestsQuery.data?.tests ?? [];
 
-  return { data, isLoading, error, reload: fetch };
+  const currentMonth =
+    monthlyAverageQuery.data?.month ?? new Date().getMonth() + 1;
+
+  const recentSeries = buildMonthlySeries(
+    monthlyAverageQuery.data?.evaluationTypes ?? [],
+    currentMonth,
+    monthlyAverageQuery.data?.subtitle
+  );
+
+  const data: PatientDashboardData = enabled
+    ? {
+        totalEvaluations: evaluationCountQuery.data?.totalEvaluations ?? 0,
+        monthlyEvaluations,
+        averageDuration:
+          averageDurationQuery.data?.averageDuration?.display ??
+          INITIAL_DATA.averageDuration,
+        evaluationVariation:
+          evaluationCountQuery.data?.monthlyChange?.percentage ?? 0,
+        mostPerformedTests,
+        recentSeries,
+      }
+    : INITIAL_DATA;
+
+  const isLoading =
+    evaluationCountQuery.isLoading ||
+    averageDurationQuery.isLoading ||
+    monthlyEvaluationsQuery.isLoading ||
+    mostPerformedTestsQuery.isLoading ||
+    monthlyAverageQuery.isLoading;
+
+  const firstError =
+    evaluationCountQuery.error ??
+    averageDurationQuery.error ??
+    monthlyEvaluationsQuery.error ??
+    mostPerformedTestsQuery.error ??
+    monthlyAverageQuery.error;
+
+  const error = firstError ? getErrorMessage(firstError) : null;
+
+  const reload = useCallback(async () => {
+    await Promise.all([
+      evaluationCountQuery.refetch(),
+      averageDurationQuery.refetch(),
+      monthlyEvaluationsQuery.refetch(),
+      mostPerformedTestsQuery.refetch(),
+      monthlyAverageQuery.refetch(),
+    ]);
+  }, [
+    evaluationCountQuery,
+    averageDurationQuery,
+    monthlyEvaluationsQuery,
+    mostPerformedTestsQuery,
+    monthlyAverageQuery,
+  ]);
+
+  return { data, isLoading, error, reload };
 }

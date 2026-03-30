@@ -79,4 +79,12 @@ export const API_ROUTES = {
   // Manager
   MANAGERS: `${API_BASE_URL}/manager`,
   MANAGER_BY_ID: (id: string) => `${API_BASE_URL}/manager/${id}`,
+
+  PARTICIPANT_DASHBOARDS: {
+    EVALUATION_COUNT: `${API_BASE_URL}/dashboard/participant/evaluations-count`,
+    AVARAGE_DURATION: `${API_BASE_URL}/dashboard/participant/average-duration`,
+    MONTHLY_EVALUATIONS: `${API_BASE_URL}/dashboard/participant/monthly-evaluations`,
+    MOST_PERFORMED_EVALUATIONS: `${API_BASE_URL}/dashboard/participant/most-performed-tests`,
+    MONTHLY_AVERAGE: `${API_BASE_URL}/dashboard/participant/monthly-average`,
+  },
 } as const;
