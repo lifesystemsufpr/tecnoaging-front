@@ -77,6 +77,11 @@ export const navItems: NavItem[] = [
         path: "/30sts",
         pro: false,
       },
+      {
+        name: "2 Minute Step Test",
+        path: "/2mst",
+        pro: false,
+      },
     ],
   },
   {
