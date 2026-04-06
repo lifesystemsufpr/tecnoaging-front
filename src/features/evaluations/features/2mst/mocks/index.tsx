@@ -47,7 +47,7 @@ const mockProcessedData = Array.from({ length: 240 }, (_, i) => ({
 
 export const mockEvaluationData: Evaluation = {
   id: "mock-2mst-001",
-  type: "TMST" as any,
+  type: "TMST",
   participantId: "participant-001",
   healthProfessionalId: "hp-001",
   healthcareUnitId: "unit-001",

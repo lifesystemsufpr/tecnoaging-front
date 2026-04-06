@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
   Typography,
   Box,
-  CircularProgress,
   Avatar,
   Stack,
 } from "@mui/material";

@@ -43,9 +43,6 @@ export default function ContinuityChart({
       getPercentileValue(participantGender, ag, 75) ?? 0,
     ]);
 
-    const genderLabel =
-      participantGender === Gender.MALE ? "Masculino" : "Feminino";
-
     return {
       title: {
         text: `Comparativo de repetição por idade`,
