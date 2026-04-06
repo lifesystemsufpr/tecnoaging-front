@@ -34,6 +34,7 @@ export default function ParticipantEvaluations({
     setPagination,
     handleSearch,
   } = useParticipantEvaluations(participantId);
+
   const { data: historyRepetitions } = useFetchHistoryRepetitions({
     patientId: participantId || "",
   });
@@ -120,7 +121,6 @@ export default function ParticipantEvaluations({
             columns={participantColumns}
             rows={evaluations}
             loading={isLoading}
-            showActions
             onView={handleOnViewEvaluation}
             pageSize={pagination.pageSize}
             setPaginationModel={setPagination}

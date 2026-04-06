@@ -10,7 +10,6 @@ export function useFetchHistoryRepetitions({
     queryKey: ["30sts", "historyRepetitions", patientId],
     queryFn: async () => {
       const resp = await evaluationService.getRepetitionsHistory(patientId);
-      console.log("API Response for history repetitions:", resp);
       return resp.data;
     },
     enabled: !!patientId,
