@@ -1,0 +1,65 @@
+name: Deploy TecnoAging (web/dev)
+
+on:
+  push:
+    branches:
+      - hml
+
+env:
+  PM2_APP_NAME: TecnoAging-front
+  APP_DIR: /var/www/tecnoaging-front
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # ✅ valida build (CI)
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # 🚀 envia código (sem .next)
+      - name: Deploy código para servidor
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -az --delete --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='.next' --exclude='.env'
+          path: ./
+          remote_path: ${{ env.APP_DIR }}
+          remote_host: ${{ secrets.SSH_HOST_HML  }}
+          remote_user: ${{ secrets.SSH_USER_HML }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY_ENV  }}
+
+      # 🧠 build real + restart
+      - name: Build & restart no servidor
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST_DEV }}
+          username: ${{ secrets.SSH_USER_DEV }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_ENV }}
+          script: |
+            cd ${{ env.APP_DIR }}
+
+            cat << 'EOF' > .env
+            ${{ secrets.HMLENV_FILE }}
+            EOF
+
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            nvm use default
+
+            npm install
+            npm run build
+
+            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start ecosystem.config.js --name ${{ env.PM2_APP_NAME }}
