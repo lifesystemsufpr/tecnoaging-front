@@ -44,8 +44,8 @@ jobs:
       - name: Build & restart no servidor
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST_DEV }}
-          username: ${{ secrets.SSH_USER_DEV }}
+          host: ${{ secrets.SSH_HOST_HML }}
+          username: ${{ secrets.SSH_USER_HML }}
           key: ${{ secrets.SSH_PRIVATE_KEY_ENV }}
           script: |
             cd ${{ env.APP_DIR }}
