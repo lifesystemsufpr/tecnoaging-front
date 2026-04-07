@@ -1,6 +1,6 @@
 import { HealthProfessional, HealthUnit, Participant } from "@/core/types";
 
-export type EvaluationType = "FTSTS" | "TTSTS";
+export type EvaluationType = "FTSTS" | "TTSTS" | "TMST";
 
 export interface SensorData {
   id: string;

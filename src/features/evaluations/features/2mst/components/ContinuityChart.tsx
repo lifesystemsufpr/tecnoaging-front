@@ -10,6 +10,8 @@ import {
 
 // Mapeamento de faixa etária para idade central (para eixo contínuo)
 const AGE_GROUP_CENTER: Record<AgeGroup, number> = {
+  "60-64": 62,
+  "65-69": 67,
   "70-74": 72,
   "75-79": 77,
   "80-84": 82,
@@ -19,12 +21,12 @@ const AGE_GROUP_CENTER: Record<AgeGroup, number> = {
 
 export default function ContinuityChart({
   idadePaciente,
-  repeticoesPaciente,
+  passosPaciente,
   participantGender,
   labelColor,
 }: {
   idadePaciente: number;
-  repeticoesPaciente: number;
+  passosPaciente: number;
   participantGender: Gender;
   labelColor: string;
 }) {
@@ -45,7 +47,7 @@ export default function ContinuityChart({
 
     return {
       title: {
-        text: `Comparativo de repetição por idade`,
+        text: `Comparativo de passos por idade`,
         left: "left",
         textStyle: { color: labelColor },
       },
@@ -57,7 +59,7 @@ export default function ContinuityChart({
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           params.forEach((item: any) => {
             if (item.seriesName && !item.seriesName.startsWith("_")) {
-              res += `${item.marker} ${item.seriesName}: ${item.value[1]} reps<br/>`;
+              res += `${item.marker} ${item.seriesName}: ${item.value[1]} passos<br/>`;
             }
           });
           return res;
@@ -79,7 +81,7 @@ export default function ContinuityChart({
         name: "Idade",
         nameLocation: "middle",
         nameGap: 30,
-        min: 70,
+        min: 60,
         max: 95,
         interval: 5,
         axisLabel: { color: labelColor },
@@ -90,7 +92,7 @@ export default function ContinuityChart({
       },
       yAxis: {
         type: "value",
-        name: "Repetições",
+        name: "Passos",
         nameLocation: "middle",
         nameGap: 50,
         min: 0,
@@ -113,7 +115,7 @@ export default function ContinuityChart({
           areaStyle: { opacity: 0 },
           z: 1,
         },
-        // Área entre P25 e P50 (cor verde claro)
+        // Área entre P25 e P50 (cor laranja claro)
         {
           name: "_areaP25_P50",
           type: "line",
@@ -127,7 +129,7 @@ export default function ContinuityChart({
           },
           z: 1,
         },
-        // Área entre P50 e P75 (cor azul claro)
+        // Área entre P50 e P75 (cor verde claro)
         {
           name: "_areaP50_P75",
           type: "line",
@@ -179,13 +181,13 @@ export default function ContinuityChart({
         {
           name: "Paciente",
           type: "scatter",
-          data: [[idadePaciente, repeticoesPaciente]],
+          data: [[idadePaciente, passosPaciente]],
           symbol: "diamond",
           symbolSize: 14,
           itemStyle: { color: "#FF4444", borderColor: "#fff", borderWidth: 2 },
           label: {
             show: true,
-            formatter: `Paciente: ${repeticoesPaciente} reps`,
+            formatter: `Paciente: ${passosPaciente} passos`,
             position: "top",
             color: "#FF4444",
             fontWeight: "bold",
@@ -194,7 +196,7 @@ export default function ContinuityChart({
         },
       ],
     };
-  }, [idadePaciente, repeticoesPaciente, participantGender, labelColor]);
+  }, [idadePaciente, passosPaciente, participantGender, labelColor]);
 
   return <ReactECharts option={option} style={{ height: 400 }} />;
 }

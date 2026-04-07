@@ -1,4 +1,4 @@
-import { Divider, Skeleton, Typography } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
 import { useFetchParticipant } from "../hooks/useFetchParticipant";
 import { DetailParticipantCard } from "../components/DetailParticipantCard";
 import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";

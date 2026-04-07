@@ -7,7 +7,6 @@ import {
   Paper,
   Typography,
   Button,
-  Grid,
   Tab,
   Tabs,
 } from "@mui/material";
@@ -15,14 +14,7 @@ import {
 import DatailLoading from "../components/DatailLoading";
 import { useFetchParticipant } from "../hooks/useFetchParticipant";
 
-import { fmtNumber } from "@/core/utils/format";
-
 import { DetailHeader } from "../components/HeaderDetail";
-import {
-  formatAddressLine1,
-  formatAddressLine2,
-  formatZipCode,
-} from "../utils/format";
 
 import ParticipantQuestionnaires from "@/features/questionnaires/containers/ParticipantQuestionnaires";
 import ParticipantEvaluations from "@/features/evaluations/containers/ParticipantEvaluations";
@@ -79,12 +71,6 @@ export default function ParticipantFullDetail({
   }
 
   const name = data?.fullName ?? "—";
-  const address1 = formatAddressLine1(data);
-  const address2 = formatAddressLine2(data);
-  const zipFormatted = formatZipCode(data.zipCode);
-  const heightFormatted =
-    typeof data.height === "number" ? `${fmtNumber(data.height)} cm` : null;
-  const weightFormatted = data.weight ? `${fmtNumber(data.weight)} kg` : null;
   const effectiveParticipantId = participantId ?? data.id;
 
   return (

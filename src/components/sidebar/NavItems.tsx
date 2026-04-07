@@ -77,16 +77,11 @@ export const navItems: NavItem[] = [
         path: "/30sts",
         pro: false,
       },
+      {
+        name: "2 Minute Step Test",
+        path: "/2mst",
+        pro: false,
+      },
     ],
-  },
-  {
-    icon: <Stethoscope size={18} />,
-    name: "Questionários",
-    roles: [
-      SystemRoles.MANAGER,
-      SystemRoles.RESEARCHER,
-      SystemRoles.HEALTH_PROFESSIONAL,
-    ],
-    path: "/questionnaires",
   },
 ];

@@ -54,24 +54,3 @@ export default function ProfessionalDashboardPage() {
     </div>
   );
 }
-
-function convertToRealSeconds(timeStr) {
-  const [, minutes] = timeStr.split(":").map(Number);
-  return minutes;
-}
-
-function average(arr) {
-  return arr.reduce((a, b) => a + b, 0) / arr.length;
-}
-
-function getTopRanking(data, type) {
-  return data
-    .filter((ev) => ev.type === type)
-    .map((ev) => ({
-      name: ev.cpfPatient,
-      time: convertToRealSeconds(ev.totalTime),
-      date: ev.date,
-    }))
-    .sort((a, b) => a.time - b.time)
-    .slice(0, 5);
-}

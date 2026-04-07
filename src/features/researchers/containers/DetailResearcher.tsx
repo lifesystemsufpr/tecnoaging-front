@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Skeleton, Typography } from "@mui/material";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import { DetailResearcherCard } from "../components/DetailResearcherCard";
 import { useDetailResearcher } from "../hooks/useDetailResearcher";
 import { UserDetailContent } from "@/core/components/shared/profile/UserDetailContent";
