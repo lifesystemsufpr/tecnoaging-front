@@ -9,8 +9,11 @@ module.exports = {
       exec_mode: "fork",
       env: {
         NODE_ENV: "production",
-        NEXTAUTH_URL: "https://devenv.tecnoaging.com.br",
-        NEXT_PUBLIC_API_BASE_URL: "https://devenv.tecnoaging.com.br/api",
+        NEXTAUTH_URL:
+          process.env.NEXTAUTH_URL ?? "https://devenv.tecnoaging.com.br",
+        NEXT_PUBLIC_API_BASE_URL:
+          process.env.NEXT_PUBLIC_API_BASE_URL ??
+          "https://devenv.tecnoaging.com.br/api",
       },
     },
   ],
