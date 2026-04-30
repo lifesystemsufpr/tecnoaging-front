@@ -59,7 +59,7 @@ export default function ProfilePage() {
     <Box>
       <ProfileNavigation
         onEdit={() => setOpenEditModal(true)}
-        disableEdit={!canOpenEdit}
+        disableEdit={true}
       />
 
       <Paper sx={{ p: 3 }}>

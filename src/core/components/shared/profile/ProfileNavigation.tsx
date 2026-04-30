@@ -37,14 +37,16 @@ export function ProfileNavigation({
         <Button startIcon={<ArrowBackIcon />} onClick={() => router.push("/")}>
           Voltar
         </Button>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={onEdit}
-          disabled={disableEdit}
-        >
-          Editar
-        </Button>
+        {!disableEdit && (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={onEdit}
+            disabled={disableEdit}
+          >
+            Editar
+          </Button>
+        )}
       </Stack>
     </Stack>
   );
