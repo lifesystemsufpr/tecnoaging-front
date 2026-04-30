@@ -4,13 +4,18 @@ import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
+import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions , evaluationData} = useThirtySTSContext();
+  const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
+
+  if (detailedData.processed.data.length === 0) {
+    return <EvaluationNoContent evaluationId={evaluationData.id} />;
+  }
 
   return (
     <Card variant="outlined">

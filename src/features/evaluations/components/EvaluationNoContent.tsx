@@ -1,0 +1,38 @@
+import { Card, CardContent, Typography, Button } from "@mui/material";
+
+interface EvaluationNoContentProps {
+  evaluationId?: string;
+}
+
+export default function EvaluationNoContent({
+  evaluationId,
+}: EvaluationNoContentProps) {
+  const handleReprocessEvaluation = () => {
+    console.log(`Reprocessando avaliação com ID: ${evaluationId}`);
+  };
+
+  return (
+    <Card variant="outlined" sx={{ mb: 2 }}>
+      <CardContent>
+        <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+          Nenhum dado disponível
+        </Typography>
+        <Typography variant="body1" sx={{ textAlign: "center" }}>
+          Parece que houve um problema ao processar a avaliação. Por favor,
+          tente novamente mais tarde ou entre em contato com o suporte.
+        </Typography>
+
+        {evaluationId && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleReprocessEvaluation}
+            sx={{ display: "block", margin: "20px auto 0" }}
+          >
+            Reprocessar Avaliação
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
