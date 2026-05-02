@@ -1,31 +1,30 @@
 import { Box, Button } from "@mui/material";
-import { useState } from "react";
-
-type Mode = "all" | "male" | "female";
+import { useResearcherDashboardContext } from "../../contexts/ResearcherDashboardContext";
+import { GenderMode } from "../../types";
 
 export default function DashboardMode() {
-  const [activeMode, setActiveMode] = useState<Mode>("all");
+  const { genderMode, setGenderMode } = useResearcherDashboardContext();
 
-  const handleModeChange = (mode: Mode) => {
-    setActiveMode(mode);
+  const handleModeChange = (mode: GenderMode) => {
+    setGenderMode(mode);
   };
 
   return (
     <Box display="flex" gap={2} mb={3}>
       <Button
-        variant={activeMode === "all" ? "contained" : "outlined"}
+        variant={genderMode === "all" ? "contained" : "outlined"}
         onClick={() => handleModeChange("all")}
       >
         Todos
       </Button>
       <Button
-        variant={activeMode === "male" ? "contained" : "outlined"}
+        variant={genderMode === "male" ? "contained" : "outlined"}
         onClick={() => handleModeChange("male")}
       >
         Masculino
       </Button>
       <Button
-        variant={activeMode === "female" ? "contained" : "outlined"}
+        variant={genderMode === "female" ? "contained" : "outlined"}
         onClick={() => handleModeChange("female")}
       >
         Feminino

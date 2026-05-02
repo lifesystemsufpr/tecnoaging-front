@@ -1,3 +1,5 @@
+export type GenderMode = "all" | "male" | "female";
+
 export interface DashboardResponse {
   summary: Summary;
   monthlyHistory: MonthlyHistoryItem[];
