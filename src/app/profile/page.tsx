@@ -40,8 +40,6 @@ export default function ProfilePage() {
 
   const canEditRole = useMemo(() => EDITABLE_ROLES.has(userRole), [userRole]);
 
-  const canOpenEdit = canEditRole && !!editableUser;
-
   const handleUserDataLoaded = useCallback((data: unknown) => {
     setEditableUser(data as EditableUser);
   }, []);

@@ -11,10 +11,9 @@ import ROUTES from "@/core/config/client.routes";
 
 interface HeaderProps {
   title: string;
-  participantId: string;
 }
 
-export function DetailHeader({ title, participantId }: HeaderProps) {
+export function DetailHeader({ title }: HeaderProps) {
   const router = useRouter();
 
   const handleBack = () => router.push(ROUTES.USERS.PARTICIPANTS.MAIN);

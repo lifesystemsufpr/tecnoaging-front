@@ -8,7 +8,9 @@ interface ResearcherDashboardContextValue {
   setGenderMode: (mode: GenderMode) => void;
 }
 
-interface ResearcherDashboardProviderProps extends React.PropsWithChildren {}
+interface ResearcherDashboardProviderProps {
+  children: React.ReactNode;
+}
 
 export const ResearcherDashboardContext =
   createContext<ResearcherDashboardContextValue>(
