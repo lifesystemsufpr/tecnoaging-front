@@ -11,7 +11,7 @@ export default function DashboardSummary({ data }: DashboardSummaryProps) {
   const { totalEvaluations, totalPatients } = data;
 
   return (
-    <Grid container spacing={2} mb={3}>
+    <Grid container spacing={2}>
       <Grid size={{ xs: 12, sm: 6, md: 6 }}>
         <Card.Root className="relative">
           <Card.Icon className="justify-start">
