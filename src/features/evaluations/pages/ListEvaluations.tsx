@@ -19,6 +19,7 @@ import {
 } from "../hooks/useListEvaluations";
 import { ListEvaluationsFilters } from "../components/ListEvaluationsFilters";
 import { EvaluationRaw, EvaluationType } from "../types/Evaluation.types";
+import { routeDetailMap } from "../utils/format";
 
 // ─── Table row type ───────────────────────────────────────────────────────────
 type TableRow = EvaluationRaw & {
@@ -80,13 +81,15 @@ function ListEvaluationsContent() {
         columns={columns}
         getRowId={(row) => row.id!}
         showActions
-        onView={(row) => router.push(`/30sts/${row.id}`)}
+        onView={(row) =>
+          router.push(routeDetailMap(row.type as EvaluationType, row.id!))
+        }
         onDelete={async (row) => {
           await deleteMutation.mutateAsync(row.id!);
         }}
         loading={isLoading}
         density="compact"
-        rowHref={(row) => `/30sts/${row.id}`}
+        rowHref={(row) => routeDetailMap(row.type as EvaluationType, row.id!)}
         toolbar={
           <Box sx={{ display: "flex", gap: 1 }}>
             <Chip
