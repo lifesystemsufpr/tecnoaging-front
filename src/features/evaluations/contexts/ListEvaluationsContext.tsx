@@ -28,6 +28,12 @@ export interface EvaluationRequestFilters {
 }
 
 // ─── Context value ────────────────────────────────────────────────────────────
+
+export interface ListEvaluationsContextProps {
+  children: React.ReactNode;
+  type: string;
+}
+
 interface ListEvaluationsContextValue {
   // UI filters
   filters: ListEvaluationsFilters;
@@ -52,7 +58,7 @@ const DEFAULT_FILTERS: ListEvaluationsFilters = {
   professionalQuery: "",
   dateFrom: null,
   dateTo: null,
-  type: "TTSTS",
+  type: "Todos",
 };
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -63,11 +69,12 @@ const ListEvaluationsContext = createContext<ListEvaluationsContextValue>(
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function ListEvaluationsProvider({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [filters, setFilters] =
-    useState<ListEvaluationsFilters>(DEFAULT_FILTERS);
+  type,
+}: ListEvaluationsContextProps) {
+  const [filters, setFilters] = useState<ListEvaluationsFilters>({
+    ...DEFAULT_FILTERS,
+    type,
+  });
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState<PageSizeOption>(10);
 

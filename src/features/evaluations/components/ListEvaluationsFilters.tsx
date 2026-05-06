@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  Autocomplete,
-  Button,
-  Grid,
-  MenuItem,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, Button, Grid, MenuItem, TextField } from "@mui/material";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { participantService } from "@/features/participants/services/participant.service";
 import { professionalService } from "@/features/professionals/services/professional.service";
@@ -29,10 +23,7 @@ export function ListEvaluationsFilters() {
   const [searchingPatients, setSearchingPatients] = useState(false);
   const [searchingProfessionals, setSearchingProfessionals] = useState(false);
 
-  const debouncedPatientQuery = useDebouncedValue(
-    filters.patientQuery,
-    300
-  );
+  const debouncedPatientQuery = useDebouncedValue(filters.patientQuery, 300);
   const debouncedProfessionalQuery = useDebouncedValue(
     filters.professionalQuery,
     300
@@ -161,9 +152,7 @@ export function ListEvaluationsFilters() {
           onChange={(_event, value) => {
             if (typeof value === "string") {
               const trimmed = value.trim();
-              const option = trimmed
-                ? { id: trimmed, name: trimmed }
-                : null;
+              const option = trimmed ? { id: trimmed, name: trimmed } : null;
               setFilters((prev) => ({
                 ...prev,
                 patient: option,
@@ -208,9 +197,7 @@ export function ListEvaluationsFilters() {
           onChange={(_event, value) => {
             if (typeof value === "string") {
               const trimmed = value.trim();
-              const option = trimmed
-                ? { id: trimmed, name: trimmed }
-                : null;
+              const option = trimmed ? { id: trimmed, name: trimmed } : null;
               setFilters((prev) => ({
                 ...prev,
                 professional: option,
@@ -259,7 +246,7 @@ export function ListEvaluationsFilters() {
         >
           <MenuItem value="Todos">Todos</MenuItem>
           <MenuItem value="TTSTS">30STS</MenuItem>
-          <MenuItem value="FTSTS">5TSTS</MenuItem>
+          <MenuItem value="TMSTS">2MST</MenuItem>
         </TextField>
       </Grid>
 

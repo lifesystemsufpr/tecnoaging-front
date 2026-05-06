@@ -3,5 +3,5 @@
 import { ListEvaluations } from "@/features/evaluations/pages/ListEvaluations";
 
 export default function TestsPage() {
-  return <ListEvaluations />;
+  return <ListEvaluations type={"TTSTS"} />;
 }

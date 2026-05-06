@@ -3,13 +3,22 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Chip } from "@mui/material";
-import { ColumnConfig, GenericTable } from "@/components/datatable/GenericTable";
+import {
+  ColumnConfig,
+  GenericTable,
+} from "@/components/datatable/GenericTable";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { formatDateTime, formatEvaluationName } from "@/core/utils/format";
-import { ListEvaluationsProvider, useListEvaluationsContext } from "../contexts/ListEvaluationsContext";
-import { useListEvaluationsQuery, useDeleteEvaluationMutation } from "../hooks/useListEvaluations";
+import {
+  ListEvaluationsProvider,
+  useListEvaluationsContext,
+} from "../contexts/ListEvaluationsContext";
+import {
+  useListEvaluationsQuery,
+  useDeleteEvaluationMutation,
+} from "../hooks/useListEvaluations";
 import { ListEvaluationsFilters } from "../components/ListEvaluationsFilters";
-import { EvaluationRaw } from "../types/Evaluation.types";
+import { EvaluationRaw, EvaluationType } from "../types/Evaluation.types";
 
 // ─── Table row type ───────────────────────────────────────────────────────────
 type TableRow = EvaluationRaw & {
@@ -21,8 +30,7 @@ type TableRow = EvaluationRaw & {
 // ─── Inner content (must be inside the provider) ──────────────────────────────
 function ListEvaluationsContent() {
   const router = useRouter();
-  const { page, setPage, pageSize, setPageSize } =
-    useListEvaluationsContext();
+  const { page, setPage, pageSize, setPageSize } = useListEvaluationsContext();
 
   const { data: response, isLoading } = useListEvaluationsQuery();
   const deleteMutation = useDeleteEvaluationMutation();
@@ -105,9 +113,9 @@ function ListEvaluationsContent() {
 }
 
 // ─── Exported page (wraps with provider) ──────────────────────────────────────
-export function ListEvaluations() {
+export function ListEvaluations({ type }: { type?: EvaluationType | "TMSTS" }) {
   return (
-    <ListEvaluationsProvider>
+    <ListEvaluationsProvider type={type ?? "Todos"}>
       <ListEvaluationsContent />
     </ListEvaluationsProvider>
   );
