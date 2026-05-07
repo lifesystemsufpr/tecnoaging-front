@@ -2,6 +2,7 @@ import { Card, CardContent, Typography, Button } from "@mui/material";
 import { evaluationService } from "../services/evaluation.service";
 import { toast } from "sonner";
 import { useState } from "react";
+import { ApiError } from "@/core/services/api.type";
 
 interface EvaluationNoContentProps {
   evaluationId?: string;
@@ -22,9 +23,13 @@ export default function EvaluationNoContent({
         window.location.reload();
       }, 5000);
     } catch (error) {
-      toast.error(
-        "Erro ao enviar avaliação para reprocessamento. Por favor, tente novamente."
-      );
+      if (error instanceof ApiError) {
+        toast.error(`Erro ${error.status}: ${error.message}`);
+      } else {
+        toast.error(
+          "Erro ao enviar avaliação para reprocessamento. Por favor, tente novamente."
+        );
+      }
     } finally {
       setLoading(false);
     }
