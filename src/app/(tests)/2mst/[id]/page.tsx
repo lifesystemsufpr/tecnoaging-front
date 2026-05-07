@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { EvaluationDetailedPage } from "@/features/evaluations/features/30sts";
+import { EvaluationDetailedPage } from "@/features/evaluations/features/2mst";
 
 export default function Detail30STSPageRoute() {
   const paramsParsed = useParams();

@@ -1,7 +1,6 @@
+import IndicatorsCard from "@/features/evaluations/components/IndicatorsCard";
 import { Indicator } from "@/features/evaluations/types/Evaluation.types";
 import { Grid } from "@mui/material";
-import IndicatorsCard from "../components/IndicatorsCard";
-
 interface IndicatorProps {
   indicators: Indicator[];
 }

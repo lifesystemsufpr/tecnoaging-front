@@ -1,6 +1,6 @@
 import { Indicator } from "@/features/evaluations/types/Evaluation.types";
 import { Card, CardContent, Typography } from "@mui/material";
-import { translateIndicatorName } from "../utils/en-pt";
+import { translateIndicatorName } from "../features/30sts/utils/en-pt";
 
 export default function IndicatorsCard({
   indicator,

@@ -47,8 +47,7 @@ export interface SensorStatDetails {
   max: number;
   mean: number;
 }
-
-export interface SensorData {
+export interface SensorAnalysisData {
   format: string;
   columns: SensorColumn[];
   units: Record<SensorColumn | string, string>;
@@ -75,21 +74,19 @@ export interface DerivedData {
   overallClassification: string;
 }
 
-export interface CyclePhases {
+export interface STSCyclePhases {
   total: number;
   stand: number;
   sit: number;
 }
 
-export interface CycleDataRaw {
-  cycle: number;
-  totalTime: number;
-  standUpTime: number;
-  sitDownTime: number;
-  power: number;
-  velocityExtension: number;
-  velocityFlexion: number;
+export interface TMSTCyclePhases {
+  total: number;
+  stand?: number;
+  sit?: number;
 }
+
+export type CyclePhases = STSCyclePhases | TMSTCyclePhases;
 
 export interface CycleData {
   min: CyclePhases;
@@ -97,6 +94,27 @@ export interface CycleData {
   avg: CyclePhases;
   totalCycles: number;
 }
+
+export interface BaseCycleDataRaw {
+  cycle: number;
+  totalTime: number;
+  power: number;
+  velocityExtension: number;
+}
+
+export interface STSCycleDataRaw extends BaseCycleDataRaw {
+  standUpTime: number;
+  sitDownTime: number;
+  velocityFlexion: number;
+}
+
+export interface TMSTCycleDataRaw extends BaseCycleDataRaw {
+  standUpTime?: number;
+  sitDownTime?: number;
+  velocityFlexion?: number;
+}
+
+export type CycleDataRaw = STSCycleDataRaw | TMSTCycleDataRaw;
 
 export interface ProcessedData {
   data: {
@@ -109,7 +127,7 @@ export interface ProcessedData {
 
 export interface MotionAnalysisResponse {
   processed: ProcessedData;
-  sensor: SensorData;
+  sensor: SensorAnalysisData;
   derived: DerivedData;
   cycle: CycleDataRaw[];
 }

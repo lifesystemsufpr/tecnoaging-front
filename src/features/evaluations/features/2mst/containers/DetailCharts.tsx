@@ -16,18 +16,7 @@ export default function DetailCharts() {
     <Card variant="outlined">
       <CardContent>
         <Stack spacing={4}>
-          <Box sx={{ position: "relative" }}>
-            <GenericChart
-              data={detailedData!.processed.data}
-              xKey="t"
-              yKey="val"
-              title={`Gráfico do ${detailedData!.processed.label}`}
-              valueFormatter={(v) => `${v} ${detailedData!.processed.unit}`}
-              timeSeries
-              dense
-              enableZoom
-            />
-          </Box>
+          <Box sx={{ position: "relative" }}></Box>
 
           {!steps && (
             <p>
