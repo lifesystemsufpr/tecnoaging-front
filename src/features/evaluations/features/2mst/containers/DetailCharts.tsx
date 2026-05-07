@@ -4,9 +4,14 @@ import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
+import { isTMSTProcessedData } from "@/features/evaluations/types/Evaluation.types";
 
 export default function DetailCharts() {
   const { detailedData, steps, evaluationData } = useTwoMSTContext();
+
+  const processed = isTMSTProcessedData(detailedData?.processed)
+    ? detailedData.processed
+    : null;
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
@@ -16,7 +21,18 @@ export default function DetailCharts() {
     <Card variant="outlined">
       <CardContent>
         <Stack spacing={4}>
-          <Box sx={{ position: "relative" }}></Box>
+          <Box sx={{ position: "relative" }}>
+            <GenericChart
+              data={processed?.data.timeseries}
+              xKey="t"
+              yKey="val"
+              title={`Gráfico do ${processed?.unit || "Valor"}`}
+              valueFormatter={(v) => `${v} ${processed?.unit}`}
+              timeSeries
+              dense
+              enableZoom
+            />
+          </Box>
 
           {!steps && (
             <p>

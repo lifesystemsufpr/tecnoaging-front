@@ -124,9 +124,6 @@ export default function ContinuityChart({
           stack: "percentilArea",
           lineStyle: { opacity: 0 },
           symbol: "none",
-          areaStyle: {
-            color: "rgba(255, 183, 77, 0.3)",
-          },
           z: 1,
         },
         // Área entre P50 e P75 (cor verde claro)
@@ -138,9 +135,6 @@ export default function ContinuityChart({
           stack: "percentilArea",
           lineStyle: { opacity: 0 },
           symbol: "none",
-          areaStyle: {
-            color: "rgba(76, 175, 80, 0.25)",
-          },
           z: 1,
         },
         // Linhas reais (não stacked) para P25, P50, P75
