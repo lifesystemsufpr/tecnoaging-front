@@ -1,4 +1,7 @@
 import { Card, CardContent, Typography, Button } from "@mui/material";
+import { evaluationService } from "../services/evaluation.service";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface EvaluationNoContentProps {
   evaluationId?: string;
@@ -7,8 +10,24 @@ interface EvaluationNoContentProps {
 export default function EvaluationNoContent({
   evaluationId,
 }: EvaluationNoContentProps) {
-  const handleReprocessEvaluation = () => {
-    console.log(`Reprocessando avaliação com ID: ${evaluationId}`);
+  const [loading, setLoading] = useState(false);
+
+  const handleReprocessEvaluation = async () => {
+    try {
+      setLoading(true);
+      await evaluationService.processPending(evaluationId!);
+
+      toast.success("Avaliação enviada para reprocessamento com sucesso!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+    } catch (error) {
+      toast.error(
+        "Erro ao enviar avaliação para reprocessamento. Por favor, tente novamente."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,6 +46,7 @@ export default function EvaluationNoContent({
             variant="contained"
             color="primary"
             onClick={handleReprocessEvaluation}
+            disabled={loading}
             sx={{ display: "block", margin: "20px auto 0" }}
           >
             Reprocessar Avaliação

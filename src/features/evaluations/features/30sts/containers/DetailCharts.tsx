@@ -13,7 +13,10 @@ export default function DetailCharts() {
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
 
-  if (detailedData.processed.data.length === 0) {
+  if (
+    detailedData.processed.data.length === 0 ||
+    detailedData.derived.indicators.length === 0
+  ) {
     return <EvaluationNoContent evaluationId={evaluationData.id} />;
   }
 

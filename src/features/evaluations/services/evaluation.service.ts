@@ -57,4 +57,11 @@ export const evaluationService = {
       method: "GET",
     });
   },
+
+  async processPending(id: string): Promise<void> {
+    return clientService<void>({
+      endpoint: API_ROUTES.EVALUATION_PROCESS_PENDING(id),
+      method: "POST",
+    });
+  },
 };

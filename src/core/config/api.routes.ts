@@ -71,6 +71,8 @@ export const API_ROUTES = {
     `${API_BASE_URL}/evaluation/${id}/detailed`,
   EVALUATION_REPETITIONS_HISTORY: (id: string) =>
     `${API_BASE_URL}/evaluation/${id}/repetitions/history`,
+  EVALUATION_PROCESS_PENDING: (id: string) =>
+    `${API_BASE_URL}/evaluation/${id}/process-pending`,
 
   QUESTIONNAIRES: `${API_BASE_URL}/questionnaire`,
   QUESTIONNAIRES_BY_PATIENT_ID: (patientId: string) =>
