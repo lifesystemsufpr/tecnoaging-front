@@ -71,6 +71,8 @@ export const API_ROUTES = {
     `${API_BASE_URL}/evaluation/${id}/detailed`,
   EVALUATION_REPETITIONS_HISTORY: (id: string) =>
     `${API_BASE_URL}/evaluation/${id}/repetitions/history`,
+  EVALUATION_PROCESS_PENDING: (id: string) =>
+    `${API_BASE_URL}/evaluation/${id}/process-pending`,
 
   QUESTIONNAIRES: `${API_BASE_URL}/questionnaire`,
   QUESTIONNAIRES_BY_PATIENT_ID: (patientId: string) =>
@@ -86,5 +88,11 @@ export const API_ROUTES = {
     MONTHLY_EVALUATIONS: `${API_BASE_URL}/dashboard/participant/monthly-evaluations`,
     MOST_PERFORMED_EVALUATIONS: `${API_BASE_URL}/dashboard/participant/most-performed-tests`,
     MONTHLY_AVERAGE: `${API_BASE_URL}/dashboard/participant/monthly-average`,
+  },
+
+  RESEARCHER_DASHBOARDS: {
+    SUMMARY: `${API_BASE_URL}/dashboard/advanced/summary`,
+    MONTHLY_HISTORY: `${API_BASE_URL}/dashboard/advanced/monthly-history`,
+    AVARAGE_TEST_BY_AGE_GROUP: `${API_BASE_URL}/dashboard/advanced/average-test-by-age-group`,
   },
 } as const;

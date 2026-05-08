@@ -6,10 +6,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 import EvaluationDetail from "@/features/evaluations/components/EvaluationDetail";
 import Indicators from "../containers/Indicators";
-import {
-  TwoMSTProvider,
-  useTwoMSTContext,
-} from "../context/2MSTContext";
+import { TwoMSTProvider, useTwoMSTContext } from "../context/2MSTContext";
 import DetailCharts from "../containers/DetailCharts";
 
 interface EvaluationDetailedPageProps {

@@ -54,6 +54,11 @@ export default function GenericChart<T>({
           : undefined,
       }));
 
+  // Calcular o máximo valor de X para limitar o zoom
+  const maxXValue = timeSeries
+    ? Math.max(...data.map((item) => Number(item[xKey])))
+    : undefined;
+
   const option = {
     title: {
       text: title,
@@ -77,6 +82,8 @@ export default function GenericChart<T>({
     xAxis: {
       data: timeSeries ? undefined : data.map((item) => String(item[xKey])),
       type: timeSeries ? "value" : "category",
+      min: timeSeries ? 0 : undefined,
+      max: maxXValue,
       axisLabel: {
         color: labelColor,
         // Opcional: Adicionar o sufixo "s" para indicar segundos

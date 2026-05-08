@@ -1,5 +1,7 @@
-import { EvaluationDetailedPage } from "@/features/evaluations/features/2mst";
+"use client";
 
-export default function TwoMSTPage() {
-  return <EvaluationDetailedPage id="mock-2mst-001" />;
+import { ListEvaluations } from "@/features/evaluations/pages/ListEvaluations";
+
+export default function TestsPage() {
+  return <ListEvaluations type={"TMSTS"} />;
 }

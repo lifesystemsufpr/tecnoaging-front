@@ -6,21 +6,17 @@ import {
   Typography,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/core/config/client.routes";
 
 interface HeaderProps {
   title: string;
-  participantId: string;
 }
 
-export function DetailHeader({ title, participantId }: HeaderProps) {
+export function DetailHeader({ title }: HeaderProps) {
   const router = useRouter();
 
   const handleBack = () => router.push(ROUTES.USERS.PARTICIPANTS.MAIN);
-  const handleEdit = () =>
-    router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(participantId) + "/edit");
 
   return (
     <Stack
@@ -44,14 +40,6 @@ export function DetailHeader({ title, participantId }: HeaderProps) {
       <Stack direction="row" spacing={1}>
         <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
           Voltar
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={handleEdit}
-          disabled={true}
-        >
-          Editar
         </Button>
       </Stack>
     </Stack>
