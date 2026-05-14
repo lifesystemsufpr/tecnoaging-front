@@ -22,6 +22,7 @@ import MuiThemeProvider from "@/context/MuiThemeProvider";
 import TanstackProvider from "@/core/providers/tanstack-provider";
 
 import { SidebarProvider } from "@/core/contexts/SidebarContext";
+import { ThemeProvider } from "@/core/theme/ThemeContext";
 
 const outfit = Outfit({
   subsets: ["latin"],
