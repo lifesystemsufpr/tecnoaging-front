@@ -2,7 +2,6 @@
 import { ScholarShip } from "@/types/enums/scholar-ship";
 import { SocioEconomicLevel } from "@/types/enums/socio-economic-level";
 import { SystemRoles } from "@/types/enums/system-roles";
-import { emptyToUndefined } from "@/utils/zod";
 import { z } from "zod";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$|^\d{11}$/;
@@ -26,9 +25,7 @@ const baseCreate = baseRequired.extend({
 });
 
 const baseUpdate = baseRequired.extend({
-  password: emptyToUndefined(
-    z.string().min(8, "Mínimo de 8 caracteres")
-  ).nullable(),
+  password: z.string().min(8, "Mínimo de 8 caracteres").optional().nullable(),
 });
 
 export const researcherCreateSchema = baseCreate.extend({
