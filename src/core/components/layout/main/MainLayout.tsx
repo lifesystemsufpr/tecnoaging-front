@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Backdrop from "../Backdrop";
 
 import Header from "@/core/components/layout/Header";
 import SideBar from "@/core/components/layout/Sidebar";
@@ -18,7 +17,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen xl:flex flex-col">
-      <Backdrop />
       <Header />
       {/* Main Content Area */}
       <div className={`flex-1 transition-all duration-300 ease-in-out`}>

@@ -17,6 +17,7 @@ export default function SideBar() {
     setIsHovered,
     toggleMobileSidebar,
     openSubmenu,
+    setOpenSubmenu,
     toggleSubmenu,
   } = useSidebar();
   const pathname = usePathname();
@@ -41,9 +42,9 @@ export default function SideBar() {
     );
 
     if (activeItem) {
-      toggleSubmenu(activeItem.name);
+      setOpenSubmenu(activeItem.name);
     }
-  }, [pathname, toggleSubmenu, filteredNavItems]);
+  }, [pathname]);
 
   const renderMenuItems = (items: typeof filteredNavItems) => (
     <ul className="flex flex-col gap-2">

@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 interface SidebarContextProps {
   isExpanded: boolean;
@@ -11,6 +17,7 @@ interface SidebarContextProps {
   openSubmenu: string | null;
   toggleSidebar: () => void;
   toggleMobileSidebar: () => void;
+  setOpenSubmenu: React.Dispatch<React.SetStateAction<string | null>>;
   setIsHovered: React.Dispatch<React.SetStateAction<boolean>>;
   setActiveItem: React.Dispatch<React.SetStateAction<string | null>>;
   toggleSubmenu: (item: string) => void;
@@ -49,17 +56,17 @@ export const SidebarProvider = ({
     };
   }, []);
 
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     setIsExpanded((prev) => !prev);
-  };
+  }, []);
 
-  const toggleMobileSidebar = () => {
+  const toggleMobileSidebar = useCallback(() => {
     setIsMobileOpen((prev) => !prev);
-  };
+  }, []);
 
-  const toggleSubmenu = (item) => {
+  const toggleSubmenu = useCallback((item: string) => {
     setOpenSubmenu((prev) => (prev === item ? null : item));
-  };
+  }, []);
 
   return (
     <SidebarContext.Provider
@@ -75,6 +82,7 @@ export const SidebarProvider = ({
         setIsHovered,
         setActiveItem,
         toggleSubmenu,
+        setOpenSubmenu,
       }}
     >
       {children}

@@ -20,7 +20,7 @@ import { deletePatient, fetchPatients } from "@/services/api-patient";
 import { useRouter } from "next/navigation";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 import { SearchInput } from "@/components/form/input/SearchInput";
-import ROUTES from "@/config/routes";
+import ROUTES from "@/core/config/client.routes";
 
 const columnsConfig: ColumnConfig<Patient>[] = [
   { key: "fullName", header: "Nome Completo" },

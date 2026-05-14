@@ -1,5 +1,5 @@
 import React from "react";
-import MainLayout from "@/layout/main/MainLayout";
+import MainLayout from "@/core/components/layout/main/MainLayout";
 
 interface LayoutProps {
   children: React.ReactNode;

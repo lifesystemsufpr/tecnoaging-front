@@ -1,9 +1,8 @@
 "use client";
 import { useSession } from "next-auth/react";
-import PatientDashboardPage from "@/features/participants/pages/PatientDashboardPage";
-import HomeResearchContent from "@/components/pages/homeResearch/HomeResearchContent";
-import HomeHealth from "@/components/pages/homeHealth/HomeContent";
+
 import { SystemRoles } from "@/types/enums/system-roles";
+import PatientDashboardPage from "@/features/participants/pages/PatientDashboardPage";
 import ProfessionalDashboardPage from "@/features/professionals/pages/DashboardPage";
 import ResearcherDashboard from "@/features/researchers/pages/ResearcherDashboard";
 

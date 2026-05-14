@@ -14,13 +14,12 @@
 import { Outfit } from "next/font/google";
 import "./globals.css";
 
-import { ThemeProvider } from "@/context/ThemeContext";
 import Providers from "@/app/providers";
 import { Toaster } from "sonner";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import MuiThemeProvider from "@/context/MuiThemeProvider";
-import TanstackProvider from "@/providers/tanstack-provider";
+import TanstackProvider from "@/core/providers/tanstack-provider";
 
 import { SidebarProvider } from "@/core/contexts/SidebarContext";
 
@@ -38,9 +37,7 @@ export default async function RootLayout({ children }) {
           <Providers session={session}>
             <Toaster position="top-center" richColors />
             <MuiThemeProvider>
-              <ThemeProvider>
-                <SidebarProvider>{children}</SidebarProvider>
-              </ThemeProvider>
+              <SidebarProvider>{children}</SidebarProvider>
             </MuiThemeProvider>
           </Providers>
         </TanstackProvider>
