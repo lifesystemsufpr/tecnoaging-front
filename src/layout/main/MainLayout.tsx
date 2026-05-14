@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { useSidebar } from "@/context/SidebarContext";
-import AppHeader from "@/layout/AppHeader";
-import AppSidebar from "../AppSidebar";
 import Backdrop from "../Backdrop";
+
+import Header from "@/core/components/layout/Header";
+import SideBar from "@/core/components/layout/Sidebar";
+import { useSidebar } from "@/core/contexts/SidebarContext";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -21,14 +22,13 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="min-h-screen xl:flex">
-      <AppSidebar />
       <Backdrop />
-
+      <SideBar />
       {/* Main Content Area */}
       <div
         className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
       >
-        <AppHeader />
+        <Header />
         <div className="p-2 mx-auto md:p-6">{children}</div>
       </div>
     </div>

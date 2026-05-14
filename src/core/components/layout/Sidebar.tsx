@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSidebar } from "../context/SidebarContext";
-
-import { ChevronDownIcon, Ellipsis } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useMenuItems } from "@/hooks/useMenuItems";
+import { ChevronDownIcon, Ellipsis } from "lucide-react";
 
-const AppSidebar = () => {
+import { useMenuItems } from "@/core/hooks/useMenuItems";
+import { useSidebar } from "@/core/contexts/SidebarContext";
+
+export default function SideBar() {
   const session = useSession();
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
@@ -263,6 +264,4 @@ const AppSidebar = () => {
       </div>
     </aside>
   );
-};
-
-export default AppSidebar;
+}
