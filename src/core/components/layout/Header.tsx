@@ -12,7 +12,7 @@ const Header = () => {
     useSidebar();
 
   const handleToggle = () => {
-    if (window.innerWidth >= 1024) {
+    if (!isMobile) {
       toggleSidebar();
     } else {
       toggleMobileSidebar();
@@ -20,19 +20,19 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 flex w-full bg-white dark:bg-[#2d4d7d] h-16 z-100 items-center border-b border-gray-200 dark:border-gray-900 py-10">
-      <div className="flex items-center justify-between w-full px-4 lg:pl-24">
+    <header className="sticky top-0 z-50 flex h-16 w-full items-center border-b border-gray-200 bg-white dark:border-gray-900 dark:bg-[#2d4d7d]">
+      <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between sm:pl-15 xs:pl-0">
         <div className="flex items-center gap-4">
           {isMobile && (
             <button
-              className="text-black hover:bg-white/10 p-2 rounded-lg transition-colors"
+              className="rounded-lg p-2 text-black transition-colors hover:bg-white/10"
               onClick={handleToggle}
               aria-label="Toggle Sidebar"
             >
               {isMobileOpen ? (
-                <X className="w-6 h-6" />
+                <X className="h-6 w-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="h-6 w-6" />
               )}
             </button>
           )}
@@ -48,10 +48,8 @@ const Header = () => {
           </Link>
         </div>
 
-        <div className="flex items-center">
-          <div className="text-white">
-            <UserDropdown />
-          </div>
+        <div className="flex items-center text-white">
+          <UserDropdown />
         </div>
       </div>
     </header>

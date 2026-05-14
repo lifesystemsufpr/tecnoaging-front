@@ -1,5 +1,5 @@
 import { HealthProfessional } from "@/core/types";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
 import { Autocomplete, TextField } from "@mui/material";
 import { useMemo, useState } from "react";
 import useFetchProfessionals from "../hooks/useFetchProfessionals";

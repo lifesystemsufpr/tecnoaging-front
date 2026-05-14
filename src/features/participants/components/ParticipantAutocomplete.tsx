@@ -4,7 +4,7 @@ import { Autocomplete, TextField } from "@mui/material";
 import { useFetchListParticipant } from "../hooks/useFetchListParticipant";
 import { useMemo, useState } from "react";
 import { Participant } from "@/core/types";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
 
 interface ParticipantAutocompleteProps {
   value: Participant | null;

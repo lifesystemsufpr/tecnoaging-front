@@ -21,7 +21,7 @@ import { fetchPatients } from "@/services/api-patient";
 import { fetchHealthProfessionals } from "@/services/api-health-professional";
 import { Evaluation } from "@/types/domain/Evaluation";
 import { formatDateTime, toISODateEnd, toISODateStart } from "@/utils/dates";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
 import { PageSizeOption } from "@/types/enums/page-size-options";
 
 type Option = { id: string; name: string };

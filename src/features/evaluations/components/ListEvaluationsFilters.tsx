@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Autocomplete, Button, Grid, MenuItem, TextField } from "@mui/material";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
 import { participantService } from "@/features/participants/services/participant.service";
 import { professionalService } from "@/features/professionals/services/professional.service";
 import {
