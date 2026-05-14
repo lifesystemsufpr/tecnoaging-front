@@ -12,24 +12,18 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const { isMobile } = useSidebar();
 
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-      ? "lg:ml-[290px]"
-      : "lg:ml-[90px]";
+  const mobileStyle = isMobile ? "w-full" : "w-[calc(100%-104px)] ml-20";
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="min-h-screen xl:flex flex-col">
       <Backdrop />
-      <SideBar />
+      <Header />
       {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
-      >
-        <Header />
-        <div className="p-2 mx-auto md:p-6">{children}</div>
+      <div className={`flex-1 transition-all duration-300 ease-in-out`}>
+        <SideBar />
+        <div className={`${mobileStyle} p-2 mx-auto md:p-6`}>{children}</div>
       </div>
     </div>
   );

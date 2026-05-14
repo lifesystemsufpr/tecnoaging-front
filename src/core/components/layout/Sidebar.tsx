@@ -1,23 +1,35 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronDownIcon, Ellipsis } from "lucide-react";
-
+import { ChevronDownIcon } from "lucide-react";
 import { useMenuItems } from "@/core/hooks/useMenuItems";
 import { useSidebar } from "@/core/contexts/SidebarContext";
 
 export default function SideBar() {
   const session = useSession();
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const {
+    isExpanded,
+    isMobileOpen,
+    isHovered,
+    setIsHovered,
+    toggleMobileSidebar,
+  } = useSidebar();
   const pathname = usePathname();
   const { filteredNavItems } = useMenuItems({
     profile: session?.data?.user?.role || "researcher",
   });
+
+  // Helper para identificar se a sidebar está recolhida (modo ícone)
+  const isCollapsed = !isExpanded && !isHovered && !isMobileOpen;
+
+  const handleMenuItemClick = () => {
+    if (isMobileOpen) {
+      toggleMobileSidebar();
+    }
+  };
 
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [subMenuHeight, setSubMenuHeight] = useState({});
@@ -34,24 +46,23 @@ export default function SideBar() {
   };
 
   const renderMenuItems = (items, menuType) => (
-    <ul className="flex flex-col gap-4">
+    <ul className="flex flex-col gap-2">
       {items.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
+              onClick={() => {
+                handleMenuItemClick();
+                handleSubmenuToggle(index, menuType);
+              }}
+              className={`menu-item group w-full flex items-center transition-all duration-200 ${
                 openSubmenu?.type === menuType && openSubmenu?.index === index
                   ? "menu-item-active"
                   : "menu-item-inactive"
-              } ${
-                !isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start"
-              }`}
+              } ${isCollapsed ? "justify-center px-0" : "justify-start px-4"}`}
             >
               <span
-                className={`${
+                className={`flex items-center justify-center transition-colors ${
                   openSubmenu?.type === menuType && openSubmenu?.index === index
                     ? "menu-item-icon-active"
                     : "menu-item-icon-inactive"
@@ -59,30 +70,33 @@ export default function SideBar() {
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className="menu-item-text">{nav.name}</span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
+              {!isCollapsed && (
+                <>
+                  <span className="menu-item-text ml-3">{nav.name}</span>
+                  <ChevronDownIcon
+                    className={`ml-auto w-4 h-4 transition-transform duration-200 ${
+                      openSubmenu?.type === menuType &&
+                      openSubmenu?.index === index
+                        ? "rotate-180"
+                        : ""
+                    }`}
+                  />
+                </>
               )}
             </button>
           ) : (
             nav.path && (
               <Link
                 href={nav.path}
-                className={`menu-item group ${
+                onClick={handleMenuItemClick}
+                className={`menu-item group w-full flex items-center transition-all duration-200 ${
                   isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                } ${
+                  isCollapsed ? "justify-center px-0" : "justify-start px-4"
                 }`}
               >
                 <span
-                  className={`${
+                  className={`flex items-center justify-center transition-colors ${
                     isActive(nav.path)
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
@@ -90,14 +104,15 @@ export default function SideBar() {
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className="menu-item-text">{nav.name}</span>
+                {!isCollapsed && (
+                  <span className="menu-item-text ml-3">{nav.name}</span>
                 )}
               </Link>
             )
           )}
 
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {/* Submenu só renderiza se NÃO estiver colapsado */}
+          {nav.subItems && !isCollapsed && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -110,11 +125,12 @@ export default function SideBar() {
                     : "0px",
               }}
             >
-              <ul className="mt-2 space-y-1 ml-9">
+              <ul className="mt-1 space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
                     <Link
                       href={subItem.path}
+                      onClick={handleMenuItemClick}
                       className={`menu-dropdown-item ${
                         isActive(subItem.path)
                           ? "menu-dropdown-item-active"
@@ -122,16 +138,8 @@ export default function SideBar() {
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span
-                          className={`${
-                            isActive(subItem.path)
-                              ? "menu-item-icon-active"
-                              : "menu-item-icon-inactive"
-                          }`}
-                        >
-                          {subItem.icon}
-                        </span>
-                        <span>{subItem.name}</span>
+                        <span>{subItem.icon}</span>
+                        <span className="text-sm">{subItem.name}</span>
                       </div>
                     </Link>
                   </li>
@@ -146,7 +154,6 @@ export default function SideBar() {
 
   useEffect(() => {
     let submenuMatched = false;
-
     ["main", "others"].forEach((menuType) => {
       const items = menuType === "main" ? filteredNavItems : [];
       items.forEach((nav, index) => {
@@ -160,12 +167,8 @@ export default function SideBar() {
         }
       });
     });
-
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, isActive]);
+    if (!submenuMatched) setOpenSubmenu(null);
+  }, [pathname, isActive, filteredNavItems]);
 
   useEffect(() => {
     if (openSubmenu !== null) {
@@ -182,84 +185,15 @@ export default function SideBar() {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-blue-600 dark:bg-gray-900 dark:border-gray-800 text-white h-screen transition-all duration-300 ease-in-out 
-      ${isMobileOpen ? "z-[1000]" : "z-6"} border-r border-bg-blue-600 
-      ${
-        isExpanded || isMobileOpen
-          ? "w-[290px]"
-          : isHovered
-            ? "w-[290px]"
-            : "w-[90px]"
-      }
-      ${isMobileOpen ? "translate-x-0 " : "-translate-x-full"}
-      lg:translate-x-0`}
+      className={`fixed top-16 left-0 flex flex-col bg-blue-600 dark:bg-gray-900 text-white h-[calc(100vh-4rem)] transition-all duration-300 ease-in-out z-50 border-r border-blue-700
+      ${isExpanded || isHovered || isMobileOpen ? "w-72.5 px-5" : "w-16 px-2"}
+      ${isMobileOpen ? "translate-x-0" : "max-lg:-translate-x-full lg:translate-x-0"}`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
-        className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
-      >
-        <Link href="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/logo-white.png"
-                alt="Logo"
-                width={250}
-                height={40}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo-white.png"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
-          ) : (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/icon-white.png"
-                alt="Logo"
-                width={32}
-                height={32}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/icon-white.png"
-                alt="Logo"
-                width={32}
-                height={32}
-              />
-            </>
-          )}
-        </Link>
-      </div>
-
-      <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
-        <nav className="mb-6">
-          <div className="flex flex-col gap-4">
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-300 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <Ellipsis />
-                )}
-              </h2>
-              {renderMenuItems(filteredNavItems, "main")}
-            </div>
-          </div>
+      <div className="flex flex-col overflow-y-auto no-scrollbar">
+        <nav className="mb-6 mt-10">
+          {renderMenuItems(filteredNavItems, "main")}
         </nav>
       </div>
     </aside>
