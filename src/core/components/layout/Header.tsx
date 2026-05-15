@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import UserDropdown from "@/components/header/UserDropdown";
+
 import { Menu, X } from "lucide-react";
 
+import { Box, Button } from "../ui";
 import { useSidebar } from "@/core/contexts/SidebarContext";
+import UserDropdown from "@/core/components/shared/profile/UserDropdown";
 
 const Header = () => {
   const { isMobileOpen, isMobile, toggleSidebar, toggleMobileSidebar } =
@@ -20,12 +22,17 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-16 w-full items-center border-b border-gray-200 bg-white dark:border-gray-900 dark:bg-[#2d4d7d]">
-      <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between sm:pl-15 xs:pl-0">
-        <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-50 flex h-19 w-full items-center bg-white shadow-sm dark:border-b dark:border-gray-900 dark:bg-[#2d4d7d]">
+      <Box
+        display="flex"
+        justify="space-between"
+        className="mx-auto w-full max-w-screen-2xl flex items-center"
+      >
+        <Box display="flex" align="center" gap="4">
           {isMobile && (
-            <button
-              className="rounded-lg p-2 text-black transition-colors hover:bg-white/10"
+            <Button
+              variant="ghost"
+              className="text-black transition-colors hover:bg-gray-50"
               onClick={handleToggle}
               aria-label="Toggle Sidebar"
             >
@@ -34,7 +41,7 @@ const Header = () => {
               ) : (
                 <Menu className="h-6 w-6" />
               )}
-            </button>
+            </Button>
           )}
 
           <Link href="/">
@@ -46,12 +53,12 @@ const Header = () => {
               className="object-contain"
             />
           </Link>
-        </div>
+        </Box>
 
-        <div className="flex items-center text-white">
+        <Box display="flex" align="center" className="text-white">
           <UserDropdown />
-        </div>
-      </div>
+        </Box>
+      </Box>
     </header>
   );
 };

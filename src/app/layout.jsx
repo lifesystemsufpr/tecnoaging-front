@@ -12,7 +12,7 @@
  * @returns {JSX.Element} The HTML structure of the application's root layout.
  */
 import { Outfit } from "next/font/google";
-import "./globals.css";
+import "../core/theme/globals.css";
 
 import Providers from "@/app/providers";
 import { Toaster } from "sonner";
@@ -37,9 +37,11 @@ export default async function RootLayout({ children }) {
         <TanstackProvider>
           <Providers session={session}>
             <Toaster position="top-center" richColors />
-            <MuiThemeProvider>
-              <SidebarProvider>{children}</SidebarProvider>
-            </MuiThemeProvider>
+            <ThemeProvider>
+              <MuiThemeProvider>
+                <SidebarProvider>{children}</SidebarProvider>
+              </MuiThemeProvider>
+            </ThemeProvider>
           </Providers>
         </TanstackProvider>
       </body>

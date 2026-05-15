@@ -213,13 +213,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (isNumberInput) {
         const numericValue = sanitizeNumberText(e.target.value);
 
-        // Update display — empty string is intentional (user is clearing)
         setNumberDisplay(numericValue);
 
         const syntheticEvent = {
           ...e,
           target: {
             ...e.target,
+            name: e.target.name, // <-- Recupere o name explicitamente
+            id: e.target.id, // <-- Recupere o id explicitamente
             value: numericValue,
           },
         } as React.ChangeEvent<HTMLInputElement>;
@@ -255,6 +256,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ...e,
         target: {
           ...e.target,
+          name: e.target.name,
+          id: e.target.id,
           value: unmask ? rawValue : formatted,
         },
       } as React.ChangeEvent<HTMLInputElement>;
@@ -268,7 +271,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         const syntheticEvent = {
           ...e,
-          target: { ...e.target, value: "0" },
+          target: {
+            ...e.target,
+            name: e.target.name,
+            id: e.target.id,
+            value: "0",
+          },
         } as unknown as React.ChangeEvent<HTMLInputElement>;
 
         onChange?.(syntheticEvent);

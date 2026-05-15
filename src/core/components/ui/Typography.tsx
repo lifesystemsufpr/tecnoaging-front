@@ -33,7 +33,7 @@ export function Typography({
   as,
   variant,
   className,
-  color = "primary",
+  color,
   ...props
 }: TypographyProps) {
   const Component = as || "p";

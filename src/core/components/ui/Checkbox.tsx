@@ -160,8 +160,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
               id={id}
               type="checkbox"
               disabled={disabled}
-              checked={checked}
-              defaultChecked={defaultChecked}
+              checked={!!checked}
               aria-checked={indeterminate ? "mixed" : checked}
               aria-describedby={helperId}
               aria-invalid={status === "error" || undefined}

@@ -13,7 +13,7 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const { isMobile } = useSidebar();
 
-  const layoutStyle = isMobile ? "w-full" : "ml-20 w-[calc(100%-80px)]";
+  const layoutStyle = isMobile ? "w-full" : "ml-16 w-[calc(100%-64px)]";
 
   return (
     <div className="min-h-screen xl:flex flex-col">

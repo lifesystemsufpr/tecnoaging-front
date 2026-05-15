@@ -120,7 +120,7 @@ export function Dropdown({
           open
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",
-          menuClassName,
+          menuClassName
         )}
       >
         <ul className="py-2" id={labelId}>
@@ -137,9 +137,9 @@ export function Dropdown({
                 className={cn(
                   "flex w-full items-start gap-3 px-3 py-2 text-left text-sm transition cursor-pointer",
                   item.disabled
-                    ? "cursor-not-allowed text-[hsl(var(--muted-foreground))] opacity-60"
+                    ? "cursor-not-allowed text-[hsl(var(--muted-foreground))] opacity-100"
                     : "text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))]",
-                  item.danger && "text-[hsl(var(--destructive))]",
+                  item.danger && "text-[hsl(var(--destructive))]"
                 )}
               >
                 {item.Icon && <item.Icon size={16} />}

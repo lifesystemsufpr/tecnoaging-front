@@ -7,6 +7,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { useMenuItems } from "@/core/hooks/useMenuItems";
 import { useSidebar } from "@/core/contexts/SidebarContext";
 import Link from "next/link";
+import { Box } from "../ui";
 
 export default function SideBar() {
   const session = useSession();
@@ -56,7 +57,7 @@ export default function SideBar() {
             {nav.subItems ? (
               <button
                 onClick={() => toggleSubmenu(nav.name)}
-                className={`menu-item group w-full flex items-center transition-all duration-200 ${
+                className={`menu-item group w-full flex items-center transition-all duration-200 cursor-pointer ${
                   isSubmenuOpen ? "menu-item-active" : "menu-item-inactive"
                 } ${isCollapsed ? "justify-center px-0" : "justify-start px-4"}`}
               >
@@ -150,15 +151,32 @@ export default function SideBar() {
 
   return (
     <aside
-      className={`fixed top-16 left-0 flex flex-col bg-blue-600 dark:bg-gray-900 text-white h-[calc(100vh-4rem)] transition-all duration-300 ease-in-out z-50 border-r border-blue-700
-      ${isExpanded || isHovered || isMobileOpen ? "w-72 px-5" : "w-16 px-2"}
-      ${isMobileOpen ? "translate-x-0" : "max-lg:-translate-x-full lg:translate-x-0"}`}
+      className={`
+        fixed top-19 left-0 z-50
+        flex h-full flex-col
+        overflow-hidden
+        border-r border-blue-700
+        bg-blue-600 text-white
+        dark:bg-gray-900
+
+        transition-[width,transform]
+        duration-300
+        ease-out
+
+        ${isExpanded || isHovered || isMobileOpen ? "w-72" : "w-16"}
+
+        ${
+          isMobileOpen
+            ? "translate-x-0"
+            : "max-lg:-translate-x-full lg:translate-x-0"
+        }
+      `}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col overflow-y-auto no-scrollbar pb-6">
+      <Box display="flex" direction="column" className="p-3">
         <nav className="mb-6 mt-10">{renderMenuItems(filteredNavItems)}</nav>
-      </div>
+      </Box>
     </aside>
   );
 }
