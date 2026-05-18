@@ -18,9 +18,9 @@ import Providers from "@/app/providers";
 import { Toaster } from "sonner";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import MuiThemeProvider from "@/context/MuiThemeProvider";
-import TanstackProvider from "@/core/providers/tanstack-provider";
 
+import TanstackProvider from "@/core/providers/tanstack-provider";
+import MuiThemeProvider from "@/core/providers/MuiThemeProvider";
 import { SidebarProvider } from "@/core/contexts/SidebarContext";
 import { ThemeProvider } from "@/core/theme/ThemeContext";
 
