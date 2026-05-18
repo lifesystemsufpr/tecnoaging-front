@@ -44,7 +44,7 @@ export function mapEntityToFormDefaults(
         role: SystemRoles.RESEARCHER,
         fullName: r.fullName,
         cpf: formatCPF(r.cpf),
-        password: "",
+        password: undefined,
         email: r.email,
         phone: r.phone ?? "",
         institution: r.institutionId ?? "",

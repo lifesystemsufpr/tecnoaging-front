@@ -14,14 +14,10 @@ import {
 } from "@/core/components/ui";
 import { Researcher } from "@/core/types";
 import { formatCPF } from "@/core/utils";
+import { useRouter } from "next/navigation";
+import ROUTES from "@/core/config/client.routes";
 
-interface ResearcherTableProps {
-  selectResearcher: (researcher: Researcher) => void;
-}
-
-export default function ResearcherTable({
-  selectResearcher,
-}: ResearcherTableProps) {
+export default function ResearcherTable() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState<FilterState>({});
@@ -29,6 +25,9 @@ export default function ResearcherTable({
     "asc" | "desc" | undefined
   >(undefined);
   const [sortField, setSortField] = useState<string | undefined>(undefined);
+  const router = useRouter();
+
+  const { openEditModal } = useResearcherCrudContext();
 
   const { data, isLoading, error } = useListResearchers({
     pageSize: pageSize,
@@ -101,12 +100,18 @@ export default function ResearcherTable({
         <Table.Header showActionsColumn />
         <Table.Body<Researcher>
           emptyMessage="Nenhum pesquisador encontrado"
+          onRowClick={(row) =>
+            router.push(ROUTES.USERS.RESEARCHERS.DETAIL(row.id))
+          }
           renderActions={(row) => (
             <Box display="flex" gap={4} justify="center">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => selectResearcher(row)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditModal(row);
+                }}
                 tooltip="Editar"
               >
                 <PencilIcon className="h-4 w-4" />

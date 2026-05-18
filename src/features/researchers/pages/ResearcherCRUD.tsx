@@ -38,14 +38,17 @@ function ResearcherCRUDContent() {
         </Button>
       </Box>
 
-      <ResearcherTable selectResearcher={openEditModal} />
+      <ResearcherTable />
 
       <Modal
         open={isUpsertDialogOpen}
         onClose={closeUpsertModal}
         hideCloseButton
       >
-        <ResearcherUpsertForm editUser={selectedResearcher} />
+        <ResearcherUpsertForm
+          editUser={selectedResearcher}
+          onSuccess={closeUpsertModal}
+        />
       </Modal>
     </Box>
   );

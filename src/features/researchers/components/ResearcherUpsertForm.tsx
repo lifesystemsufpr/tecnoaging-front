@@ -38,10 +38,22 @@ export function ResearcherUpsertForm({
   editUser,
   onSuccess,
 }: ResearcherUpsertFormProps) {
-  console.log("Edit user in form:", editUser);
   const isEdit = !!editUser;
   const { data: session } = useSession();
   const [institutions, setInstitutions] = useState<Institution[]>([]);
+  console.log("Edit user in form:", editUser);
+
+  const createDefaults: FormValues = {
+    role: SystemRoles.RESEARCHER,
+    fullName: "",
+    cpf: "",
+    password: "",
+    phone: "",
+    gender: "MALE",
+    email: "",
+    institution: "",
+    fieldOfStudy: "",
+  };
 
   const schema = isEdit ? researcherUpdateSchema : researcherCreateSchema;
 
@@ -52,17 +64,7 @@ export function ResearcherUpsertForm({
           ...editUser,
           role: SystemRoles.RESEARCHER,
         } as never) as unknown as FormValues)
-      : {
-          role: SystemRoles.RESEARCHER,
-          fullName: "",
-          cpf: "",
-          password: "",
-          phone: "",
-          gender: "MALE",
-          email: "",
-          institution: "",
-          fieldOfStudy: "",
-        },
+      : createDefaults,
     mode: "onBlur",
   });
 
@@ -74,7 +76,19 @@ export function ResearcherUpsertForm({
     setValue,
   } = methods;
 
-  console.log(control);
+  useEffect(() => {
+    if (isEdit && editUser) {
+      methods.reset(
+        mapEntityToFormDefaults({
+          ...editUser,
+          role: SystemRoles.RESEARCHER,
+        } as never) as unknown as FormValues
+      );
+      return;
+    }
+
+    methods.reset(createDefaults);
+  }, [editUser, isEdit, methods]);
 
   // Fetch institutions
   useEffect(() => {
@@ -103,6 +117,7 @@ export function ResearcherUpsertForm({
         const payload = mapResearcherUpdate(
           raw as unknown as UserUpdateFormData
         );
+        console.log("Payload para atualização:", payload);
         await researcherService.updateResearcher(editUser.id, payload);
         toast.success("Pesquisador atualizado!");
       } else {

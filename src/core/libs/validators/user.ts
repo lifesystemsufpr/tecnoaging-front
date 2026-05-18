@@ -22,7 +22,13 @@ const baseCreate = baseRequired.extend({
 });
 
 const baseUpdate = baseRequired.extend({
-  password: z.string().min(8, "Mínimo de 8 caracteres").optional().nullable(),
+  password: z
+    .preprocess(
+      (value) => (value === "" ? undefined : value),
+      z.string().min(8, "Mínimo de 8 caracteres").optional().nullable()
+    )
+    .optional()
+    .nullable(),
 });
 
 export const researcherCreateSchema = baseCreate.extend({

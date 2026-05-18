@@ -7,6 +7,10 @@ const ROUTES = {
         `/users/participants/${id}/questionnaires`,
       EVALUATIONS: (id: string) => `/users/participants/${id}/evaluations`,
     },
+    RESEARCHERS: {
+      MAIN: "/users/researchers",
+      DETAIL: (id: string) => `/users/researchers/${id}`,
+    },
   },
 
   EVALUATIONS: {
