@@ -25,12 +25,14 @@ export function TableHeader({
     selection,
     visibleData,
     getRowId,
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useTableContext<any>();
 
   const allSelected = React.useMemo(() => {
     if (!selection.enabled || visibleData.length === 0) return false;
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     return visibleData.every((row: any, index: number) =>
-      selection.isRowSelected(getRowId(row, index)),
+      selection.isRowSelected(getRowId(row, index))
     );
   }, [selection, visibleData, getRowId]);
 
@@ -40,8 +42,9 @@ export function TableHeader({
       selection.clearSelection();
       return;
     }
+    //eslint-disable-next-line @typescript-eslint/no-explicit-any
     const ids = visibleData.map((row: any, index: number) =>
-      getRowId(row, index),
+      getRowId(row, index)
     );
     selection.selectAll(ids);
   };
@@ -61,6 +64,7 @@ export function TableHeader({
           </th>
         )}
 
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {columns.map((column: TableColumnDef<any>) => {
           const columnKey = String(column.id ?? column.field);
           const isSorted = sortState.field === columnKey;
@@ -77,7 +81,7 @@ export function TableHeader({
               className={cn(
                 "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground",
                 column.align === "right" && "text-right",
-                column.align === "center" && "text-center",
+                column.align === "center" && "text-center"
               )}
             >
               <div className="flex items-center gap-1">

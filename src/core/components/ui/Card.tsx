@@ -75,6 +75,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
             ? (e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
+                  //eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onClick(e as any);
                 }
               }

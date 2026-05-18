@@ -1,15 +1,9 @@
 "use client";
 
 import React from "react";
-import { Pencil, LogOut, ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { Pencil, LogOut, ArrowDownIcon } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
-import {
-  Avatar,
-  Box,
-  Typography,
-  Dropdown,
-  DropdownItem,
-} from "@/core/components/ui";
+import { Avatar, Box, Dropdown, DropdownItem } from "@/core/components/ui";
 import { useRouter } from "next/navigation";
 
 export default function UserDropdown() {
@@ -17,7 +11,6 @@ export default function UserDropdown() {
   const navigate = useRouter();
   const user = session?.user;
   const profile = session?.user?.role;
-  const isPatient = profile === "patient";
 
   const handleLogout = () => {
     signOut({ callbackUrl: `${window.location.origin}/login` });
@@ -58,7 +51,7 @@ export default function UserDropdown() {
     <div className="relative">
       <Dropdown
         items={dropdownItems}
-        trigger={({ open, toggle, close }) => (
+        trigger={({ open, toggle }) => (
           <Box
             onClick={(e) => {
               e.stopPropagation();

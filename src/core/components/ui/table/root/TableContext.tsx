@@ -32,8 +32,9 @@ export type TableContextValue<T> = {
   getRowId: (row: T, index: number) => string;
 };
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TableContext = React.createContext<TableContextValue<any> | null>(
-  null,
+  null
 );
 
 export function useTableContext<T>() {

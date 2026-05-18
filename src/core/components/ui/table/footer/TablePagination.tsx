@@ -13,6 +13,7 @@ export function TablePagination({
   pageSizeOptions = [1, 5, 10, 20, 50],
   extraColumns = 0,
 }: TablePaginationProps) {
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { pageState, actions, columns, selection } = useTableContext<any>();
 
   const computedColSpan =
@@ -22,7 +23,7 @@ export function TablePagination({
   const canNext = pageState.page < pageState.totalPages;
 
   const handlePageSizeChange: React.ChangeEventHandler<HTMLSelectElement> = (
-    event,
+    event
   ) => {
     actions.setPageSize(Number(event.target.value));
   };

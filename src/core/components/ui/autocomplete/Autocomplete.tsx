@@ -3,6 +3,7 @@ import { cn } from "@/core/utils";
 import { useAutocomplete, type UseAutocompleteProps } from "./useAutocomplete";
 
 interface AutocompleteProps<T> extends UseAutocompleteProps<T> {
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderInput: (props: any) => React.ReactNode;
   renderOption?: (option: T, state: { active: boolean }) => React.ReactNode;
   loadingText?: string;
@@ -52,6 +53,7 @@ export function Autocomplete<T>({
           activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined,
         value: inputValue,
         disabled,
+        //eslint-disable-next-line @typescript-eslint/no-explicit-any
         onChange: (e: any) => {
           setInputValue(e.target.value);
           setOpen(true);
@@ -67,7 +69,7 @@ export function Autocomplete<T>({
           open
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",
-          menuClassName,
+          menuClassName
         )}
       >
         <ul
@@ -111,7 +113,7 @@ export function Autocomplete<T>({
                       active
                         ? "bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]"
                         : "text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))]",
-                      optionClassName,
+                      optionClassName
                     )}
                   >
                     {content}
