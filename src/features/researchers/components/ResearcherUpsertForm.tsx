@@ -6,24 +6,26 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 
+import { makeTitleService } from "@/services/makeTitleService";
+
 import { Input, Label, Button, Autocomplete } from "@/core/components/ui";
 import UserFields from "@/core/components/shared/UserFields";
+import { Institution, Researcher } from "@/core/types";
+import { SystemRoles } from "@/core/enums";
+
 import {
   researcherCreateSchema,
+  ResearcherFormData,
   researcherUpdateSchema,
-  type ResearcherFormData,
-} from "@/lib/validators/user";
-import type { Researcher } from "@/types/domain/Reseracher";
-import type { Institution } from "@/types/domain/Institution";
+  type UserFormData,
+  type UserUpdateFormData,
+} from "@/core/libs/validators";
 import {
+  mapEntityToFormDefaults,
   mapResearcherCreate,
   mapResearcherUpdate,
-  mapEntityToFormDefaults,
-} from "@/lib/mappers/userMappers";
-import { createResearcher, updateResearcher } from "@/services/api-researcher";
-import { makeTitleService } from "@/services/makeTitleService";
-import { SystemRoles } from "@/types/enums/system-roles";
-import type { UserFormData, UserUpdateFormData } from "@/lib/validators/user";
+} from "@/core/libs/mappers/user";
+import { researcherService } from "@/features/researchers/services/researcher.service";
 
 interface ResearcherUpsertFormProps {
   editUser?: Researcher | null;
@@ -36,6 +38,7 @@ export function ResearcherUpsertForm({
   editUser,
   onSuccess,
 }: ResearcherUpsertFormProps) {
+  console.log("Edit user in form:", editUser);
   const isEdit = !!editUser;
   const { data: session } = useSession();
   const [institutions, setInstitutions] = useState<Institution[]>([]);
@@ -71,6 +74,8 @@ export function ResearcherUpsertForm({
     setValue,
   } = methods;
 
+  console.log(control);
+
   // Fetch institutions
   useEffect(() => {
     async function fetchInstitutions() {
@@ -98,18 +103,11 @@ export function ResearcherUpsertForm({
         const payload = mapResearcherUpdate(
           raw as unknown as UserUpdateFormData
         );
-        await updateResearcher({
-          id: editUser.id,
-          data: payload,
-          access_token: session.accessToken,
-        });
+        await researcherService.updateResearcher(editUser.id, payload);
         toast.success("Pesquisador atualizado!");
       } else {
         const payload = mapResearcherCreate(raw as unknown as UserFormData);
-        await createResearcher({
-          data: payload,
-          access_token: session.accessToken,
-        });
+        await researcherService.createResearcher(payload);
         toast.success("Pesquisador criado!");
       }
 
@@ -180,7 +178,9 @@ export function ResearcherUpsertForm({
               options={institutions}
               getOptionLabel={(o) => o.title}
               value={selectedInstitution}
-              onChange={(v) => setValue("institution", v?.id ?? "", { shouldValidate: true })}
+              onChange={(v) =>
+                setValue("institution", v?.id ?? "", { shouldValidate: true })
+              }
               isOptionEqualToValue={(o, v) => o.id === v?.id}
               renderInput={(inputProps) => (
                 <Input

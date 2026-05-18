@@ -2,7 +2,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/core/utils/index";
-import { applyMask, onlyDigits, type InputMaskType } from "@/core/utils/mask";
+import { applyMask, onlyDigits, type InputMaskType } from "@/core/utils";
 
 const inputWrapperVariants = cva(
   [

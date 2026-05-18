@@ -4,27 +4,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { z } from "zod";
 
-import { Input, Label, Button } from "@/core/components/ui";
-import UserFields from "@/core/components/shared/UserFields";
-import {
-  healthProCreateSchema,
-  healthProUpdateSchema,
-  type HealthProFormData,
-} from "@/lib/validators/user";
-import type { HealthProfessional } from "@/types/domain/Health-professional";
-import {
-  mapHealthProCreate,
-  mapHealthProUpdate,
-} from "@/lib/mappers/userMappers";
 import {
   createHealthProfessional,
   updateHealthProfessional,
 } from "@/services/api-health-professional";
-import { SystemRoles } from "@/types/enums/system-roles";
-import type { UserFormData, UserUpdateFormData } from "@/lib/validators/user";
-import { mapEntityToFormDefaults } from "@/lib/mappers/userMappers";
+
+import { Input, Label, Button } from "@/core/components/ui";
+import UserFields from "@/core/components/shared/UserFields";
+
+import { HealthProfessional } from "@/core/types";
+import { SystemRoles } from "@/core/enums";
+import {
+  mapEntityToFormDefaults,
+  mapHealthProCreate,
+  mapHealthProUpdate,
+} from "@/core/libs/mappers/user";
+import {
+  healthProCreateSchema,
+  healthProUpdateSchema,
+  type HealthProFormData,
+  UserFormData,
+  UserUpdateFormData,
+} from "@/core/libs/validators";
 
 interface ProfessionalUpsertFormProps {
   editUser?: HealthProfessional | null;
@@ -73,7 +75,9 @@ export function ProfessionalUpsertForm({
       if (!session?.accessToken) throw new Error("Sem token de acesso");
 
       if (isEdit && editUser) {
-        const payload = mapHealthProUpdate(raw as unknown as UserUpdateFormData);
+        const payload = mapHealthProUpdate(
+          raw as unknown as UserUpdateFormData
+        );
         await updateHealthProfessional({
           id: editUser.id,
           data: payload,

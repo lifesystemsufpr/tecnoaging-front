@@ -5,7 +5,6 @@ import { LoginResponse, TokenPayload } from "@/types/auth.d";
 import { parseJwt } from "@/lib/parseJwt";
 import { userFromAuthorize, userFromClaims } from "@/lib/userAdapter";
 import { API_BASE_URL } from "@/services/Routes";
-
 import { JWT } from "next-auth/jwt";
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {

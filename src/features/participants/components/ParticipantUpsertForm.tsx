@@ -8,27 +8,25 @@ import { useCallback, useState } from "react";
 
 import { Input, Label, Select, Button } from "@/core/components/ui";
 import UserFields from "@/core/components/shared/UserFields";
+import { Participant } from "@/core/types";
 import {
   patientCreateSchema,
+  PatientFormData,
   patientUpdateSchema,
-  type PatientFormData,
-} from "@/lib/validators/user";
-import type { Patient } from "@/types/domain/Patient";
+  UserFormData,
+} from "@/core/libs/validators";
 import {
+  mapEntityToFormDefaults,
   mapPatientCreate,
   mapPatientUpdate,
-  mapEntityToFormDefaults,
-} from "@/lib/mappers/userMappers";
-import { createPatient, updatePatient } from "@/services/api-patient";
-import { SystemRoles } from "@/types/enums/system-roles";
-import type { UserFormData, UserUpdateFormData } from "@/lib/validators/user";
-import { SocioEconomicLevel } from "@/types/enums/socio-economic-level";
-import { ScholarShip } from "@/types/enums/scholar-ship";
-import { UF_LIST } from "@/lib/validators/health-unit";
-import { socioLabel } from "@/utils/socioEconomic";
+} from "@/core/libs/mappers/user";
+import { ScholarShip, SocioEconomicLevel, SystemRoles } from "@/core/enums";
+import { socioLabel } from "@/core/utils";
 
+import { UF_LIST } from "@/lib/validators/health-unit";
+import { createPatient, updatePatient } from "@/services/api-patient";
 interface ParticipantUpsertFormProps {
-  editUser?: Patient | null;
+  editUser?: Participant | null;
   onSuccess?: () => void;
 }
 
@@ -92,7 +90,10 @@ export function ParticipantUpsertForm({
     async (raw: string) => {
       const cep = (raw || "").replace(/\D/g, "");
       if (cep.length !== 8) {
-        setError("zipCode", { type: "manual", message: "CEP deve ter 8 dígitos" });
+        setError("zipCode", {
+          type: "manual",
+          message: "CEP deve ter 8 dígitos",
+        });
         return;
       }
       setCepLoading(true);
@@ -100,7 +101,10 @@ export function ParticipantUpsertForm({
         const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await res.json();
         if (data?.erro) {
-          setError("zipCode", { type: "manual", message: "CEP não encontrado" });
+          setError("zipCode", {
+            type: "manual",
+            message: "CEP não encontrado",
+          });
           setValue("state", "");
           setValue("city", "");
           setValue("neighborhood", "");
@@ -113,7 +117,10 @@ export function ParticipantUpsertForm({
         setValue("neighborhood", data.bairro || "");
         setValue("street", data.logradouro || "");
       } catch {
-        setError("zipCode", { type: "manual", message: "Erro ao consultar CEP" });
+        setError("zipCode", {
+          type: "manual",
+          message: "Erro ao consultar CEP",
+        });
       } finally {
         setCepLoading(false);
       }
@@ -210,7 +217,10 @@ export function ParticipantUpsertForm({
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     name={field.name}
-                    errorMessage={(errors as Record<string, { message?: string }>).birthDate?.message}
+                    errorMessage={
+                      (errors as Record<string, { message?: string }>).birthDate
+                        ?.message
+                    }
                   />
                 )}
               />
@@ -227,7 +237,9 @@ export function ParticipantUpsertForm({
                   errorMessage={errors.weight?.message}
                   {...register("weight", {
                     setValueAs: (v) => {
-                      const s = String(v ?? "").replace(",", ".").trim();
+                      const s = String(v ?? "")
+                        .replace(",", ".")
+                        .trim();
                       if (s === "") return undefined;
                       const n = Number(s);
                       return Number.isNaN(n) ? undefined : n;
@@ -244,7 +256,9 @@ export function ParticipantUpsertForm({
                   errorMessage={errors.height?.message}
                   {...register("height", {
                     setValueAs: (v) => {
-                      const s = String(v ?? "").replace(",", ".").trim();
+                      const s = String(v ?? "")
+                        .replace(",", ".")
+                        .trim();
                       if (s === "") return undefined;
                       const n = Number(s);
                       return Number.isNaN(n) ? undefined : n;
@@ -438,7 +452,11 @@ export function ParticipantUpsertForm({
 
             {/* Botões */}
             <div className="mt-6 flex justify-between">
-              <Button type="button" variant="outline" onClick={() => setStep(0)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep(0)}
+              >
                 Voltar
               </Button>
               <Button type="submit" loading={isSubmitting}>

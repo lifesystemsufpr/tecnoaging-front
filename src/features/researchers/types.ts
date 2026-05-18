@@ -1,3 +1,5 @@
+import { User } from "@/core/types";
+
 export type GenderMode = "all" | "male" | "female";
 
 export interface DashboardResponse {
@@ -27,4 +29,11 @@ export interface GenderDistribution {
 export interface AgeGroupAverage {
   ageRange: string;
   average: number;
+}
+
+export interface ResearcherCreateRequest {
+  user: User;
+  institutionId: string;
+  fieldOfStudy: string;
+  email: string;
 }

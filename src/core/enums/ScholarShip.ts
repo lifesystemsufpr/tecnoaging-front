@@ -1,16 +1,3 @@
-export enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-}
-
-export enum SocioEconomicLevel {
-  A = "A",
-  B = "B",
-  C = "C",
-  D = "D",
-  E = "E",
-}
-
 export enum ScholarShip {
   NONE = "Nenhum",
   FUNDAMENTAL_INCOMPLETE = "Fundamental Incompleto",
@@ -22,11 +9,4 @@ export enum ScholarShip {
   POSTGRADUATE = "Pós Graduação",
   MASTERS = "Mestrado",
   DOCTORATE = "Doutorado",
-}
-
-export enum SystemRoles {
-  RESEARCHER = "RESEARCHER",
-  HEALTH_PROFESSIONAL = "HEALTH_PROFESSIONAL",
-  PATIENT = "PARTICIPANT",
-  MANAGER = "MANAGER",
 }
