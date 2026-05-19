@@ -20,6 +20,7 @@ interface InstitutionAutocompleteProps extends Omit<
   placeholder?: string;
   size?: InputProps["size"];
   inputClassName?: string;
+  inputErrorMessage?: string;
   className?: string;
   menuClassName?: string;
   optionClassName?: string;
@@ -33,6 +34,7 @@ interface InstitutionAutocompleteProps extends Omit<
   orderBy?: "title" | "createdAt";
   sortOrder?: "asc" | "desc";
   enabled?: boolean;
+  valueId?: string;
 }
 
 export function InstitutionAutocomplete({
@@ -40,6 +42,7 @@ export function InstitutionAutocomplete({
   placeholder = "Busque por instituicao",
   size = "md",
   inputClassName,
+  inputErrorMessage,
   className,
   menuClassName,
   optionClassName,
@@ -50,6 +53,7 @@ export function InstitutionAutocomplete({
   orderBy,
   sortOrder,
   enabled = true,
+  valueId,
   getOptionLabel,
   isOptionEqualToValue,
   inputValue,
@@ -93,6 +97,18 @@ export function InstitutionAutocomplete({
     isOptionEqualToValue ??
     ((a: Institution, b: Institution) => a?.id === b?.id);
 
+  const resolvedValue = React.useMemo(() => {
+    if (hookProps.value !== undefined) return hookProps.value ?? null;
+    if (!valueId) return null;
+    return options.find((option) => option.id === valueId) ?? null;
+  }, [hookProps.value, valueId, options]);
+
+  React.useEffect(() => {
+    if (inputValue !== undefined) return;
+    if (!resolvedValue) return;
+    setInternalInputValue(resolveLabel(resolvedValue));
+  }, [inputValue, resolvedValue, resolveLabel]);
+
   return (
     <div>
       {label && (
@@ -104,6 +120,7 @@ export function InstitutionAutocomplete({
         {...hookProps}
         options={options}
         loading={query.isLoading || query.isFetching}
+        value={resolvedValue}
         inputValue={resolvedInputValue}
         onInputChange={handleInputChange}
         getOptionLabel={resolveLabel}
@@ -120,6 +137,7 @@ export function InstitutionAutocomplete({
             size={size}
             placeholder={placeholder}
             className={inputClassName}
+            errorMessage={inputErrorMessage}
           />
         )}
       />

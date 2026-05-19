@@ -17,7 +17,7 @@ export function useUpdateResearcher() {
   return useMutation({
     mutationFn: ({ id, data }: UpdateResearcherPayload) =>
       api.patch<Researcher>(API_ROUTES.RESEARCHER_BY_ID(id), {
-        body: data,
+        ...data,
       }),
 
     onSuccess: () => {

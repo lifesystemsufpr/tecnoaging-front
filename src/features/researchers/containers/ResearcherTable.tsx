@@ -27,7 +27,7 @@ export default function ResearcherTable() {
   const [sortField, setSortField] = useState<string | undefined>(undefined);
   const router = useRouter();
 
-  const { openEditModal } = useResearcherCrudContext();
+  const { openEditModal, openDeleteDialog } = useResearcherCrudContext();
 
   const { data, isLoading, error } = useListResearchers({
     pageSize: pageSize,
@@ -116,7 +116,15 @@ export default function ResearcherTable() {
               >
                 <PencilIcon className="h-4 w-4" />
               </Button>
-              <Button variant="destructive" size="sm" tooltip="Excluir">
+              <Button
+                variant="destructive"
+                size="sm"
+                tooltip="Excluir"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openDeleteDialog(row);
+                }}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </Box>

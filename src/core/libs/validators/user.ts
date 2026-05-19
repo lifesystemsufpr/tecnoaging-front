@@ -31,11 +31,27 @@ const baseUpdate = baseRequired.extend({
     .nullable(),
 });
 
-export const researcherCreateSchema = baseCreate.extend({
+const researcherCreateFlatSchema = baseCreate.extend({
   role: z.literal(SystemRoles.RESEARCHER),
   email: z.string().email("Email inválido"),
   institution: z.string().min(1, "Required"),
   fieldOfStudy: z.string().optional().nullable(),
+});
+
+export const researcherCreateSchema = z.object({
+  email: z.string().email("Email inválido"),
+  institutionId: z.string().min(1, "Instituicao obrigatoria"),
+  fieldOfStudy: z.string().optional().nullable(),
+  user: z.object({
+    fullName: z.string().min(1, "Informe o nome"),
+    cpf: z.string().regex(cpfRegex, "CPF inválido"),
+    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+      required_error: "Gênero é obrigatório",
+    }),
+    password: z.string().min(8, "Mínimo de 8 caracteres"),
+    active: z.boolean().optional(),
+  }),
 });
 
 export const patientCreateSchema = baseCreate.extend({
@@ -74,12 +90,26 @@ export const healthProCreateSchema = baseCreate.extend({
   specialization: z.string().min(1, "Required"),
 });
 
-export const researcherUpdateSchema = baseUpdate.extend({
-  role: z.literal(SystemRoles.RESEARCHER),
+export const researcherUpdateSchema = z.object({
   email: z.string().email("Email inválido"),
-  institution: z.string().min(1, "Required"),
+  institutionId: z.string().min(1, "Instituicao obrigatoria"),
   fieldOfStudy: z.string().optional().nullable(),
-  specialization: z.string().optional(),
+  user: z.object({
+    fullName: z.string().min(1, "Informe o nome"),
+    cpf: z.string().regex(cpfRegex, "CPF inválido"),
+    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+      required_error: "Gênero é obrigatório",
+    }),
+    password: z
+      .preprocess(
+        (value) => (value === "" ? undefined : value),
+        z.string().min(8, "Mínimo de 8 caracteres").optional().nullable()
+      )
+      .optional()
+      .nullable(),
+    active: z.boolean().optional(),
+  }),
 });
 
 export const patientUpdateSchema = baseUpdate.extend({
@@ -119,13 +149,12 @@ export const healthProUpdateSchema = baseUpdate.extend({
 });
 
 export const userSchema = z.discriminatedUnion("role", [
-  researcherCreateSchema,
+  researcherCreateFlatSchema,
   patientCreateSchema,
   healthProCreateSchema,
 ]);
 
 export const userUpdateSchema = z.discriminatedUnion("role", [
-  researcherUpdateSchema,
   patientUpdateSchema,
   healthProUpdateSchema,
 ]);

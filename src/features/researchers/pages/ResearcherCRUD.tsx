@@ -9,16 +9,15 @@ import {
   ResearcherCrudProvider,
   useResearcherCrudContext,
 } from "../contexts/ResearcherListContext";
+import { ConfirmDelete } from "../containers/ConfirmDelete";
 
 function ResearcherCRUDContent() {
   const {
     isUpsertDialogOpen,
     selectedResearcher,
     openCreateModal,
-    openDeleteDialog,
-    openEditModal,
+    isDeleteDialogOpen,
     closeUpsertModal,
-    isEditing,
   } = useResearcherCrudContext();
 
   return (
@@ -40,16 +39,20 @@ function ResearcherCRUDContent() {
 
       <ResearcherTable />
 
-      <Modal
-        open={isUpsertDialogOpen}
-        onClose={closeUpsertModal}
-        hideCloseButton
-      >
-        <ResearcherUpsertForm
-          editUser={selectedResearcher}
-          onSuccess={closeUpsertModal}
-        />
-      </Modal>
+      {isUpsertDialogOpen && (
+        <Modal
+          open={isUpsertDialogOpen}
+          onClose={closeUpsertModal}
+          hideCloseButton
+        >
+          <ResearcherUpsertForm
+            editUser={selectedResearcher}
+            onSuccess={closeUpsertModal}
+          />
+        </Modal>
+      )}
+
+      {isDeleteDialogOpen && <ConfirmDelete />}
     </Box>
   );
 }
