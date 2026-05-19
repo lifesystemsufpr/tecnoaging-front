@@ -1,240 +1,196 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider, Controller } from "react-hook-form";
-import { useSession } from "next-auth/react";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
-
-import { makeTitleService } from "@/services/makeTitleService";
-
-import { Input, Label, Button, Autocomplete } from "@/core/components/ui";
-import UserFields from "@/core/components/shared/UserFields";
-import { Institution, Researcher } from "@/core/types";
-import { SystemRoles } from "@/core/enums";
-
+import { useState } from "react";
+import { useUpdateResearcher } from "../hooks/useUpdateResearcher";
+import { Gender } from "@/core/enums";
+import { ResearcherCreateRequest } from "../types";
+import { Researcher } from "@/core/types";
+import { InstitutionAutocomplete } from "@/features/institutions";
 import {
-  researcherCreateSchema,
-  ResearcherFormData,
-  researcherUpdateSchema,
-  type UserFormData,
-  type UserUpdateFormData,
-} from "@/core/libs/validators";
-import {
-  mapEntityToFormDefaults,
-  mapResearcherCreate,
-  mapResearcherUpdate,
-} from "@/core/libs/mappers/user";
-import { researcherService } from "@/features/researchers/services/researcher.service";
+  Box,
+  Button,
+  Grid,
+  Input,
+  Label,
+  Select,
+  Typography,
+} from "@/core/components/ui";
+
+import { researcherCreateSchema } from "@/core/libs/validators/index";
 
 interface ResearcherUpsertFormProps {
   editUser?: Researcher | null;
   onSuccess?: () => void;
 }
 
-type FormValues = ResearcherFormData;
+const initialFormData: ResearcherCreateRequest = {
+  email: "",
+  fieldOfStudy: "",
+  institutionId: "",
+  user: {
+    fullName: "",
+    cpf: "",
+    phone: "",
+    gender: Gender.MALE,
+    password: "",
+    active: true,
+  },
+};
 
 export function ResearcherUpsertForm({
   editUser,
   onSuccess,
 }: ResearcherUpsertFormProps) {
   const isEdit = !!editUser;
-  const { data: session } = useSession();
-  const [institutions, setInstitutions] = useState<Institution[]>([]);
-  console.log("Edit user in form:", editUser);
+  const updateMutation = useUpdateResearcher();
 
-  const createDefaults: FormValues = {
-    role: SystemRoles.RESEARCHER,
-    fullName: "",
-    cpf: "",
-    password: "",
-    phone: "",
-    gender: "MALE",
-    email: "",
-    institution: "",
-    fieldOfStudy: "",
-  };
-
-  const schema = isEdit ? researcherUpdateSchema : researcherCreateSchema;
-
-  const methods = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: isEdit
-      ? (mapEntityToFormDefaults({
-          ...editUser,
-          role: SystemRoles.RESEARCHER,
-        } as never) as unknown as FormValues)
-      : createDefaults,
-    mode: "onBlur",
-  });
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    watch,
-    setValue,
-  } = methods;
-
-  useEffect(() => {
-    if (isEdit && editUser) {
-      methods.reset(
-        mapEntityToFormDefaults({
-          ...editUser,
-          role: SystemRoles.RESEARCHER,
-        } as never) as unknown as FormValues
-      );
-      return;
-    }
-
-    methods.reset(createDefaults);
-  }, [editUser, isEdit, methods]);
-
-  // Fetch institutions
-  useEffect(() => {
-    async function fetchInstitutions() {
-      try {
-        const service = makeTitleService("institution");
-        const data = await service.list(session?.accessToken);
-        setInstitutions(data);
-      } catch (error) {
-        console.error("Erro ao buscar instituições:", error);
-        setInstitutions([]);
-      }
-    }
-    fetchInstitutions();
-  }, [session?.accessToken]);
-
-  const institutionValue = watch("institution");
-  const selectedInstitution =
-    institutions.find((i) => i.id === institutionValue) ?? null;
-
-  const onSubmit = async (raw: FormValues) => {
-    try {
-      if (!session?.accessToken) throw new Error("Sem token de acesso");
-
-      if (isEdit && editUser) {
-        const payload = mapResearcherUpdate(
-          raw as unknown as UserUpdateFormData
-        );
-        console.log("Payload para atualização:", payload);
-        await researcherService.updateResearcher(editUser.id, payload);
-        toast.success("Pesquisador atualizado!");
-      } else {
-        const payload = mapResearcherCreate(raw as unknown as UserFormData);
-        await researcherService.createResearcher(payload);
-        toast.success("Pesquisador criado!");
-      }
-
-      onSuccess?.();
-    } catch (err) {
-      const message = (err as Error)?.message || String(err);
-      if (message.includes("Unexpected token 'T'")) {
-        toast.error("Erro no servidor. Funcionalidade não implementada.");
-      } else {
-        toast.error(message);
-      }
-      console.error("Submission error:", err);
-    }
-  };
-
-  const onError = () => {
-    toast.error("Erros no formulário, verifique os campos.");
-  };
+  const [formData, setFormData] =
+    useState<ResearcherCreateRequest>(initialFormData);
 
   return (
-    <FormProvider {...methods}>
-      <form
-        noValidate
-        onSubmit={handleSubmit(onSubmit, onError)}
-        className="flex flex-col gap-6 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6"
-      >
-        {/* Header */}
-        <div>
-          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
-            {isEdit ? "Editar Pesquisador" : "Cadastrar Pesquisador"}
-          </h2>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            {isEdit
-              ? "Altere as informações e salve."
-              : "Preencha o formulário abaixo para cadastrar um novo pesquisador."}
-          </p>
-        </div>
+    <Box display="flex" direction="column" gap={20}>
+      <Box display="flex" direction="column" gap={8} mb={18}>
+        <Typography variant="h4" color="secondary">
+          {isEdit ? "Editar Pesquisador" : "Cadastrar Pesquisador"}
+        </Typography>
+        <Typography variant="small">
+          {isEdit
+            ? "Faça as alterações desejadas e clique em salvar."
+            : "Preencha os campos abaixo para cadastrar um novo pesquisador."}
+        </Typography>
+      </Box>
 
-        {/* Campos compartilhados */}
-        <UserFields isEdit={isEdit} />
-
-        {/* Email */}
-        <div>
-          <Label htmlFor="email">Email *</Label>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="email"
-                type="email"
-                placeholder="email@exemplo.com"
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                errorMessage={errors.email?.message}
-              />
-            )}
+      <Grid container spacing={24}>
+        <Grid item xs={12}>
+          <Label htmlFor="fullName">Nome Completo</Label>
+          <Input
+            id="fullName"
+            placeholder="Nome Completo"
+            value={formData.user.fullName}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                user: { ...formData.user, fullName: e.target.value },
+              })
+            }
+            type="text"
+            size="lg"
           />
-        </div>
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="cpf">CPF</Label>
+          <Input
+            id="cpf"
+            placeholder="CPF"
+            type="text"
+            size="lg"
+            mask="cpf"
+            value={formData.user.cpf}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                user: { ...formData.user, cpf: e.target.value },
+              })
+            }
+          />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="password">Senha</Label>
+          <Input
+            id="password"
+            placeholder="Senha"
+            type="password"
+            size="lg"
+            value={formData.user.password}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                user: { ...formData.user, password: e.target.value },
+              })
+            }
+          />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="phone">Telefone</Label>
+          <Input
+            id="phone"
+            placeholder="Telefone"
+            type="text"
+            size="lg"
+            mask="phone"
+            value={formData.user.phone}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                user: { ...formData.user, phone: e.target.value },
+              })
+            }
+          />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="gender">Gênero</Label>
+          <Select
+            id="gender"
+            className="h-12"
+            value={formData.user.gender}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                user: { ...formData.user, gender: e.target.value as Gender },
+              })
+            }
+          >
+            <option value={Gender.FEMALE}>Feminino</option>
+            <option value={Gender.MALE}>Masculino</option>
+          </Select>
+        </Grid>
+        <Grid item xs={12}>
+          <Label htmlFor="email">E-mail</Label>
+          <Input
+            id="email"
+            placeholder="E-mail"
+            type="email"
+            size="lg"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                email: e.target.value,
+              })
+            }
+          />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="institutionId">Instituição</Label>
+          <InstitutionAutocomplete
+            size="lg"
+            placeholder="Instituição"
+            onChange={(e) => setFormData({ ...formData, institutionId: e.id })}
+          />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="fieldOfStudy">Campo de Estudo</Label>
+          <Input
+            id="fieldOfStudy"
+            placeholder="Campo de Estudo"
+            type="text"
+            size="lg"
+            value={formData.fieldOfStudy}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                fieldOfStudy: e.target.value,
+              })
+            }
+          />
+        </Grid>
+      </Grid>
 
-        {/* Instituição + Campo de Estudo */}
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <Label htmlFor="institution">Instituição *</Label>
-            <Autocomplete
-              options={institutions}
-              getOptionLabel={(o) => o.title}
-              value={selectedInstitution}
-              onChange={(v) =>
-                setValue("institution", v?.id ?? "", { shouldValidate: true })
-              }
-              isOptionEqualToValue={(o, v) => o.id === v?.id}
-              renderInput={(inputProps) => (
-                <Input
-                  {...inputProps}
-                  id="institution"
-                  placeholder="Buscar instituição..."
-                  errorMessage={errors.institution?.message}
-                />
-              )}
-            />
-          </div>
-
-          <div className="flex-1">
-            <Label htmlFor="fieldOfStudy">Campo de Estudo</Label>
-            <Controller
-              name={"fieldOfStudy" as keyof FormValues}
-              control={control}
-              render={({ field, fieldState }) => (
-                <Input
-                  id="fieldOfStudy"
-                  placeholder="Ex: Ciências da Saúde"
-                  value={(field.value as string) || ""}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  errorMessage={fieldState.error?.message}
-                />
-              )}
-            />
-          </div>
-        </div>
-
-        {/* Submit */}
-        <div className="flex justify-end">
-          <Button type="submit" loading={isSubmitting}>
-            {isEdit ? "Salvar alterações" : "Cadastrar"}
-          </Button>
-        </div>
-      </form>
-    </FormProvider>
+      <Box display="flex" direction="row" justify="flex-end" gap={12} mt={12}>
+        <Button variant="default" color="primary" size="lg">
+          Cadastrar
+        </Button>
+      </Box>
+    </Box>
   );
 }

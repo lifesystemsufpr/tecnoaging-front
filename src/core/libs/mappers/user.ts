@@ -49,7 +49,7 @@ export function mapEntityToFormDefaults(
         phone: r.phone ?? "",
         institution: r.institutionId ?? "",
         fieldOfStudy: r.fieldOfStudy ?? "",
-        gender: r.gender ?? "OTHER",
+        gender: r.gender ?? "MALE",
       };
     }
     case SystemRoles.PATIENT: {
@@ -60,10 +60,7 @@ export function mapEntityToFormDefaults(
         cpf: formatCPF(p.cpf) ?? "",
         password: "",
         confirmPassword: "",
-        gender: (p.gender ?? p.gender ?? "OTHER") as
-          | "MALE"
-          | "FEMALE"
-          | "OTHER",
+        gender: (p.gender ?? p.gender ?? "MALE") as "MALE" | "FEMALE" | "OTHER",
         phone: p.phone ?? p.phone ?? "",
 
         // paciente
@@ -136,12 +133,11 @@ export function mapResearcherUpdate(data: UserUpdateFormData) {
       fullName: data.fullName,
       cpf: sanatizeCPF(data.cpf),
       phone: sanatizePhone(data.phone) || "",
-      gender: data.gender || "OTHER",
+      gender: data.gender || "MALE",
     },
     email: data.email,
     institutionId: data.institution,
     fieldOfStudy: data.fieldOfStudy,
-    specialityId: data.specialization ?? "",
   };
   if (data.password && data.password.trim().length > 0) {
     payload.user.password = data.password;

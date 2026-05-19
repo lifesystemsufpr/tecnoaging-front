@@ -75,16 +75,16 @@ export function Modal({
   return createPortal(
     <div
       className={cn(
-        "fixed inset-0 z-50 flex w-full justify-center p-4",
+        "fixed inset-0 z-1000 flex w-full justify-center p-4",
         align === "top" ? "items-start pt-16" : "items-center",
-        open ? "pointer-events-auto" : "pointer-events-none",
+        open ? "pointer-events-auto" : "pointer-events-none"
       )}
     >
       <div
         className={cn(
           "absolute inset-0 bg-black/60 transition-opacity duration-200",
           open ? "opacity-100" : "opacity-0",
-          overlayClassName,
+          overlayClassName
         )}
         aria-hidden="true"
         onClick={onClose}
@@ -99,7 +99,7 @@ export function Modal({
           "transition-all duration-200",
           open ? "opacity-100 scale-100" : "opacity-0 scale-95",
           sizeMap[size],
-          className,
+          className
         )}
       >
         {showHeader && (
@@ -165,6 +165,6 @@ export function Modal({
         )}
       </section>
     </div>,
-    document.body,
+    document.body
   );
 }
