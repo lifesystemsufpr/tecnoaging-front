@@ -1,19 +1,17 @@
-"use client";
-
 import { Box, Button, Modal, Typography } from "@/core/components/ui";
-import ResearcherTable from "../containers/ResearcherTable";
-import { ResearcherUpsertForm } from "../components/ResearcherUpsertForm";
-import { useResearcherCrudContext } from "../contexts/ResearcherListContext";
+import ProfessionalTable from "../containers/ProfessionalTable";
+import { useProfessionalCrudContext } from "../contexts/ProfessionalCrudContext";
+import { ProfessionalUpsertForm } from "../components/ProfessionalUpsertForm";
 import { ConfirmDelete } from "../containers/ConfirmDelete";
 
-export function ResearcherCrudPage() {
+export function HealthProfessionalsCrudPage() {
   const {
-    isUpsertDialogOpen,
-    selectedResearcher,
     openCreateModal,
-    isDeleteDialogOpen,
+    isUpsertDialogOpen,
     closeUpsertModal,
-  } = useResearcherCrudContext();
+    selectedProfessional,
+    isDeleteDialogOpen,
+  } = useProfessionalCrudContext();
 
   return (
     <Box display="flex" direction="column" gap={12}>
@@ -24,15 +22,15 @@ export function ResearcherCrudPage() {
         align="center"
       >
         <Typography variant="h4" color="secondary">
-          Gerenciar Pesquisadores
+          Gerenciar Profissionais de Saúde
         </Typography>
 
         <Button variant="default" onClick={openCreateModal}>
-          Adicionar Pesquisador
+          Adicionar Profissional
         </Button>
       </Box>
 
-      <ResearcherTable />
+      <ProfessionalTable />
 
       {isUpsertDialogOpen && (
         <Modal
@@ -40,8 +38,8 @@ export function ResearcherCrudPage() {
           onClose={closeUpsertModal}
           hideCloseButton
         >
-          <ResearcherUpsertForm
-            editUser={selectedResearcher}
+          <ProfessionalUpsertForm
+            editUser={selectedProfessional}
             onSuccess={closeUpsertModal}
           />
         </Modal>

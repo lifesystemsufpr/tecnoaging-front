@@ -1,7 +1,14 @@
 "use client";
 
-import { ResearcherCRUD } from "@/features/researchers";
+import {
+  ResearcherCrudPage,
+  ResearcherCrudProvider,
+} from "@/features/researchers";
 
 export default function ResearcherRoute() {
-  return <ResearcherCRUD />;
+  return (
+    <ResearcherCrudProvider>
+      <ResearcherCrudPage />
+    </ResearcherCrudProvider>
+  );
 }
