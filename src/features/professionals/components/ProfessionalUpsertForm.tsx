@@ -1,186 +1,290 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider, Controller } from "react-hook-form";
-import { useSession } from "next-auth/react";
-import { toast } from "sonner";
-
-import {
-  createHealthProfessional,
-  updateHealthProfessional,
-} from "@/services/api-health-professional";
-
-import { Input, Label, Button } from "@/core/components/ui";
-import UserFields from "@/core/components/shared/UserFields";
-
+import { useCallback, useState } from "react";
+import { useUpdateProfessional } from "../hooks/useUpdateProfessional";
+import { useCreateProfessional } from "../hooks/useCreateProfessional";
+import { Gender } from "@/core/enums";
 import { HealthProfessional } from "@/core/types";
-import { SystemRoles } from "@/core/enums";
+import { HealthProfessionalFormData } from "@/core/libs/validators";
 import {
-  mapEntityToFormDefaults,
-  mapHealthProCreate,
-  mapHealthProUpdate,
-} from "@/core/libs/mappers/user";
+  Box,
+  Button,
+  Grid,
+  Input,
+  Label,
+  Select,
+  Typography,
+} from "@/core/components/ui";
 import {
-  healthProCreateSchema,
-  healthProUpdateSchema,
-  type HealthProFormData,
-  UserFormData,
-  UserUpdateFormData,
-} from "@/core/libs/validators";
+  healthProfessionalCreateSchema,
+  healthProfessionalUpdateSchema,
+} from "@/core/libs/validators/index";
+import { sanatizeCPF } from "@/core/utils";
+import { toast } from "sonner";
 
 interface ProfessionalUpsertFormProps {
   editUser?: HealthProfessional | null;
   onSuccess?: () => void;
 }
 
-type FormValues = HealthProFormData;
-
 export function ProfessionalUpsertForm({
   editUser,
   onSuccess,
 }: ProfessionalUpsertFormProps) {
+  const updateMutation = useUpdateProfessional();
+  const createMutation = useCreateProfessional();
+
   const isEdit = !!editUser;
-  const { data: session } = useSession();
 
-  const schema = isEdit ? healthProUpdateSchema : healthProCreateSchema;
+  const initialFormData: HealthProfessionalFormData = {
+    email: editUser?.email ?? "",
+    speciality: editUser?.speciality ?? "",
+    user: {
+      fullName: editUser?.fullName ?? "",
+      cpf: editUser?.cpf ?? "",
+      phone: editUser?.phone ?? "",
+      gender: (editUser?.gender as Gender) ?? Gender.MALE,
+      password: "",
+      active: editUser?.active ?? true,
+    },
+  };
 
-  const methods = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: isEdit
-      ? (mapEntityToFormDefaults({
-          ...editUser,
-          role: SystemRoles.HEALTH_PROFESSIONAL,
-        } as never) as unknown as FormValues)
-      : {
-          role: SystemRoles.HEALTH_PROFESSIONAL,
-          fullName: "",
-          cpf: "",
-          password: "",
-          phone: "",
-          gender: "MALE",
-          email: "",
-          specialization: "",
-        },
-    mode: "onBlur",
-  });
+  const [formData, setFormData] =
+    useState<HealthProfessionalFormData>(initialFormData);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = methods;
+  const clearError = useCallback((path: string) => {
+    setErrors((prev) => {
+      if (!prev[path]) return prev;
+      const next = { ...prev };
+      delete next[path];
+      return next;
+    });
+  }, []);
 
-  const onSubmit = async (raw: FormValues) => {
-    try {
-      if (!session?.accessToken) throw new Error("Sem token de acesso");
-
-      if (isEdit && editUser) {
-        const payload = mapHealthProUpdate(
-          raw as unknown as UserUpdateFormData
-        );
-        await updateHealthProfessional({
-          id: editUser.id,
-          data: payload,
-          accessToken: session.accessToken,
-        });
-        toast.success("Profissional de Saúde atualizado!");
-      } else {
-        const payload = mapHealthProCreate(raw as unknown as UserFormData);
-        await createHealthProfessional({
-          accessToken: session.accessToken,
-          data: payload,
-        });
-        toast.success("Profissional de Saúde criado!");
-      }
-
-      onSuccess?.();
-    } catch (err) {
-      const message = (err as Error)?.message || String(err);
-      if (message.includes("Unexpected token 'T'")) {
-        toast.error("Erro no servidor. Funcionalidade não implementada.");
-      } else {
-        toast.error(message);
-      }
-      console.error("Submission error:", err);
+  const handleValidate = useCallback(() => {
+    const schema = isEdit
+      ? healthProfessionalUpdateSchema
+      : healthProfessionalCreateSchema;
+    const result = schema.safeParse(formData);
+    if (result.success) {
+      setErrors({});
+      return true;
     }
-  };
 
-  const onError = () => {
-    toast.error("Erros no formulário, verifique os campos.");
-  };
+    const nextErrors: Record<string, string> = {};
+    result.error.issues.forEach((issue) => {
+      const key = issue.path.join(".");
+      if (!nextErrors[key]) nextErrors[key] = issue.message;
+    });
+    setErrors(nextErrors);
+    return false;
+  }, [formData, isEdit]);
+
+  const handleSubmit = useCallback(() => {
+    const isValid = handleValidate();
+    if (!isValid) return;
+
+    const sanitizedCpf = sanatizeCPF(formData.user.cpf);
+    const payload = {
+      ...formData,
+      user: {
+        ...formData.user,
+        cpf: sanitizedCpf,
+        password:
+          formData.user.password !== "" ? formData.user.password : undefined,
+      },
+    };
+
+    if (isEdit && editUser) {
+      updateMutation.mutate(
+        { id: editUser.id!, data: payload },
+        {
+          onSuccess: () => {
+            toast.success("Profissional atualizado com sucesso!");
+            onSuccess?.();
+          },
+        }
+      );
+    } else {
+      createMutation.mutate(payload, {
+        onSuccess: () => {
+          toast.success("Profissional cadastrado com sucesso!");
+          onSuccess?.();
+        },
+      });
+    }
+  }, [
+    formData,
+    handleValidate,
+    isEdit,
+    editUser,
+    updateMutation,
+    createMutation,
+    onSuccess,
+  ]);
 
   return (
-    <FormProvider {...methods}>
-      <form
-        noValidate
-        onSubmit={handleSubmit(onSubmit, onError)}
-        className="flex flex-col gap-6 rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6"
-      >
-        {/* Header */}
-        <div>
-          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
-            {isEdit
-              ? "Editar Profissional de Saúde"
-              : "Cadastrar Profissional de Saúde"}
-          </h2>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            {isEdit
-              ? "Altere as informações e salve."
-              : "Preencha o formulário abaixo para cadastrar um novo profissional."}
-          </p>
-        </div>
+    <Box display="flex" direction="column" gap={20}>
+      <Box display="flex" direction="column" gap={8} mb={18}>
+        <Typography variant="h4" color="secondary">
+          {isEdit ? "Editar Profissional" : "Cadastrar Profissional"}
+        </Typography>
+        <Typography variant="small">
+          {isEdit
+            ? "Faça as alterações desejadas e clique em salvar."
+            : "Preencha os campos abaixo para cadastrar um novo profissional de saúde."}
+        </Typography>
+      </Box>
 
-        {/* Campos compartilhados */}
-        <UserFields isEdit={isEdit} />
-
-        {/* Email */}
-        <div>
-          <Label htmlFor="email">Email *</Label>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="email"
-                type="email"
-                placeholder="email@exemplo.com"
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                errorMessage={errors.email?.message}
-              />
-            )}
+      <Grid container spacing={24}>
+        <Grid item xs={12}>
+          <Label htmlFor="fullName">Nome Completo</Label>
+          <Input
+            id="fullName"
+            placeholder="Nome Completo"
+            value={formData.user.fullName}
+            errorMessage={errors["user.fullName"]}
+            onChange={(e) => {
+              clearError("user.fullName");
+              setFormData({
+                ...formData,
+                user: { ...formData.user, fullName: e.target.value },
+              });
+            }}
+            type="text"
+            size="lg"
+            required
           />
-        </div>
+        </Grid>
 
-        {/* Especialização */}
-        <div>
-          <Label htmlFor="specialization">Especialização *</Label>
-          <Controller
-            name="specialization"
-            control={control}
-            render={({ field }) => (
-              <Input
-                id="specialization"
-                placeholder="Ex: Fisioterapia, Geriatria..."
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                errorMessage={errors.specialization?.message}
-              />
-            )}
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="cpf">CPF</Label>
+          <Input
+            id="cpf"
+            placeholder="CPF"
+            type="text"
+            size="lg"
+            mask="cpf"
+            value={formData.user.cpf}
+            errorMessage={errors["user.cpf"]}
+            onChange={(e) => {
+              clearError("user.cpf");
+              setFormData({
+                ...formData,
+                user: { ...formData.user, cpf: e.target.value },
+              });
+            }}
           />
-        </div>
+        </Grid>
 
-        {/* Submit */}
-        <div className="flex justify-end">
-          <Button type="submit" loading={isSubmitting}>
-            {isEdit ? "Salvar alterações" : "Cadastrar"}
-          </Button>
-        </div>
-      </form>
-    </FormProvider>
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="password">Senha</Label>
+          <Input
+            id="password"
+            placeholder="Senha"
+            type="password"
+            size="lg"
+            value={formData.user.password}
+            errorMessage={errors["user.password"]}
+            onChange={(e) => {
+              clearError("user.password");
+              setFormData({
+                ...formData,
+                user: { ...formData.user, password: e.target.value },
+              });
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="phone">Telefone</Label>
+          <Input
+            id="phone"
+            placeholder="Telefone"
+            type="text"
+            size="lg"
+            mask="phone"
+            value={formData.user.phone}
+            errorMessage={errors["user.phone"]}
+            onChange={(e) => {
+              clearError("user.phone");
+              setFormData({
+                ...formData,
+                user: { ...formData.user, phone: e.target.value },
+              });
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12} lg={6}>
+          <Label htmlFor="gender">Gênero</Label>
+          <Select
+            id="gender"
+            className="h-12"
+            value={formData.user.gender}
+            onChange={(e) => {
+              clearError("user.gender");
+              setFormData({
+                ...formData,
+                user: { ...formData.user, gender: e.target.value as Gender },
+              });
+            }}
+          >
+            <option value={Gender.FEMALE}>Feminino</option>
+            <option value={Gender.MALE}>Masculino</option>
+          </Select>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Label htmlFor="email">E-mail</Label>
+          <Input
+            id="email"
+            placeholder="E-mail"
+            type="email"
+            size="lg"
+            value={formData.email}
+            errorMessage={errors["email"]}
+            onChange={(e) => {
+              clearError("email");
+              setFormData({
+                ...formData,
+                email: e.target.value,
+              });
+            }}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Label htmlFor="speciality">Especialidade</Label>
+          <Input
+            id="speciality"
+            placeholder="Especialidade"
+            type="text"
+            size="lg"
+            value={formData.speciality}
+            errorMessage={errors["speciality"]}
+            onChange={(e) => {
+              clearError("speciality");
+              setFormData({
+                ...formData,
+                speciality: e.target.value,
+              });
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      <Box display="flex" direction="row" justify="flex-end" gap={12} mt={12}>
+        <Button
+          variant="default"
+          color="primary"
+          size="lg"
+          onClick={handleSubmit}
+        >
+          {isEdit ? "Salvar Alterações" : "Cadastrar Profissional"}
+        </Button>
+      </Box>
+    </Box>
   );
 }

@@ -1,3 +1,5 @@
+import { User } from "@/core/types";
+
 export interface CurrentMonthByGender {
   timezone: string;
   month: string;
@@ -30,4 +32,10 @@ export interface DashboardStats {
   currentMonthByGender: CurrentMonthByGender;
   teamPerformance: TeamPerformance;
   monthlyHistory: MonthlyHistory;
+}
+
+export interface HealthProfessionalRequest {
+  user: User;
+  email: string;
+  speciality: string; 
 }

@@ -8,5 +8,8 @@ export * from "./hooks/useFetchParticipantMonthlyEvaluations";
 export * from "./hooks/useFetchParticipantMostPerformedTests";
 export * from "./containers/ParticipanteDetail";
 export * from "./hooks/usePatientDashboard";
+export * from "./components/ParticipantUpsertForm";
+export * from "./hooks/useCreateParticipant";
+export * from "./hooks/useUpdateParticipant";
 
 export { default as PatientDashboardPage } from "./pages/PatientDashboardPage";

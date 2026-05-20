@@ -90,6 +90,114 @@ export const healthProCreateSchema = baseCreate.extend({
   specialization: z.string().min(1, "Required"),
 });
 
+export const healthProfessionalCreateSchema = z.object({
+  email: z.string().email("Email inválido"),
+  speciality: z.string().min(1, "Especialidade obrigatória"),
+  user: z.object({
+    fullName: z.string().min(1, "Informe o nome"),
+    cpf: z.string().regex(cpfRegex, "CPF inválido"),
+    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+      required_error: "Gênero é obrigatório",
+    }),
+    password: z.string().min(8, "Mínimo de 8 caracteres"),
+    active: z.boolean().optional(),
+  }),
+});
+
+export const healthProfessionalUpdateSchema = z.object({
+  email: z.string().email("Email inválido"),
+  speciality: z.string().min(1, "Especialidade obrigatória"),
+  user: z.object({
+    fullName: z.string().min(1, "Informe o nome"),
+    cpf: z.string().regex(cpfRegex, "CPF inválido"),
+    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+      required_error: "Gênero é obrigatório",
+    }),
+    password: z
+      .preprocess(
+        (value) => (value === "" ? undefined : value),
+        z.string().min(8, "Mínimo de 8 caracteres").optional().nullable()
+      )
+      .optional()
+      .nullable(),
+    active: z.boolean().optional(),
+  }),
+});
+
+const participantUserCreate = z.object({
+  fullName: z.string().min(1, "Informe o nome"),
+  cpf: z.string().regex(cpfRegex, "CPF inválido"),
+  phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+    required_error: "Gênero é obrigatório",
+  }),
+  password: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
+const participantUserUpdate = z.object({
+  fullName: z.string().min(1, "Informe o nome"),
+  cpf: z.string().regex(cpfRegex, "CPF inválido"),
+  phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+    required_error: "Gênero é obrigatório",
+  }),
+  password: z
+    .preprocess(
+      (value) => (value === "" ? undefined : value),
+      z.string().min(8, "Mínimo de 8 caracteres").optional().nullable()
+    )
+    .optional()
+    .nullable(),
+  active: z.boolean().optional(),
+});
+
+const participantFields = {
+  birthDay: z
+    .string()
+    .min(1, "Data de nascimento obrigatória")
+    .refine((value) => {
+      const date = new Date(value);
+      const now = new Date();
+      return date <= now;
+    }, "Data de nascimento inválida"),
+  weight: z.number({ invalid_type_error: "Peso obrigatório" }).min(0, "Peso inválido"),
+  height: z.number({ invalid_type_error: "Altura obrigatória" }).min(0, "Altura inválida"),
+  scholarship: z.enum(
+    Object.keys(ScholarShip) as [keyof typeof ScholarShip, ...string[]],
+    { errorMap: () => ({ message: "Escolaridade obrigatória" }) }
+  ),
+  socio_economic_level: z.nativeEnum(SocioEconomicLevel, {
+    errorMap: () => ({ message: "Nível socioeconômico obrigatório" }),
+  }),
+  zipCode: z.string().min(1, "CEP obrigatório"),
+  street: z.string().min(1, "Rua obrigatória"),
+  number: z.string().min(1, "Número obrigatório"),
+  complement: z.string().optional().nullable(),
+  neighborhood: z.string().min(1, "Bairro obrigatório"),
+  city: z.string().min(1, "Cidade obrigatória"),
+  state: z.string().min(1, "UF obrigatória"),
+};
+
+export const participantStep1Schema = z.object({
+  birthDay: participantFields.birthDay,
+  weight: participantFields.weight,
+  height: participantFields.height,
+  user: participantUserCreate,
+});
+
+export const participantNestedCreateSchema = z.object({
+  ...participantFields,
+  user: participantUserCreate,
+});
+
+export const participantNestedUpdateSchema = z.object({
+  ...participantFields,
+  user: participantUserUpdate,
+});
+
 export const researcherUpdateSchema = z.object({
   email: z.string().email("Email inválido"),
   institutionId: z.string().min(1, "Instituicao obrigatoria"),
@@ -165,3 +273,15 @@ export type UserUpdateFormData = z.infer<typeof userUpdateSchema>;
 export type ResearcherFormData = z.infer<typeof researcherCreateSchema>;
 export type PatientFormData = z.infer<typeof patientCreateSchema>;
 export type HealthProFormData = z.infer<typeof healthProCreateSchema>;
+export type HealthProfessionalFormData = z.infer<
+  typeof healthProfessionalCreateSchema
+>;
+export type HealthProfessionalUpdateFormData = z.infer<
+  typeof healthProfessionalUpdateSchema
+>;
+export type ParticipantNestedFormData = z.infer<
+  typeof participantNestedCreateSchema
+>;
+export type ParticipantNestedUpdateFormData = z.infer<
+  typeof participantNestedUpdateSchema
+>;
