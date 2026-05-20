@@ -1,5 +1,5 @@
-import { Grid, Typography, Stack } from "@mui/material";
-import { Copyable } from "@/core/components/layout";
+import { Box, Grid, Typography } from "@/core/components/ui";
+import { Copyable } from "./Copyable";
 
 interface InfoFieldProps {
   label: string;
@@ -18,26 +18,24 @@ export function InfoField({
     value === null || value === undefined || value === "" ? "—" : value;
 
   return (
-    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-      <Stack spacing={0.5}>
-        <Typography variant="subtitle2" color="text.secondary">
+    <Grid item xs={12} sm={6} md={4}>
+      <Box display="flex" direction="column" gap={4}>
+        <Typography variant="small" className="text-muted-foreground">
           {label}
         </Typography>
 
         {copyable ? (
           <Copyable text={String(value)} label={String(displayValue)} />
         ) : (
-          <Typography variant="body1" color="text.primary">
-            {displayValue}
-          </Typography>
+          <Typography>{displayValue}</Typography>
         )}
 
         {subValue && (
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="small" className="text-muted-foreground">
             {subValue}
           </Typography>
         )}
-      </Stack>
+      </Box>
     </Grid>
   );
 }

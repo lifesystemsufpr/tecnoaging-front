@@ -3,25 +3,26 @@
 import { useState } from "react";
 import {
   Box,
-  Divider,
-  Paper,
-  Typography,
   Button,
+  Card,
+  Separator,
   Tab,
+  TabList,
+  TabPanel,
   Tabs,
-} from "@mui/material";
+  Typography,
+} from "@/core/components/ui";
+
+import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
 
 import DatailLoading from "../components/DatailLoading";
 import { useFetchParticipant } from "../hooks/useFetchParticipant";
-
 import { DetailHeader } from "../components/HeaderDetail";
+import { DetailParticipantCard } from "../components/DetailParticipantCard";
 
 import ParticipantQuestionnaires from "@/features/questionnaires/containers/ParticipantQuestionnaires";
 import ParticipantEvaluations from "@/features/evaluations/containers/ParticipantEvaluations";
 import { QuestionnairesProvider } from "@/features/questionnaires";
-
-import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
-import { DetailParticipantCard } from "../components/DetailParticipantCard";
 
 export default function ParticipantFullDetail({
   participantId,
@@ -40,84 +41,72 @@ export default function ParticipantFullDetail({
 
   if (loading)
     return (
-      <Box p={3}>
+      <Box p={24}>
         <DatailLoading />
       </Box>
     );
 
   if (err) {
     return (
-      <Box p={3} mx="auto">
-        <DetailHeader title="Erro" participantId={participantId} />
-        <Paper sx={{ p: 3 }}>
-          <Typography color="error" gutterBottom>
-            {err.message}
-          </Typography>
-          <Button onClick={reload} variant="outlined">
+      <Box p={24} mx="auto">
+        <DetailHeader title="Erro" />
+        <Card padding="md">
+          <Typography className="text-destructive">{err.message}</Typography>
+          <Button onClick={reload} variant="outline">
             Tentar novamente
           </Button>
-        </Paper>
+        </Card>
       </Box>
     );
   }
 
   if (!data) {
     return (
-      <Box p={3} mx="auto">
-        <DetailHeader title="Detalhes" participantId={participantId} />
+      <Box p={24} mx="auto">
+        <DetailHeader title="Detalhes" />
         <Typography>Nenhum participante encontrado.</Typography>
       </Box>
     );
   }
+  const handleChangeTab = (newValue: number) => {
+    setTab(newValue);
+  };
 
   const name = data?.fullName ?? "—";
   const effectiveParticipantId = participantId ?? data.id;
 
   return (
-    <Box p={3} sx={{ mx: "auto" }}>
-      <DetailHeader
-        title={name !== "—" ? name : "Detalhes"}
-        participantId={effectiveParticipantId}
-      />
+    <Box p={24} mx="auto">
+      <DetailHeader title={name !== "—" ? name : "Detalhes"} />
 
-      <Paper sx={{ p: 3 }}>
+      <Card variant="elevated" padding="md" className="border-0">
         <UserDetailHeader
           active={true}
           name={name}
           updatedAt={data.updatedAt}
           entity="Paciente"
         />
-        <Tabs
-          value={tab}
-          onChange={(_, value) => setTab(value)}
-          sx={{ mt: 3 }}
-          variant="scrollable"
-          allowScrollButtonsMobile
-        >
-          <Tab label="Dados Pessoais" value={0} />
-          <Tab label="Histórico de Questionários" value={1} />
-          <Tab label="Histórico de Avaliações" value={2} />
-        </Tabs>
+        <Tabs value={tab} onChange={handleChangeTab} variant="scrollable">
+          <Box mt={24}>
+            <TabList ariaLabel="Detalhes do participante">
+              <Tab label="Dados Pessoais" value={0} />
+              <Tab label="Histórico de Questionários" value={1} />
+              <Tab label="Histórico de Avaliações" value={2} />
+            </TabList>
+          </Box>
 
-        {tab === 0 && (
-          <>
-            <Divider sx={{ my: 3 }} />
-
+          <TabPanel value={0}>
             <UserDetailContent userData={data} />
             <DetailParticipantCard data={data} />
-          </>
-        )}
+          </TabPanel>
 
-        {tab === 1 && (
-          <QuestionnairesProvider patientId={effectiveParticipantId}>
-            <Divider sx={{ my: 3 }} />
-            <ParticipantQuestionnaires withHeader={false} />
-          </QuestionnairesProvider>
-        )}
+          <TabPanel value={1}>
+            <QuestionnairesProvider patientId={effectiveParticipantId}>
+              <ParticipantQuestionnaires withHeader={false} />
+            </QuestionnairesProvider>
+          </TabPanel>
 
-        {tab === 2 && (
-          <>
-            <Divider sx={{ my: 3 }} />
+          <TabPanel value={2}>
             {effectiveParticipantId ? (
               <ParticipantEvaluations
                 participantId={effectiveParticipantId}
@@ -128,9 +117,9 @@ export default function ParticipantFullDetail({
                 Identificador do participante não disponível.
               </Typography>
             )}
-          </>
-        )}
-      </Paper>
+          </TabPanel>
+        </Tabs>
+      </Card>
     </Box>
   );
 }

@@ -1,6 +1,4 @@
-import { InfoField } from "@/core/components/layout";
 import { Participant } from "@/core/types/User.types";
-import { Grid } from "@mui/material";
 
 import {
   formatAddressLine1,
@@ -11,6 +9,8 @@ import { fmtNumber, formatData } from "@/core/utils/format";
 import { ScholarShip } from "@/types/enums/scholar-ship";
 import { SocioEconomicLevel } from "@/core/enums";
 import { socioLabel } from "@/core/utils/label";
+import { InfoField } from "@/core/components/shared";
+import { Grid } from "@/core/components/ui";
 
 export function DetailParticipantCard({ data }: { data: Participant }) {
   const address1 = formatAddressLine1(data);
@@ -21,7 +21,7 @@ export function DetailParticipantCard({ data }: { data: Participant }) {
   const weightFormatted = data.weight ? `${fmtNumber(data.weight)} kg` : null;
 
   return (
-    <Grid container spacing={2} sx={{ mt: 2 }}>
+    <Grid container spacing={24} mt={2}>
       <InfoField label="Data de nascimento" value={formatData(data.birthday)} />
       <InfoField label="Peso" value={weightFormatted} />
       <InfoField label="Altura" value={heightFormatted} />

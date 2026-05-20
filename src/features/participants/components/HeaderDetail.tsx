@@ -1,11 +1,11 @@
+import { ArrowLeft } from "lucide-react";
 import {
+  Box,
   Breadcrumbs,
-  Link as MUILink,
-  Stack,
   Button,
+  Link,
   Typography,
-} from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+} from "@/core/components/ui";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/core/config/client.routes";
 
@@ -19,29 +19,28 @@ export function DetailHeader({ title }: HeaderProps) {
   const handleBack = () => router.push(ROUTES.USERS.PARTICIPANTS.MAIN);
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      mb={2}
-    >
+    <Box display="flex" justify="space-between" align="center" mb={16}>
       <Breadcrumbs aria-label="breadcrumb">
-        <MUILink
-          component="button"
+        <Link
+          as="button"
+          type="button"
           onClick={handleBack}
           underline="hover"
           color="inherit"
         >
           Participantes
-        </MUILink>
-        <Typography color="text.primary">{title}</Typography>
+        </Link>
+        <Typography className="text-foreground">{title}</Typography>
       </Breadcrumbs>
 
-      <Stack direction="row" spacing={1}>
-        <Button startIcon={<ArrowBackIcon />} onClick={handleBack}>
+      <Box display="flex" gap={8}>
+        <Button
+          leftIcon={<ArrowLeft className="h-4 w-4" />}
+          onClick={handleBack}
+        >
           Voltar
         </Button>
-      </Stack>
-    </Stack>
+      </Box>
+    </Box>
   );
 }

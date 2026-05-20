@@ -6,6 +6,7 @@ const linkVariants = cva(
   [
     "inline-flex items-center gap-1",
     "rounded-sm",
+    "cursor-pointer",
     "transition-colors",
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
   ].join(" "),
