@@ -16,5 +16,9 @@ export interface HealthUnit {
   neighborhood: string;
 }
 
+export interface HealthUnitRequest extends Omit<HealthUnit, "id"> {
+  active?: boolean;
+}
+
 export type InstitutionList = Institution[];
 export type HealthUnitList = HealthUnit[];

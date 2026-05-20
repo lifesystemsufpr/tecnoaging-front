@@ -17,6 +17,13 @@ const ROUTES = {
     },
   },
 
+  INSTITUTIONS: {
+    HEALTH_UNITS: {
+      MAIN: "/health-units",
+      DETAIL: (id: string) => `/health-units/${id}`,
+    },
+  },
+
   EVALUATIONS: {
     FTSTS: "/5tsts",
     TTSTS: "/30sts",
