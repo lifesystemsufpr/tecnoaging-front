@@ -2,7 +2,14 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/core/utils/index";
 
-export type TypographyColor = "primary" | "secondary" | "muted" | "accent";
+export type TypographyColor =
+  | "primary"
+  | "secondary"
+  | "muted"
+  | "accent"
+  | "error"
+  | "success"
+  | "warning";
 
 const typographyVariants = cva("text-foreground", {
   variants: {

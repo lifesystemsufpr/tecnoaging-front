@@ -1,11 +1,11 @@
-import { Box, Button, Checkbox } from "@/core/components/ui";
-import FormHeader from "../components/FormHeader";
-import { LoginInputs } from "../components/LoginInputs";
 import { useCallback, useState } from "react";
 import { signIn } from "next-auth/react";
-import { cpfSchema } from "@/lib/validators/cpf";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import FormHeader from "../components/FormHeader";
+import { LoginInputs } from "../components/LoginInputs";
+import { cpfSchema } from "@/core/libs/validators";
+import { Box, Button, Checkbox } from "@/core/components/ui";
 
 export interface FormData {
   cpf: string;

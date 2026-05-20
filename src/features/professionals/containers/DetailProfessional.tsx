@@ -1,9 +1,11 @@
-import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
+"use client";
+
+import { useEffect } from "react";
 import { DetailProfessionalCard } from "../components/DetailProfessionalCard";
 import { useDetailProfessional } from "../hooks/useDetailProfessional";
-import { Box, Button, Typography, Divider } from "@mui/material";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
-import { useEffect } from "react";
+import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
+import { Box, Button, Separator, Typography } from "@/core/components/ui";
 
 interface DetailProfessionalProps {
   professionalId: string;
@@ -19,10 +21,10 @@ export function DetailProfessional({
   });
 
   useEffect(() => {
-    if (data && onDataLoaded) {
+    if (!isLoading && onDataLoaded) {
       onDataLoaded(data);
     }
-  }, [data, onDataLoaded]);
+  }, [isLoading, onDataLoaded]);
 
   if (isLoading) {
     return <ProfileSkeleton />;
@@ -31,10 +33,10 @@ export function DetailProfessional({
   if (error) {
     return (
       <Box p={3} mx="auto">
-        <Typography color="error" gutterBottom>
+        <Typography color="error">
           Erro ao carregar detalhes do profissional.
         </Typography>
-        <Button variant="outlined" onClick={() => window.location.reload()}>
+        <Button variant="outline" onClick={() => window.location.reload()}>
           Tentar novamente
         </Button>
       </Box>
@@ -44,9 +46,7 @@ export function DetailProfessional({
   if (!data) {
     return (
       <Box p={3} mx="auto">
-        <Typography color="text.secondary" gutterBottom>
-          Profissional não encontrado.
-        </Typography>
+        <Typography color="secondary">Profissional não encontrado.</Typography>
       </Box>
     );
   }
@@ -60,7 +60,7 @@ export function DetailProfessional({
         updatedAt={data.updatedAt}
       />
 
-      <Divider sx={{ my: 3 }} />
+      <Separator className="my-6" />
 
       <UserDetailContent userData={data} />
       <DetailProfessionalCard data={data} />

@@ -22,6 +22,7 @@ import {
 } from "@/core/libs/validators/index";
 import { formatCPF, sanatizeCPF, socioLabel } from "@/core/utils";
 import { toast } from "sonner";
+import { fetchEnderecoViaCEP } from "@/core/utils/api";
 
 interface ParticipantUpsertFormProps {
   editUser?: Participant | null;
@@ -91,9 +92,8 @@ export function ParticipantUpsertForm({
       }
       setCepLoading(true);
       try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await res.json();
-        if (data?.erro) {
+        const res = await fetchEnderecoViaCEP(cep);
+        if (res?.erro) {
           setErrors((prev) => ({
             ...prev,
             zipCode: "CEP não encontrado",
@@ -110,10 +110,10 @@ export function ParticipantUpsertForm({
         clearError("zipCode");
         setFormData((prev) => ({
           ...prev,
-          state: data.uf || "",
-          city: data.localidade || "",
-          neighborhood: data.bairro || "",
-          street: data.logradouro || "",
+          state: res.uf || "",
+          city: res.localidade || "",
+          neighborhood: res.bairro || "",
+          street: res.logradouro || "",
         }));
       } catch {
         setErrors((prev) => ({

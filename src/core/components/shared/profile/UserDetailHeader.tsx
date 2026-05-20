@@ -15,7 +15,7 @@ export function UserDetailHeader({
       <Avatar name={name} size="lg" />
       <Box w="100%">
         <Box display="flex" align="center" gap={8} wrap="wrap">
-          <Typography as="h2" variant="h4">
+          <Typography as="h2" variant="h3">
             {name}
           </Typography>
           <Badge variant="secondary">{entity}</Badge>

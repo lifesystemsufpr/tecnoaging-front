@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Card,
-  Separator,
   Tab,
   TabList,
   TabPanel,
@@ -30,10 +29,10 @@ export default function ParticipantFullDetail({
   participantId?: string;
 }) {
   const {
-    participantData: data,
+    data: data,
     isLoading: loading,
     error: err,
-    reload,
+    refetch: reload,
   } = useFetchParticipant({
     participantId,
   });
@@ -52,7 +51,7 @@ export default function ParticipantFullDetail({
         <DetailHeader title="Erro" />
         <Card padding="md">
           <Typography className="text-destructive">{err.message}</Typography>
-          <Button onClick={reload} variant="outline">
+          <Button onClick={() => reload()} variant="outline">
             Tentar novamente
           </Button>
         </Card>

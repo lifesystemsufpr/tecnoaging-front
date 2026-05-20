@@ -1,18 +1,14 @@
 "use client";
 
-import { SystemRoles } from "@/core/enums";
-import { Box, Modal, Paper, useMediaQuery, useTheme } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useCallback, useMemo, useState } from "react";
 
-import { UserCreateForm } from "@/components/form/user-create";
-import { HealthProfessional } from "@/types/domain/Health-professional";
-import { Patient } from "@/types/domain/Patient";
-import { Researcher } from "@/types/domain/Reseracher";
-
+import { SystemRoles } from "@/core/enums";
 import { ProfileNavigation, DetailFeature } from "@/core/components/shared";
+import { HealthProfessional, Participant, Researcher } from "@/core/types";
+import { Box, Card } from "@/core/components/ui";
 
-type EditableUser = Researcher | Patient | HealthProfessional;
+type EditableUser = Researcher | Participant | HealthProfessional;
 
 const EDITABLE_ROLES = new Set<SystemRoles>([
   SystemRoles.RESEARCHER,
@@ -25,8 +21,6 @@ export default function ProfilePage() {
   const [editableUser, setEditableUser] = useState<EditableUser | null>(null);
   const [refreshTick, setRefreshTick] = useState(0);
 
-  const theme = useTheme();
-  const isNotebook = useMediaQuery(theme.breakpoints.down("lg"));
   const session = useSession();
 
   const userRole = useMemo(
@@ -60,45 +54,14 @@ export default function ProfilePage() {
         disableEdit={true}
       />
 
-      <Paper sx={{ p: 3 }}>
+      <Card variant="elevated" padding="md" className="border-0">
         <DetailFeature
           key={`${userRole}-${userId}-${refreshTick}`}
           role={userRole}
           userId={userId}
           onUserDataLoaded={handleUserDataLoaded}
         />
-      </Paper>
-
-      <Modal
-        open={openEditModal}
-        onClose={handleCloseModal}
-        sx={{
-          padding: 2,
-        }}
-      >
-        <Box
-          sx={{
-            position: "absolute" as const,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: isNotebook ? "90%" : "50%",
-            bgcolor: "background.paper",
-            border: "2px solid #000",
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          {editableUser && canEditRole ? (
-            <UserCreateForm
-              lockedRole={userRole}
-              editUser={editableUser}
-              onHandle={handleFormSuccess}
-            />
-          ) : null}
-        </Box>
-      </Modal>
+      </Card>
     </Box>
   );
 }

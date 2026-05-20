@@ -1,39 +1,18 @@
+import { useQuery } from "@tanstack/react-query";
+import { API_ROUTES } from "@/services/Routes";
+import { useHttp } from "@/core/hooks/useHttp";
 import { Participant } from "@/core/types";
-import { useCallback, useEffect, useState } from "react";
-import { participantService } from "../services/participant.service";
 
 export function useFetchParticipant({
   participantId,
 }: {
   participantId: string;
 }) {
-  const [participantData, setParticipantData] = useState<Participant | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const api = useHttp();
 
-  const fetch = useCallback(async () => {
-    setIsLoading(true);
-    participantService
-      .fetchParticipantById(participantId)
-      .then((data) => {
-        setParticipantData(data);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar participante:", error);
-        setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [participantId]);
-
-  useEffect(() => {
-    if (participantId) {
-      fetch();
-    }
-  }, [participantId, fetch]);
-
-  return { participantData, fetch, reload: fetch, isLoading, error };
+  return useQuery({
+    queryKey: ["participant", participantId],
+    queryFn: () =>
+      api.get<Participant>(API_ROUTES.PATIENT_BY_ID(participantId)),
+  });
 }

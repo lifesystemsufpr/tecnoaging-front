@@ -17,11 +17,13 @@ import { DetailProfessionalCard } from "../components/DetailProfessionalCard";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/core/config/client.routes";
 
+interface HealthProfessionalDetailPageProps {
+  professionalId: string;
+}
+
 export function HealthProfessionalDetailPage({
   professionalId,
-}: {
-  professionalId: string;
-}) {
+}: HealthProfessionalDetailPageProps) {
   const router = useRouter();
   const { data, isLoading, error, refetch } = useDetailProfessional({
     professionalId,
