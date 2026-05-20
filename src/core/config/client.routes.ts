@@ -11,6 +11,10 @@ const ROUTES = {
       MAIN: "/users/researchers",
       DETAIL: (id: string) => `/users/researchers/${id}`,
     },
+    HEALTH_PROFESSIONALS: {
+      MAIN: "/users/health-professionals",
+      DETAIL: (id: string) => `/users/health-professionals/${id}`,
+    },
   },
 
   EVALUATIONS: {

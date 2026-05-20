@@ -6,3 +6,4 @@ export * from "./hooks/useUpdateProfessional";
 export * from "./containers/DetailProfessional";
 export * from "./pages/HealthProfessionalsCRUDPage";
 export * from "./contexts/ProfessionalCrudContext";
+export * from "./pages/HealthProfessionalDetail";
