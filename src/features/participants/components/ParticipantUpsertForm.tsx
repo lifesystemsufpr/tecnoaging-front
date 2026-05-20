@@ -20,7 +20,7 @@ import {
   participantNestedUpdateSchema,
   participantStep1Schema,
 } from "@/core/libs/validators/index";
-import { sanatizeCPF, socioLabel } from "@/core/utils";
+import { formatCPF, sanatizeCPF, socioLabel } from "@/core/utils";
 import { toast } from "sonner";
 
 interface ParticipantUpsertFormProps {
@@ -40,7 +40,7 @@ export function ParticipantUpsertForm({
   const [cepLoading, setCepLoading] = useState(false);
 
   const initialFormData: ParticipantNestedFormData = {
-    birthDay: editUser?.birthday ?? "",
+    birthday: editUser?.birthday ?? "",
     scholarship:
       (editUser?.scholarship as unknown as keyof typeof ScholarShip) ??
       ("NONE" as keyof typeof ScholarShip),
@@ -57,7 +57,7 @@ export function ParticipantUpsertForm({
     state: editUser?.state ?? "",
     user: {
       fullName: editUser?.fullName ?? "",
-      cpf: editUser?.cpf ?? "",
+      cpf: editUser?.cpf ? formatCPF(editUser.cpf) : "",
       phone: editUser?.phone ?? "",
       gender: (editUser?.gender as Gender) ?? Gender.MALE,
       password: undefined,
@@ -130,7 +130,7 @@ export function ParticipantUpsertForm({
   // --- Step 1 Validation ---
   const handleNextStep = useCallback(() => {
     const step1Data = {
-      birthDay: formData.birthDay,
+      birthday: formData.birthday,
       weight: formData.weight,
       height: formData.height,
       user: formData.user,
@@ -203,7 +203,7 @@ export function ParticipantUpsertForm({
     const sanitizedCpf = sanatizeCPF(formData.user.cpf);
     const password = isEdit
       ? formData.user.password || undefined
-      : formatBirthDayPassword(formData.birthDay);
+      : formatBirthDayPassword(formData.birthday);
 
     const payload = {
       ...formData,
@@ -230,6 +230,10 @@ export function ParticipantUpsertForm({
           toast.success("Participante cadastrado com sucesso!");
           onSuccess?.();
         },
+        onError: (error: any) => {
+          const message = error?.message[0] || "Erro ao cadastrar participante";
+          toast.error(message);
+        },
       });
     }
   }, [
@@ -243,12 +247,10 @@ export function ParticipantUpsertForm({
   ]);
 
   // --- Helpers to update numeric fields ---
-  const handleNumberChange = (
-    field: "weight" | "height",
-    raw: string
-  ) => {
+  const handleNumberChange = (field: "weight" | "height", raw: string) => {
     const sanitized = raw.replace(",", ".").trim();
-    const num = sanitized === "" ? (undefined as unknown as number) : Number(sanitized);
+    const num =
+      sanitized === "" ? (undefined as unknown as number) : Number(sanitized);
     clearError(field);
     setFormData((prev) => ({ ...prev, [field]: num }));
   };
@@ -309,6 +311,18 @@ export function ParticipantUpsertForm({
             />
           </Grid>
 
+          <Grid item xs={6} lg={6}>
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              placeholder="A senha será a data de nascimento do participante"
+              type="password"
+              size="lg"
+              disabled
+              value=""
+            />
+          </Grid>
+
           <Grid item xs={12} lg={6}>
             <Label htmlFor="phone">Telefone</Label>
             <Input
@@ -348,34 +362,22 @@ export function ParticipantUpsertForm({
             </Select>
           </Grid>
 
-          <Grid item xs={12} lg={6}>
+          <Grid item xs={12} lg={12}>
             <Label htmlFor="birthDay">Data de Nascimento</Label>
             <Input
               id="birthDay"
               type="date"
               size="lg"
-              value={formData.birthDay}
-              errorMessage={errors["birthDay"]}
+              value={formData.birthday}
+              errorMessage={errors["birthday"]}
               onChange={(e) => {
-                clearError("birthDay");
+                clearError("birthday");
                 setFormData({
                   ...formData,
-                  birthDay: e.target.value,
+                  birthday: e.target.value,
                 });
               }}
               required
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              placeholder="A senha será a data de nascimento do participante"
-              type="password"
-              size="lg"
-              disabled
-              value=""
             />
           </Grid>
 
@@ -461,7 +463,7 @@ export function ParticipantUpsertForm({
               ))}
             </Select>
             {errors["scholarship"] && (
-              <Typography variant="small" color="destructive">
+              <Typography variant="small" color="accent">
                 {errors["scholarship"]}
               </Typography>
             )}
@@ -477,8 +479,7 @@ export function ParticipantUpsertForm({
                 clearError("socio_economic_level");
                 setFormData({
                   ...formData,
-                  socio_economic_level: e.target
-                    .value as SocioEconomicLevel,
+                  socio_economic_level: e.target.value as SocioEconomicLevel,
                 });
               }}
             >
@@ -490,7 +491,7 @@ export function ParticipantUpsertForm({
               ))}
             </Select>
             {errors["socio_economic_level"] && (
-              <Typography variant="small" color="destructive">
+              <Typography variant="small" color="accent">
                 {errors["socio_economic_level"]}
               </Typography>
             )}
@@ -534,7 +535,7 @@ export function ParticipantUpsertForm({
               ))}
             </Select>
             {errors["state"] && (
-              <Typography variant="small" color="destructive">
+              <Typography variant="small" color="accent">
                 {errors["state"]}
               </Typography>
             )}
@@ -632,11 +633,7 @@ export function ParticipantUpsertForm({
               gap={12}
               mt={12}
             >
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setStep(0)}
-              >
+              <Button variant="outline" size="lg" onClick={() => setStep(0)}>
                 Voltar
               </Button>
               <Button

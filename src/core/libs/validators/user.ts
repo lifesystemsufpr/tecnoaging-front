@@ -155,7 +155,7 @@ const participantUserUpdate = z.object({
 });
 
 const participantFields = {
-  birthDay: z
+  birthday: z
     .string()
     .min(1, "Data de nascimento obrigatória")
     .refine((value) => {
@@ -163,8 +163,12 @@ const participantFields = {
       const now = new Date();
       return date <= now;
     }, "Data de nascimento inválida"),
-  weight: z.number({ invalid_type_error: "Peso obrigatório" }).min(0, "Peso inválido"),
-  height: z.number({ invalid_type_error: "Altura obrigatória" }).min(0, "Altura inválida"),
+  weight: z
+    .number({ invalid_type_error: "Peso obrigatório" })
+    .min(0, "Peso inválido"),
+  height: z
+    .number({ invalid_type_error: "Altura obrigatória" })
+    .min(0, "Altura inválida"),
   scholarship: z.enum(
     Object.keys(ScholarShip) as [keyof typeof ScholarShip, ...string[]],
     { errorMap: () => ({ message: "Escolaridade obrigatória" }) }
@@ -182,7 +186,7 @@ const participantFields = {
 };
 
 export const participantStep1Schema = z.object({
-  birthDay: participantFields.birthDay,
+  birthday: participantFields.birthday,
   weight: participantFields.weight,
   height: participantFields.height,
   user: participantUserCreate,

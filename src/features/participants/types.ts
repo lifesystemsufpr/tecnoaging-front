@@ -2,7 +2,7 @@ import { ScholarShip, SocioEconomicLevel, UF_LIST } from "@/core/enums";
 import { User } from "@/core/types";
 
 export interface ParticipantRequest {
-  birthDay: string;
+  birthday: string;
   scholarship: ScholarShip;
   socio_economic_level: SocioEconomicLevel;
   weight: number;
@@ -14,5 +14,5 @@ export interface ParticipantRequest {
   neighborhood: string;
   city: string;
   state: UF_LIST;
-  user: User
+  user: User;
 }

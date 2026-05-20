@@ -12,4 +12,7 @@ export * from "./components/ParticipantUpsertForm";
 export * from "./hooks/useCreateParticipant";
 export * from "./hooks/useUpdateParticipant";
 
+export * from "./contexts/ParticipantCrudContext";
+export * from "./pages/ParticipantCrudPage";
+
 export { default as PatientDashboardPage } from "./pages/PatientDashboardPage";
