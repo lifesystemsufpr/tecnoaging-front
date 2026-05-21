@@ -1,6 +1,8 @@
-export interface Institution {
+export interface EducationUnit {
   id?: string;
   title: string;
+
+  createdAt?: string;
   updatedAt?: string;
 }
 
@@ -14,11 +16,21 @@ export interface HealthUnit {
   city: string;
   state: string;
   neighborhood: string;
-}
 
-export interface HealthUnitRequest extends Omit<HealthUnit, "id"> {
   active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export type InstitutionList = Institution[];
+export interface HealthUnitRequest extends Omit<
+  HealthUnit,
+  "id" | "createdAt" | "updatedAt"
+> {}
+
+export interface EducationUnitRequest extends Omit<
+  EducationUnit,
+  "id" | "createdAt" | "updatedAt"
+> {}
+
+export type EducationUnitList = EducationUnit[];
 export type HealthUnitList = HealthUnit[];

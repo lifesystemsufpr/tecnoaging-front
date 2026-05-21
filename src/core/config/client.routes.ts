@@ -19,8 +19,12 @@ const ROUTES = {
 
   INSTITUTIONS: {
     HEALTH_UNITS: {
-      MAIN: "/health-units",
-      DETAIL: (id: string) => `/health-units/${id}`,
+      MAIN: "/health-unit",
+      DETAIL: (id: string) => `/health-unit/${id}`,
+    },
+    EDUCATIONAL_UNITS: {
+      MAIN: "/educational-unit",
+      DETAIL: (id: string) => `/educational-unit/${id}`,
     },
   },
 

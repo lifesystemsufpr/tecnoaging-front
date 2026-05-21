@@ -1,4 +1,4 @@
-import { SystemRoles } from "@/types/enums/system-roles";
+import { SystemRoles } from "@/core/enums";
 import { Home, User, Users, Building2, Stethoscope } from "lucide-react";
 
 interface NavItem {
@@ -62,7 +62,7 @@ export const navItems: NavItem[] = [
       },
       {
         name: "Instituições de Ensino",
-        path: "/institutions",
+        path: "/educational-unit",
         pro: false,
       },
     ],

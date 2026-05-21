@@ -1,5 +1,5 @@
-import { navItems } from "@/components/sidebar/NavItems";
 import { SystemRoles } from "@/core/enums/index";
+import { navItems } from "../components/layout/sidebar/NavItems";
 
 interface UseMenuItemsProps {
   profile: string;
