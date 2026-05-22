@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Autocomplete, Button, Grid, MenuItem, TextField } from "@mui/material";
+import { useEffect, useId, useMemo, useState } from "react";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Grid,
+  Input,
+  Label,
+  Select,
+} from "@/core/components/ui";
 import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
 import { participantService } from "@/features/participants/services/participant.service";
 import { professionalService } from "@/features/professionals/services/professional.service";
@@ -11,7 +19,14 @@ import {
 } from "../contexts/ListEvaluationsContext";
 
 export function ListEvaluationsFilters() {
-  const { filters, setFilters, setPage } = useListEvaluationsContext();
+  const { filters, setFilters, applyFilters, resetFilters } =
+    useListEvaluationsContext();
+
+  const patientId = useId();
+  const professionalId = useId();
+  const typeId = useId();
+  const dateFromId = useId();
+  const dateToId = useId();
 
   // ─── Autocomplete state ───────────────────────────────────────────────
   const [patientOptions, setPatientOptions] = useState<AutocompleteOption[]>(
@@ -125,137 +140,124 @@ export function ListEvaluationsFilters() {
   const handleReset = () => {
     setPatientOptions([]);
     setProfessionalOptions([]);
-    setPage(0);
-    setFilters({
-      patient: null,
-      patientQuery: "",
-      professional: null,
-      professionalQuery: "",
-      dateFrom: null,
-      dateTo: null,
-      type: "Todos",
-    });
+    resetFilters();
   };
 
   const handleSearch = () => {
-    setPage(0);
+    applyFilters();
   };
 
   return (
-    <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
-      <Grid size={6}>
+    <Grid container spacing={16} align="center">
+      <Grid item xs={12} md={6}>
+        <Label htmlFor={patientId} className="mb-1 block">
+          Participante
+        </Label>
         <Autocomplete
-          fullWidth
-          size="small"
+          options={patientOptionsWithSelection}
           value={filters.patient}
           inputValue={filters.patientQuery}
-          onChange={(_event, value) => {
-            if (typeof value === "string") {
-              const trimmed = value.trim();
-              const option = trimmed ? { id: trimmed, name: trimmed } : null;
-              setFilters((prev) => ({
+          onChange={(value) =>
+            setFilters((prev) => ({
+              ...prev,
+              patient: value,
+              patientQuery: value?.name ?? "",
+            }))
+          }
+          onInputChange={(value) =>
+            setFilters((prev) => {
+              const currentName = prev.patient?.name ?? "";
+              const shouldClear = currentName && value !== currentName;
+              return {
                 ...prev,
-                patient: option,
-                patientQuery: option?.name ?? "",
-              }));
-            } else {
-              setFilters((prev) => ({
-                ...prev,
-                patient: value,
-                patientQuery: value?.name ?? "",
-              }));
-            }
-          }}
-          onInputChange={(_event, value) =>
-            setFilters((prev) => ({ ...prev, patientQuery: value }))
+                patientQuery: value,
+                patient: value ? (shouldClear ? null : prev.patient) : null,
+              };
+            })
           }
-          options={patientOptionsWithSelection}
-          filterOptions={(optionsList) => optionsList}
-          getOptionLabel={(option) =>
-            typeof option === "string" ? option : option.name
-          }
-          isOptionEqualToValue={(option, value) =>
-            typeof value !== "string" && !!value && option.id === value.id
-          }
-          renderInput={(params) => (
-            <TextField {...params} label="Participante" placeholder="Nome" />
-          )}
-          clearOnBlur={false}
-          freeSolo
+          getOptionLabel={(option) => option.name}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           loading={searchingPatients}
           loadingText="Buscando..."
           noOptionsText="Nenhum participante encontrado"
+          renderInput={(props) => (
+            <Input {...props} id={patientId} placeholder="Nome" size="lg" />
+          )}
         />
       </Grid>
 
-      <Grid size={6}>
+      <Grid item xs={12} md={6}>
+        <Label htmlFor={professionalId} className="mb-1 block">
+          Profissional
+        </Label>
         <Autocomplete
-          fullWidth
-          size="small"
+          options={professionalOptionsWithSelection}
           value={filters.professional}
           inputValue={filters.professionalQuery}
-          onChange={(_event, value) => {
-            if (typeof value === "string") {
-              const trimmed = value.trim();
-              const option = trimmed ? { id: trimmed, name: trimmed } : null;
-              setFilters((prev) => ({
+          onChange={(value) =>
+            setFilters((prev) => ({
+              ...prev,
+              professional: value,
+              professionalQuery: value?.name ?? "",
+            }))
+          }
+          onInputChange={(value) =>
+            setFilters((prev) => {
+              const currentName = prev.professional?.name ?? "";
+              const shouldClear = currentName && value !== currentName;
+              return {
                 ...prev,
-                professional: option,
-                professionalQuery: option?.name ?? "",
-              }));
-            } else {
-              setFilters((prev) => ({
-                ...prev,
-                professional: value,
-                professionalQuery: value?.name ?? "",
-              }));
-            }
-          }}
-          onInputChange={(_event, value) =>
-            setFilters((prev) => ({ ...prev, professionalQuery: value }))
+                professionalQuery: value,
+                professional: value
+                  ? shouldClear
+                    ? null
+                    : prev.professional
+                  : null,
+              };
+            })
           }
-          options={professionalOptionsWithSelection}
-          filterOptions={(optionsList) => optionsList}
-          getOptionLabel={(option) =>
-            typeof option === "string" ? option : option.name
-          }
-          isOptionEqualToValue={(option, value) =>
-            typeof value !== "string" && !!value && option.id === value.id
-          }
-          renderInput={(params) => (
-            <TextField {...params} label="Profissional" placeholder="Nome" />
-          )}
-          clearOnBlur={false}
-          freeSolo
+          getOptionLabel={(option) => option.name}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
           loading={searchingProfessionals}
           loadingText="Buscando..."
           noOptionsText="Nenhum profissional encontrado"
+          renderInput={(props) => (
+            <Input
+              {...props}
+              id={professionalId}
+              placeholder="Nome"
+              size="lg"
+            />
+          )}
         />
       </Grid>
 
-      <Grid size={6}>
-        <TextField
-          select
-          size="small"
-          label="Tipo"
+      <Grid item xs={12} md={6}>
+        <Label htmlFor={typeId} className="mb-1 block">
+          Tipo
+        </Label>
+        <Select
+          id={typeId}
           value={filters.type}
           onChange={(event) =>
             setFilters((prev) => ({ ...prev, type: event.target.value }))
           }
-          fullWidth
+          className="h-12 text-base"
         >
-          <MenuItem value="Todos">Todos</MenuItem>
-          <MenuItem value="TTSTS">30STS</MenuItem>
-          <MenuItem value="TMSTS">2MST</MenuItem>
-        </TextField>
+          <option value="Todos">Todos</option>
+          <option value="TTSTS">30STS</option>
+          <option value="TMSTS">2MST</option>
+        </Select>
       </Grid>
 
-      <Grid size={3}>
-        <TextField
-          size="small"
-          label="Data de"
+      <Grid item xs={12} md={3}>
+        <Label htmlFor={dateFromId} className="mb-1 block">
+          Data de
+        </Label>
+        <Input
+          id={dateFromId}
           type="date"
-          InputLabelProps={{ shrink: true }}
+          size="lg"
           value={filters.dateFrom ?? ""}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -263,16 +265,17 @@ export function ListEvaluationsFilters() {
               dateFrom: event.target.value || null,
             }))
           }
-          fullWidth
         />
       </Grid>
 
-      <Grid size={3}>
-        <TextField
-          size="small"
-          label="Data até"
+      <Grid item xs={12} md={3}>
+        <Label htmlFor={dateToId} className="mb-1 block">
+          Data até
+        </Label>
+        <Input
+          id={dateToId}
           type="date"
-          InputLabelProps={{ shrink: true }}
+          size="lg"
           value={filters.dateTo ?? ""}
           onChange={(event) =>
             setFilters((prev) => ({
@@ -280,17 +283,18 @@ export function ListEvaluationsFilters() {
               dateTo: event.target.value || null,
             }))
           }
-          fullWidth
         />
       </Grid>
 
-      <Grid size={12} sx={{ display: "flex", gap: 1 }}>
-        <Button variant="contained" onClick={handleSearch}>
-          Buscar
-        </Button>
-        <Button variant="outlined" onClick={handleReset}>
-          Limpar
-        </Button>
+      <Grid item xs={12}>
+        <Box display="flex" gap={8}>
+          <Button size="lg" onClick={handleSearch}>
+            Buscar
+          </Button>
+          <Button variant="outline" size="lg" onClick={handleReset}>
+            Limpar
+          </Button>
+        </Box>
       </Grid>
     </Grid>
   );
