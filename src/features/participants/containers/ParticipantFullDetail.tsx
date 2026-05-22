@@ -98,7 +98,7 @@ export default function ParticipantFullDetail({
           </TabPanel>
 
           <TabPanel value={1}>
-            <Typography variant="h2">
+            <Typography variant="h4" className="text-muted-foreground">
               Funcionalidade Temporariamente Indisponível
             </Typography>
           </TabPanel>
