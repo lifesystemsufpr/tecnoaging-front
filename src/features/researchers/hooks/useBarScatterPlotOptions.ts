@@ -1,28 +1,26 @@
 import { useMemo } from "react";
 import { Gender } from "@/core/enums";
 import {
-  AGE_GROUPS,
   AGE_GROUP_COLORS,
-  AgeGroup,
-  getPercentilesForGender,
   getPercentileValue,
 } from "../utils/barScatterPlotData";
+import { AGE_GROUPS, AgeGroup, PercentileEntry } from "../types";
 
 interface UseBarScatterPlotOptionsParams {
-  participantGender: Gender;
+  participantGender: string;
   labelColor: string;
+  averageByAgeGroup: PercentileEntry[];
 }
 
 /**
  * Gera pontos scatter simulados (jitter) em torno da mediana para cada faixa etária.
  */
 function generateScatterPoints(
-  gender: Gender,
+  percentiles: PercentileEntry[],
   ageGroupIndex: number,
   ageGroup: AgeGroup
 ): [number, number][] {
   const points: [number, number][] = [];
-  const percentiles = getPercentilesForGender(gender);
 
   for (const entry of percentiles) {
     const value = entry.values[ageGroup];
@@ -39,19 +37,24 @@ function generateScatterPoints(
 export function useBarScatterPlotOptions({
   participantGender,
   labelColor,
+  averageByAgeGroup,
 }: UseBarScatterPlotOptionsParams) {
   return useMemo(() => {
     const genderLabel =
-      participantGender === Gender.MALE ? "Masculino" : "Feminino";
+      participantGender === "all"
+        ? "Todos"
+        : participantGender === "male"
+          ? "Masculino"
+          : "Feminino";
 
-    // Dados do boxplot: [min (P5), Q1 (P25), mediana (P50), Q3 (P75), max (P90)]
+    // Dados do boxplot: [min (P5), Q1 (P25), mediana (P50), Q3 (P75), max (P95)]
     const boxplotData = AGE_GROUPS.map((ag) => {
-      const p5 = getPercentileValue(participantGender, ag, 5) ?? 0;
-      const p25 = getPercentileValue(participantGender, ag, 25) ?? 0;
-      const p50 = getPercentileValue(participantGender, ag, 50) ?? 0;
-      const p75 = getPercentileValue(participantGender, ag, 75) ?? 0;
-      const p90 = getPercentileValue(participantGender, ag, 90) ?? 0;
-      return [p5, p25, p50, p75, p90];
+      const p5 = getPercentileValue(averageByAgeGroup, ag, 5) ?? 0;
+      const p25 = getPercentileValue(averageByAgeGroup, ag, 25) ?? 0;
+      const p50 = getPercentileValue(averageByAgeGroup, ag, 50) ?? 0;
+      const p75 = getPercentileValue(averageByAgeGroup, ag, 75) ?? 0;
+      const p95 = getPercentileValue(averageByAgeGroup, ag, 95) ?? 0;
+      return [p5, p25, p50, p75, p95];
     });
 
     // Cores para cada caixa do boxplot via renderItem customizado
@@ -61,7 +64,7 @@ export function useBarScatterPlotOptions({
     const scatterSeries = AGE_GROUPS.map((ag, idx) => ({
       name: ag,
       type: "scatter" as const,
-      data: generateScatterPoints(participantGender, idx, ag),
+      data: generateScatterPoints(averageByAgeGroup, idx, ag),
       symbolSize: 5,
       itemStyle: {
         color: AGE_GROUP_COLORS[ag],
@@ -88,7 +91,7 @@ export function useBarScatterPlotOptions({
             const ageGroup = AGE_GROUPS[params.dataIndex];
             const data = params.data;
             return `<strong>Faixa Etária: ${ageGroup}</strong><br/>
-              P90 (máx): ${data[5]}<br/>
+              P95 (máx): ${data[5]}<br/>
               P75 (Q3): ${data[4]}<br/>
               P50 (Mediana): ${data[3]}<br/>
               P25 (Q1): ${data[2]}<br/>
@@ -150,5 +153,5 @@ export function useBarScatterPlotOptions({
         ...scatterSeries,
       ],
     };
-  }, [participantGender, labelColor]);
+  }, [participantGender, labelColor, averageByAgeGroup]);
 }

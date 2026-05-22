@@ -20,7 +20,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 
 import TanstackProvider from "@/core/providers/tanstack-provider";
-import MuiThemeProvider from "@/core/providers/MuiThemeProvider";
 import { SidebarProvider } from "@/core/contexts/SidebarContext";
 import { ThemeProvider } from "@/core/theme/ThemeContext";
 
@@ -38,9 +37,7 @@ export default async function RootLayout({ children }) {
           <Providers session={session}>
             <Toaster position="top-center" richColors />
             <ThemeProvider>
-              <MuiThemeProvider>
-                <SidebarProvider>{children}</SidebarProvider>
-              </MuiThemeProvider>
+              <SidebarProvider>{children}</SidebarProvider>
             </ThemeProvider>
           </Providers>
         </TanstackProvider>

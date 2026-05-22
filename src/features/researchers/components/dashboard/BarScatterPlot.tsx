@@ -3,13 +3,18 @@ import ReactECharts from "echarts-for-react";
 import { useBarScatterPlotOptions } from "../../hooks/useBarScatterPlotOptions";
 import { BarScatterPlotProps } from "./barScatterPlot.types";
 import { useResearcherDashboardContext } from "../../contexts/ResearcherDashboardContext";
+import { useResearcherDashboard } from "../../hooks/useResearcherDashboard";
 
 export default function BarScatterPlot({ labelColor }: BarScatterPlotProps) {
-  const { genderMapped } = useResearcherDashboardContext();
+  const { genderMode } = useResearcherDashboardContext();
+  const genderMapper =
+    genderMode === "all" ? "" : genderMode === "male" ? "MALE" : "FEMALE";
+  const { data } = useResearcherDashboard(genderMapper);
 
   const option = useBarScatterPlotOptions({
-    participantGender: genderMapped,
+    participantGender: genderMode,
     labelColor,
+    averageByAgeGroup: data?.averageByAgeGroup ?? [],
   });
 
   return (

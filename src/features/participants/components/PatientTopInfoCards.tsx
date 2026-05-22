@@ -1,12 +1,5 @@
-import { Assessment, Timer } from "@mui/icons-material";
-import {
-  Card,
-  CardContent,
-  Chip,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Timer, BookMarkedIcon } from "lucide-react";
+import { Box, Card, CardContent, Grid, Typography } from "@/core/components/ui";
 import { ReactNode } from "react";
 
 interface PatientTopInfoCardsProps {
@@ -37,27 +30,33 @@ function InfoCard({
   valueColor = "text.primary",
 }: InfoCardProps) {
   return (
-    <Card variant="outlined" sx={{ borderRadius: 3, height: "100%" }}>
+    <Card variant="outlined" className="h-full">
       <CardContent>
-        <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+        <Box display="flex" align="center" gap={8} mb={8}>
           {icon}
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="small" className="text-muted">
             {label}
           </Typography>
-        </Stack>
+        </Box>
 
-        <Stack direction="row" justifyContent="space-between" alignItems="end">
-          <Typography variant="h5" fontWeight={700} color={valueColor}>
+        <Box display="flex" justify="space-between" align="flex-end">
+          <Typography
+            variant="h4"
+            className="font-bold"
+            style={{ color: valueColor }}
+          >
             {value}
           </Typography>
 
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Chip size="small" color="default" label={variation} />
-            <Typography variant="caption" color="text.secondary">
+          <Box display="flex" gap={8} align="center">
+            <Box className="inline-flex items-center bg-slate-100 text-slate-800 text-sm px-2 py-0.5 rounded">
+              {variation}
+            </Box>
+            <Typography variant="small" className="text-muted">
               {variationLabel}
             </Typography>
-          </Stack>
-        </Stack>
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
@@ -69,10 +68,10 @@ export function PatientTopInfoCards({
   evaluationVariation,
 }: PatientTopInfoCardsProps) {
   return (
-    <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 6, xl: 6 }}>
+    <Grid container spacing={8}>
+      <Grid item xs={12} md={6} xl={6}>
         <InfoCard
-          icon={<Assessment fontSize="small" color="primary" />}
+          icon={<BookMarkedIcon size={16} />}
           label="Avaliações Realizadas"
           value={total}
           variation={formatPercentVariation(evaluationVariation)}
@@ -80,9 +79,9 @@ export function PatientTopInfoCards({
         />
       </Grid>
 
-      <Grid size={{ xs: 12, md: 6, xl: 6 }}>
+      <Grid item xs={12} md={6} xl={6}>
         <InfoCard
-          icon={<Timer fontSize="small" color="primary" />}
+          icon={<Timer size={16} />}
           label="Duração Média"
           value={averageDuration}
           variation="média"

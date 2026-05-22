@@ -1,25 +1,28 @@
-import { Box, Divider, Grid, Paper, Skeleton, Stack } from "@mui/material";
+import { Box, Card, Grid, Separator, Skeleton } from "@/core/components/ui";
 
 export default function DatailLoading() {
   return (
-    <Paper sx={{ p: 3 }}>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Skeleton variant="circular" width={56} height={56} />
-        <Box flex={1}>
-          <Skeleton variant="text" width={280} height={32} />
-          <Skeleton variant="text" width={180} />
+    <Card
+      variant="outlined"
+      className="w-full border shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-transform border-gray-200"
+    >
+      <Box direction="row" align="center">
+        <Skeleton variant="circular" w={56} h={56} />
+        <Box display="flex" direction="column" gap={4} w="100%">
+          <Skeleton variant="text" w={280} h={32} />
+          <Skeleton variant="text" w={180} />
         </Box>
-        <Skeleton variant="rectangular" width={120} height={32} />
-      </Stack>
-      <Divider sx={{ my: 3 }} />
+        <Skeleton variant="rectangular" w={120} h={32} />
+      </Box>
+      <Separator className="my-3" />
       <Grid container spacing={2}>
         {Array.from({ length: 8 }).map((_, i) => (
-          <Grid key={i} size={12}>
-            <Skeleton variant="text" width="60%" />
-            <Skeleton variant="text" width="80%" />
+          <Grid key={i} item xs={12} sm={6} md={4} lg={3}>
+            <Skeleton variant="text" w="60%" />
+            <Skeleton variant="text" w="80%" />
           </Grid>
         ))}
       </Grid>
-    </Paper>
+    </Card>
   );
 }

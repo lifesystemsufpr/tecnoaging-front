@@ -1,31 +1,39 @@
 "use client";
 
-import { Box } from "@mui/material";
 import DashboardMode from "../components/dashboard/DashboardMode";
 import DashboardMonthly from "../components/dashboard/DashboardMonthly";
 import { useResearcherDashboard } from "../hooks/useResearcherDashboard";
 import DashboardSummary from "../components/dashboard/DashboardSummary";
 import BarScatterPlot from "../components/dashboard/BarScatterPlot";
-import { ResearcherDashboardProvider } from "../contexts/ResearcherDashboardContext";
+import { Box, Typography } from "@/core/components/ui";
+import { useResearcherDashboardContext } from "../contexts/ResearcherDashboardContext";
 
-export default function ResearcherDashboard() {
-  const { data, isLoading: loading } = useResearcherDashboard();
+export function ResearcherDashboard() {
+  const { genderMode } = useResearcherDashboardContext();
+  const { data, isLoading: loading } = useResearcherDashboard(genderMode);
 
   return (
-    <ResearcherDashboardProvider>
-      <Box>
-        <h1>Painel do Pesquisador</h1>
-        <DashboardMode />
-        {loading ? (
-          <p>Loading dashboard data...</p>
-        ) : (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <DashboardSummary data={data?.summary} />
-            <DashboardMonthly data={data?.monthlyHistory} />
-            <BarScatterPlot labelColor="black" />
-          </Box>
-        )}
+    <Box display="flex" direction="column" gap={12}>
+      <Box
+        display="flex"
+        direction="row"
+        justify="space-between"
+        align="center"
+      >
+        <Typography variant="h4" color="secondary">
+          Painel do Pesquisador
+        </Typography>
       </Box>
-    </ResearcherDashboardProvider>
+      <DashboardMode />
+      {loading ? (
+        <Typography variant="body">Loading dashboard data...</Typography>
+      ) : (
+        <Box display="flex" direction="column" gap={12}>
+          <DashboardSummary data={data?.summary} />
+          <DashboardMonthly data={data?.monthlyHistory} />
+          <BarScatterPlot labelColor="black" />
+        </Box>
+      )}
+    </Box>
   );
 }

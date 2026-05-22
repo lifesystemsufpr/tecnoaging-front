@@ -1,91 +1,53 @@
 import * as React from "react";
-import { Box, Card, Typography, Skeleton } from "@mui/material";
+import { Card, Box, Skeleton } from "@/core/components/ui";
 
 export const ProfileSkeleton = () => (
-  <Card
-    sx={{
-      margin: "20px auto",
-      padding: 3,
-      boxShadow: 3,
-    }}
-  >
+  <Card variant="elevated" className="border-gray-200">
     {/* Cabeçalho - Avatar e Título */}
-    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+    <Box display="flex" align="center" gap={2} mb={3}>
       {/* Avatar (DB) */}
-      <Skeleton variant="circular" width={40} height={40} sx={{ mr: 2 }} />
+      <Skeleton variant="circular" w={40} h={40} className="mr-2" />
       <Box>
         {/* Nome (Dr. Bruno Lima) e Status */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Skeleton
-            variant="text"
-            width={150}
-            height={28}
-            sx={{ fontSize: "1.5rem", mr: 1 }}
-          />
-          <Skeleton
-            variant="rectangular"
-            width={70}
-            height={20}
-            sx={{ borderRadius: 1 }}
-          />
-          <Skeleton
-            variant="rectangular"
-            width={40}
-            height={20}
-            sx={{ borderRadius: 1, ml: 1 }}
-          />
+        <Box display="flex" align="center" gap={1}>
+          <Skeleton variant="text" w={150} h={28} />
+          <Skeleton variant="rectangular" w={70} h={20} />
+          <Skeleton variant="rectangular" w={40} h={20} />
         </Box>
         {/* Atualizado em... */}
-        <Skeleton
-          variant="text"
-          width={120}
-          height={16}
-          sx={{ fontSize: "0.875rem" }}
-        />
+        <Skeleton variant="text" w={120} h={16} />
       </Box>
     </Box>
 
     {/* Linha Divisória (opcional, dependendo do design real) */}
     {/* Você pode usar um Divider aqui, ou apenas o espaçamento. */}
 
-    <Box sx={{ mt: 3 }}>
+    <Box mt={3}>
       {/* Campos de Informação - Nome, CPF, Telefone, etc. */}
 
       {/* Nome */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={50} />
-      </Typography>
-      <Skeleton variant="text" width={180} height={24} />
+      <Skeleton variant="text" w={50} />
+      <Skeleton variant="text" w={180} h={24} />
 
       {/* CPF */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={40} />
-      </Typography>
-      <Skeleton variant="text" width={150} height={24} />
+      <Skeleton variant="text" w={40} />
+      <Skeleton variant="text" w={150} h={24} />
 
       {/* Telefone */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={60} />
-      </Typography>
-      <Skeleton variant="text" width={130} height={24} />
+      <Skeleton variant="text" w={60} />
+      <Skeleton variant="text" w={130} h={24} />
 
       {/* Gênero */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={50} />
-      </Typography>
-      <Skeleton variant="text" width={100} height={24} />
+      <Skeleton variant="text" w={50} />
+      <Skeleton variant="text" w={100} h={24} />
 
       {/* Campo de estudo */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={100} />
-      </Typography>
-      <Skeleton variant="text" width={200} height={24} />
+      <Skeleton variant="text" w={100} />
+      <Skeleton variant="text" w={200} h={24} />
 
       {/* Instituição */}
-      <Typography variant="body2" sx={{ fontWeight: "bold", mt: 2 }}>
-        <Skeleton variant="text" width={80} />
-      </Typography>
-      <Skeleton variant="text" width={250} height={24} />
+      <Skeleton variant="text" w={80} />
+      <Skeleton variant="text" w={250} h={24} />
     </Box>
   </Card>
 );

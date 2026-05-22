@@ -22,8 +22,9 @@ export async function fetchLogin({
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Login error response:", errorText);
+      const errorJson = await response.json();
+
+      throw new Error(errorJson.message || "Falha ao realizar login");
     }
 
     return response;

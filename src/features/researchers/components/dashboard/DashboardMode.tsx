@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button } from "@/core/components/ui";
 import { useResearcherDashboardContext } from "../../contexts/ResearcherDashboardContext";
 import { GenderMode } from "../../types";
 
@@ -10,21 +10,21 @@ export default function DashboardMode() {
   };
 
   return (
-    <Box display="flex" gap={2} mb={3}>
+    <Box display="flex" gap={12} mb={3}>
       <Button
-        variant={genderMode === "all" ? "contained" : "outlined"}
+        variant={genderMode === "all" ? "default" : "outline"}
         onClick={() => handleModeChange("all")}
       >
         Todos
       </Button>
       <Button
-        variant={genderMode === "male" ? "contained" : "outlined"}
+        variant={genderMode === "male" ? "default" : "outline"}
         onClick={() => handleModeChange("male")}
       >
         Masculino
       </Button>
       <Button
-        variant={genderMode === "female" ? "contained" : "outlined"}
+        variant={genderMode === "female" ? "default" : "outline"}
         onClick={() => handleModeChange("female")}
       >
         Feminino

@@ -49,14 +49,13 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           if (!credentials?.username || !credentials?.password) return null;
-
           const res = await fetchLogin({
             username: credentials.username,
             password: credentials.password,
             remember: credentials.remember == "true",
           });
 
-          if (!res.ok) throw new Error("Credenciais inválidas");
+          if (!res.ok) return null;
 
           const data: LoginResponse = await res.json();
 
@@ -87,9 +86,12 @@ export const authOptions: NextAuthOptions = {
             refreshToken,
             accessTokenExpires: Date.now() + (claims.exp - claims.iat) * 1000,
           };
-        } catch (error) {
-          console.error("Erro na autorização:", error);
-          return null;
+        } catch (error: any) {
+          throw new Error(
+            error?.response?.data?.message ||
+              error?.message ||
+              "Erro ao autenticar"
+          );
         }
       },
     }),
@@ -126,8 +128,6 @@ export const authOptions: NextAuthOptions = {
       ) {
         return token;
       }
-
-      console.log(token);
 
       if (!token.refreshToken) {
         console.warn("Token expirado, mas não há refresh_token para renovar.");

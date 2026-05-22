@@ -14,7 +14,7 @@ import {
   SortDirection,
 } from "@/core/components/ui/table/header/TableColumn";
 import { http } from "@/core/services/http.service";
-import { useSession } from "next-auth/react";
+import { Gender } from "@/core/enums";
 
 export interface FetchResearchersParams {
   page?: number;
@@ -56,38 +56,6 @@ export const researcherService = {
       const resp: Researcher = await http.get<Researcher>(endpoint);
 
       return resp;
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  },
-
-  fetchDasbhoardData: async (): Promise<DashboardResponse> => {
-    try {
-      const endpointSummary = API_ROUTES.RESEARCHER_DASHBOARDS.SUMMARY;
-      const endpointMonthly = API_ROUTES.RESEARCHER_DASHBOARDS.MONTHLY_HISTORY;
-      const endpointAge =
-        API_ROUTES.RESEARCHER_DASHBOARDS.AVARAGE_TEST_BY_AGE_GROUP;
-
-      const [summary, monthlyHistory, averageByAgeGroup] = await Promise.all([
-        clientService<Summary>({
-          method: "GET",
-          endpoint: endpointSummary,
-        }),
-        clientService<MonthlyHistoryItem[]>({
-          method: "GET",
-          endpoint: endpointMonthly,
-        }),
-        clientService<AgeGroupAverage[]>({
-          method: "GET",
-          endpoint: endpointAge,
-        }),
-      ]);
-
-      return {
-        summary,
-        monthlyHistory,
-        averageByAgeGroup,
-      };
     } catch (error) {
       return Promise.reject(error);
     }

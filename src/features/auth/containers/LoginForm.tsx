@@ -68,7 +68,8 @@ export default function LoginForm() {
       }
 
       if (result.error) {
-        toast.error("Usuário ou senha inválidos.");
+        const message = result.error || "Usuário ou senha inválidos.";
+        toast.error(message);
         return;
       }
 

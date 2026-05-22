@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@/core/components/ui";
 import { ApexOptions } from "apexcharts";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -78,9 +78,9 @@ export function PatientMonthlyChart({ data }: PatientMonthlyChartProps) {
   ];
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 3 }}>
+    <Card variant="outlined" className="rounded-lg">
       <CardContent>
-        <Typography variant="h6" fontWeight={600} mb={2}>
+        <Typography variant="h4" className="font-semibold mb-2">
           Avaliações Mensais
         </Typography>
         <ReactApexChart

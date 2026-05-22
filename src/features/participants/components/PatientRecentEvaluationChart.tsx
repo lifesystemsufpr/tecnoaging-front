@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@/core/components/ui";
 import { DashboardSeries } from "../types/patient-dashboard.types";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -84,13 +84,13 @@ export function PatientRecentEvaluationChart({
   const series = data.series;
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 3, height: "100%" }}>
+    <Card variant="outlined" className="h-full rounded-lg">
       <CardContent>
-        <Typography variant="h6" fontWeight={600}>
+        <Typography variant="h4" className="font-semibold">
           Média Mensal das Avaliações
         </Typography>
         {data.subtitle ? (
-          <Typography variant="body2" color="text.secondary" mb={2}>
+          <Typography variant="small" className="text-muted mb-2">
             {data.subtitle}
           </Typography>
         ) : null}
