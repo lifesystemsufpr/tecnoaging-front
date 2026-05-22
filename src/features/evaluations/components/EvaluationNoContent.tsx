@@ -1,4 +1,10 @@
-import { Card, CardContent, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+} from "@/core/components/ui";
 import { evaluationService } from "../services/evaluation.service";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -36,26 +42,27 @@ export default function EvaluationNoContent({
   };
 
   return (
-    <Card variant="outlined" sx={{ mb: 2 }}>
+    <Card variant="outlined" className="mb-2">
       <CardContent>
-        <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+        <Typography variant="h4" className="mb-4 text-center">
           Nenhum dado disponível
         </Typography>
-        <Typography variant="body1" sx={{ textAlign: "center" }}>
+        <Typography variant="body" className="text-center">
           Parece que houve um problema ao processar a avaliação. Por favor,
           tente novamente mais tarde ou entre em contato com o suporte.
         </Typography>
 
         {evaluationId && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleReprocessEvaluation}
-            disabled={loading}
-            sx={{ display: "block", margin: "20px auto 0" }}
-          >
-            Reprocessar Avaliação
-          </Button>
+          <Box mt={20} display="flex" justify="center">
+            <Button
+              onClick={handleReprocessEvaluation}
+              disabled={loading}
+              loading={loading}
+              loadingText="Reprocessando"
+            >
+              Reprocessar Avaliação
+            </Button>
+          </Box>
         )}
       </CardContent>
     </Card>

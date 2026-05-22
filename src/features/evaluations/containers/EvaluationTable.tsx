@@ -18,12 +18,14 @@ import {
   useDeleteEvaluationMutation,
   useListEvaluations,
 } from "../hooks/useListEvaluations";
+import DeleteEvaluation from "../components/DeleteEvaluation";
 import {
   Evaluation,
   EvaluationFilters,
   EvaluationType,
 } from "../types/Evaluation.types";
 import { routeDetailMap } from "../utils/format";
+import { toast } from "sonner";
 
 type TableRow = Evaluation & {
   patientName?: string;
@@ -39,6 +41,8 @@ export default function EvaluationTable({ filters }: EvaluationTableProps) {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [evaluationPendingDeletion, setEvaluationPendingDeletion] =
+    useState<TableRow | null>(null);
   const deleteMutation = useDeleteEvaluationMutation();
 
   useEffect(() => {
@@ -107,6 +111,23 @@ export default function EvaluationTable({ filters }: EvaluationTableProps) {
 
   return (
     <Box>
+      <DeleteEvaluation
+        open={!!evaluationPendingDeletion}
+        evaluation={evaluationPendingDeletion}
+        onClose={() => setEvaluationPendingDeletion(null)}
+        onConfirm={() => {
+          if (!evaluationPendingDeletion?.id) return;
+          deleteMutation.mutate(evaluationPendingDeletion.id, {
+            onSuccess: () => {
+              setEvaluationPendingDeletion(null);
+              toast.success("Avaliação excluída com sucesso.");
+            },
+            onError: () => {
+              toast.error("Erro ao excluir avaliação. Tente novamente.");
+            },
+          });
+        }}
+      />
       <Table.Root<TableRow>
         columns={columnsConfig}
         data={rows}
@@ -143,7 +164,7 @@ export default function EvaluationTable({ filters }: EvaluationTableProps) {
                 onClick={(event) => {
                   event.stopPropagation();
                   if (!row.id) return;
-                  deleteMutation.mutate(row.id);
+                  setEvaluationPendingDeletion(row);
                 }}
               >
                 <Trash2 className="h-4 w-4" />

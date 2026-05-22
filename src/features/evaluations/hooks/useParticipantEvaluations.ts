@@ -14,6 +14,7 @@ export function useParticipantEvaluations(participantId: string) {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
+    type: "TTSTS",
   });
 
   const [pagination, setPagination] = useState({
@@ -34,6 +35,7 @@ export function useParticipantEvaluations(participantId: string) {
         patientCpf: patient.cpf,
         startDate: filters.startDate || undefined,
         endDate: filters.endDate || undefined,
+        type: filters.type || undefined,
         page: pagination.page + 1,
         pageSize: pagination.pageSize,
       });
@@ -53,7 +55,16 @@ export function useParticipantEvaluations(participantId: string) {
   }, [loadData]);
 
   const handleSearch = (dateFrom: string | null, dateTo: string | null) => {
-    setFilters({ startDate: dateFrom || "", endDate: dateTo || "" });
+    setFilters((prev) => ({
+      ...prev,
+      startDate: dateFrom || "",
+      endDate: dateTo || "",
+    }));
+    setPagination((prev) => ({ ...prev, page: 0 }));
+  };
+
+  const handleTypeChange = (type: string) => {
+    setFilters((prev) => ({ ...prev, type }));
     setPagination((prev) => ({ ...prev, page: 0 }));
   };
 
@@ -65,6 +76,7 @@ export function useParticipantEvaluations(participantId: string) {
     pagination,
     setPagination,
     handleSearch,
+    handleTypeChange,
     refresh: loadData,
   };
 }

@@ -10,7 +10,7 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import LockIcon from "@mui/icons-material/Lock";
+import { Lock } from "lucide-react";
 import { TestTypeConfig } from "./testTypeCard.types";
 
 interface TestTypeCardProps {
@@ -60,7 +60,7 @@ export default function TestTypeCard({
       {/* Badge de status */}
       {!config.active && (
         <Chip
-          icon={<LockIcon sx={{ fontSize: 14 }} />}
+          icon={<Lock size={14} />}
           label="Em breve"
           size="small"
           sx={{
@@ -109,14 +109,14 @@ export default function TestTypeCard({
           }}
         >
           <Icon
-            sx={{
-              fontSize: 28,
-              color: config.active
+            size={28}
+            color={
+              config.active
                 ? config.color
                 : isDark
                   ? "rgba(255,255,255,0.4)"
-                  : "rgba(0,0,0,0.3)",
-            }}
+                  : "rgba(0,0,0,0.3)"
+            }
           />
         </Box>
 

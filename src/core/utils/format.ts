@@ -67,6 +67,8 @@ export const formatEvaluationName = (type: string) => {
       return "30STS";
     case "FTSTS":
       return "5TSTS";
+    case "TMSTS":
+      return "2MST";
     default:
       return type;
   }

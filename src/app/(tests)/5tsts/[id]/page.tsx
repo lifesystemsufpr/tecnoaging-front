@@ -24,7 +24,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { Evaluation, MotionAnalysisResponse } from "@/types/domain/Evaluation";
-import { InfoItem } from "@/components/evaluations/InfoItem";
+import { InfoItem } from "@/core/components/shared/InfoItem";
 import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 
 import SensorDataChart from "@/components/evaluations/charts/SensorDataChart";
