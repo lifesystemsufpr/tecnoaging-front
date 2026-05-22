@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useHttp } from "@/core/hooks/useHttp";
-import { API_ROUTES } from "@/services/Routes";
 import { Researcher } from "@/core/types";
+import { API_ROUTES } from "@/core/config/api.routes";
 
 interface UseDetailResearcherProps {
   researcherId: string;

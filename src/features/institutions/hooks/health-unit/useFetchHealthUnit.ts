@@ -1,7 +1,7 @@
 import { useHttp } from "@/core/hooks/useHttp";
-import { API_ROUTES } from "@/services/Routes";
 import { HealthUnit } from "../../types";
 import { useQuery } from "@tanstack/react-query";
+import { API_ROUTES } from "@/core/config/api.routes";
 
 interface FetchHealthUnitParams {
   id: string;

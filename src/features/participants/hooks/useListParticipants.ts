@@ -1,5 +1,4 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { API_ROUTES } from "@/services/Routes";
 import { useHttp } from "@/core/hooks/useHttp";
 import { ApiResponse } from "@/core/services/api.type";
 import { Participant } from "@/core/types";
@@ -7,6 +6,7 @@ import {
   FilterState,
   SortDirection,
 } from "@/core/components/ui/table/header/TableColumn";
+import { API_ROUTES } from "@/core/config/api.routes";
 
 export interface FetchParticipantsParams {
   page?: number;
@@ -24,7 +24,7 @@ export function useListParticipants({
   sortField,
 }: FetchParticipantsParams) {
   const api = useHttp();
-  const endpoint = API_ROUTES.PATIENTS;
+  const endpoint = API_ROUTES.PARTICIPANTS;
 
   return useQuery({
     queryKey: [

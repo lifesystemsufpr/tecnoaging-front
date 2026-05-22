@@ -1,5 +1,5 @@
 import { GridRowId, GridRenderCellParams } from "@mui/x-data-grid";
-import { PageSizeOption } from "@/types/enums/page-size-options";
+import { PageSizeOption } from "@/core/enums/page-size-options";
 
 export type KeyOf<T> = Extract<keyof T, string>;
 

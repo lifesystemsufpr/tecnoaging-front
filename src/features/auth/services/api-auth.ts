@@ -1,5 +1,5 @@
-import { LoginRequest } from "../types/auth.d";
-import { API_ROUTES } from "./Routes";
+import { API_ROUTES } from "@/core/config/api.routes";
+import { LoginRequest } from "../../../types/auth";
 
 export async function fetchLogin({
   username,

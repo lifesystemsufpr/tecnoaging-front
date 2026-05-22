@@ -1,10 +1,10 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchLogin } from "@/services/api-auth";
+import { fetchLogin } from "@/features/auth/services/api-auth";
 import { LoginResponse, TokenPayload } from "@/types/auth.d";
 import { parseJwt } from "@/lib/parseJwt";
 import { userFromAuthorize, userFromClaims } from "@/lib/userAdapter";
-import { API_BASE_URL } from "@/services/Routes";
+import { API_BASE_URL } from "@/features/auth/services/Routes";
 import { JWT } from "next-auth/jwt";
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {

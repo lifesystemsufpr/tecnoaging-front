@@ -1,5 +1,5 @@
+import { API_ROUTES } from "@/core/config/api.routes";
 import { useHttp } from "@/core/hooks/useHttp";
-import { API_ROUTES } from "@/services/Routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useDeleteResearcher() {

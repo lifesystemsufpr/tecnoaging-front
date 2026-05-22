@@ -5,9 +5,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { PageSizeOption } from "@/types/enums/page-size-options";
-import { toISODateStart, toISODateEnd } from "@/utils/dates";
+import { PageSizeOption } from "@/core/enums/page-size-options";
 import { EvaluationFilters } from "../types/Evaluation.types";
+import { toISODateEnd, toISODateStart } from "@/core/utils";
 
 // ─── Option type for autocomplete ─────────────────────────────────────────────
 export type AutocompleteOption = { id: string; name: string };

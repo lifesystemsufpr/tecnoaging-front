@@ -1,8 +1,8 @@
 import { useHttp } from "@/core/hooks/useHttp";
-import { API_ROUTES } from "@/services/Routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ResearcherCreateRequest } from "../types";
 import { Researcher } from "@/core/types";
+import { API_ROUTES } from "@/core/config/api.routes";
 
 export function useCreateResearcher() {
   const api = useHttp();

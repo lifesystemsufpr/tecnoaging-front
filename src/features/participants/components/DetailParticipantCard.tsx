@@ -6,8 +6,7 @@ import {
   formatZipCode,
 } from "../utils/format";
 import { fmtNumber, formatData } from "@/core/utils/format";
-import { ScholarShip } from "@/types/enums/scholar-ship";
-import { SocioEconomicLevel } from "@/core/enums";
+import { ScholarShip, SocioEconomicLevel } from "@/core/enums";
 import { socioLabel } from "@/core/utils/label";
 import { InfoField } from "@/core/components/shared";
 import { Grid } from "@/core/components/ui";

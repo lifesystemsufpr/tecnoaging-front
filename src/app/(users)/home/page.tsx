@@ -1,10 +1,10 @@
 "use client";
 import { useSession } from "next-auth/react";
 
-import { SystemRoles } from "@/types/enums/system-roles";
 import PatientDashboardPage from "@/features/participants/pages/PatientDashboardPage";
 import ProfessionalDashboardPage from "@/features/professionals/pages/DashboardPage";
 import ResearcherDashboard from "@/features/researchers/pages/ResearcherDashboard";
+import { SystemRoles } from "@/core/enums";
 
 export default function HomeDashboardPage() {
   const { data: session, status } = useSession();

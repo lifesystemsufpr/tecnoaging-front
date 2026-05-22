@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useHttp } from "@/core/hooks/useHttp";
-import { API_ROUTES } from "@/services/Routes";
+import { API_ROUTES } from "@/core/config/api.routes";
 
 export function useDeleteProfessional() {
   const api = useHttp();

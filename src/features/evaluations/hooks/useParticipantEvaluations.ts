@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { fetchPatientById } from "@/services/api-patient";
-import { evaluationService } from "../services/evaluation.service";
 import { EvaluationRaw } from "../types/Evaluation.types";
-import { Patient } from "@/types/domain/Patient";
+import { Participant } from "@/core/types";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useHttp } from "@/core/hooks/useHttp";
+import { API_ROUTES } from "@/core/config/api.routes";
+import { ApiResponse } from "@/core/services/api.type";
 
 export function useParticipantEvaluations(participantId: string) {
-  const [patientData, setPatientData] = useState<Patient | null>(null);
-  const [evaluations, setEvaluations] = useState<EvaluationRaw[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalRows, setTotalRows] = useState(0);
+  const api = useHttp();
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -22,37 +21,38 @@ export function useParticipantEvaluations(participantId: string) {
     page: 0,
   });
 
-  const loadData = useCallback(async () => {
-    if (!participantId) return;
+  const patientQuery = useQuery({
+    queryKey: ["participant", participantId],
+    queryFn: () =>
+      api.get<Participant>(API_ROUTES.PARTICIPANT_BY_ID(participantId)),
+    enabled: !!participantId,
+    staleTime: 10 * 60 * 1000,
+  });
 
-    try {
-      setIsLoading(true);
-
-      const patient = await fetchPatientById({ id: participantId });
-      setPatientData(patient);
-
-      const response = await evaluationService.list({
-        patientCpf: patient.cpf,
-        startDate: filters.startDate || undefined,
-        endDate: filters.endDate || undefined,
-        type: filters.type || undefined,
-        page: pagination.page + 1,
-        pageSize: pagination.pageSize,
-      });
-
-      setEvaluations(response.data);
-      setTotalRows(response.meta.total || 0);
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-      toast.error("Erro ao carregar informações do paciente e avaliações.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [participantId, filters, pagination.page, pagination.pageSize]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const evaluationsQuery = useQuery({
+    queryKey: [
+      "participant-evaluations",
+      participantId,
+      patientQuery.data?.cpf,
+      filters,
+      pagination.page,
+      pagination.pageSize,
+    ],
+    queryFn: () =>
+      api.get<ApiResponse<EvaluationRaw[]>>(API_ROUTES.EVALUATIONS, {
+        query: {
+          patientCpf: patientQuery.data?.cpf,
+          startDate: filters.startDate || undefined,
+          endDate: filters.endDate || undefined,
+          type: filters.type || undefined,
+          page: pagination.page + 1,
+          pageSize: pagination.pageSize,
+        },
+      }),
+    enabled: !!participantId && !!patientQuery.data?.cpf,
+    placeholderData: keepPreviousData,
+    staleTime: 10 * 60 * 1000,
+  });
 
   const handleSearch = (dateFrom: string | null, dateTo: string | null) => {
     setFilters((prev) => ({
@@ -68,6 +68,16 @@ export function useParticipantEvaluations(participantId: string) {
     setPagination((prev) => ({ ...prev, page: 0 }));
   };
 
+  const refresh = useCallback(() => {
+    patientQuery.refetch();
+    evaluationsQuery.refetch();
+  }, [patientQuery, evaluationsQuery]);
+
+  const evaluations = evaluationsQuery.data?.data ?? [];
+  const totalRows = evaluationsQuery.data?.meta?.total ?? 0;
+  const isLoading = patientQuery.isLoading || evaluationsQuery.isLoading;
+  const patientData = (patientQuery.data ?? null) as Participant | null;
+
   return {
     patientData,
     evaluations,
@@ -77,6 +87,6 @@ export function useParticipantEvaluations(participantId: string) {
     setPagination,
     handleSearch,
     handleTypeChange,
-    refresh: loadData,
+    refresh,
   };
 }

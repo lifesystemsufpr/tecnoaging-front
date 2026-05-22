@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo, ReactNode } from "react";
 import { DataGrid, GridRowId } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
-import { pageSizeOptions } from "@/types/enums/page-size-options";
+import { pageSizeOptions } from "@/core/enums/page-size-options";
 
 import { GenericTableProps } from "./types/GenericTable.types";
 import { toGridColumns, createActionsColumn } from "./utils/columns.utils";
