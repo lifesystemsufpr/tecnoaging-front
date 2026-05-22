@@ -13,7 +13,6 @@ export function useCreateResearcher() {
 
   return useMutation({
     mutationFn: async (data: ResearcherCreateRequest) => {
-      console.log("Creating researcher with data:", data);
       const response = await api.post<Researcher>(endpoint, { ...data });
       return response;
     },
