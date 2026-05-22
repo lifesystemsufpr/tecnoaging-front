@@ -19,9 +19,7 @@ import { useFetchParticipant } from "../hooks/useFetchParticipant";
 import { DetailHeader } from "../components/HeaderDetail";
 import { DetailParticipantCard } from "../components/DetailParticipantCard";
 
-import ParticipantQuestionnaires from "@/features/questionnaires/containers/ParticipantQuestionnaires";
 import ParticipantEvaluations from "@/features/evaluations/containers/ParticipantEvaluations";
-import { QuestionnairesProvider } from "@/features/questionnaires";
 
 export default function ParticipantFullDetail({
   participantId,
@@ -100,9 +98,9 @@ export default function ParticipantFullDetail({
           </TabPanel>
 
           <TabPanel value={1}>
-            <QuestionnairesProvider patientId={effectiveParticipantId}>
-              <ParticipantQuestionnaires withHeader={false} />
-            </QuestionnairesProvider>
+            <Typography variant="h2">
+              Funcionalidade Temporariamente Indisponível
+            </Typography>
           </TabPanel>
 
           <TabPanel value={2}>

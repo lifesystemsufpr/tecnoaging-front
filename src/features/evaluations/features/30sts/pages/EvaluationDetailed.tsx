@@ -3,7 +3,6 @@
 import { Box, Button, Container } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 import EvaluationDetail from "@/features/evaluations/components/EvaluationDetail";
 import Indicators from "../containers/Indicators";
 import {
@@ -24,7 +23,8 @@ export function EvaluationDetailed() {
     isDetailedLoading,
   } = useThirtySTSContext();
 
-  if (isEvaluationLoading || isDetailedLoading) return <EvaluationSkeleton />;
+  if (isEvaluationLoading || isDetailedLoading)
+    return <Container sx={{ py: 2 }}>Carregando avaliação...</Container>;
   if (!evaluationData || !detailedData)
     return <Container sx={{ py: 2 }}>Avaliação não encontrada.</Container>;
 
