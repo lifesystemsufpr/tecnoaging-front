@@ -8,7 +8,7 @@ interface DashboardSummaryProps {
 }
 
 export default function DashboardSummary({ data }: DashboardSummaryProps) {
-  const { totalEvaluations, totalPatients } = data;
+  const { totalEvaluations = 0, totalPatients = 0 } = data;
 
   return (
     <Box display="flex" direction="row" gap={12}>
