@@ -48,7 +48,7 @@ export interface SensorStatDetails {
   mean: number;
 }
 
-export interface SensorData {
+export interface SensorAnalysisData {
   format: string;
   columns: SensorColumn[];
   units: Record<SensorColumn | string, string>;
@@ -75,21 +75,19 @@ export interface DerivedData {
   overallClassification: string;
 }
 
-export interface CyclePhases {
+export interface STSCyclePhases {
   total: number;
   stand: number;
   sit: number;
 }
 
-export interface CycleDataRaw {
-  cycle: number;
-  totalTime: number;
-  standUpTime: number;
-  sitDownTime: number;
-  power: number;
-  velocityExtension: number;
-  velocityFlexion: number;
+export interface TMSTCyclePhases {
+  total: number;
+  stand?: number;
+  sit?: number;
 }
+
+export type CyclePhases = STSCyclePhases | TMSTCyclePhases;
 
 export interface CycleData {
   min: CyclePhases;
@@ -98,20 +96,109 @@ export interface CycleData {
   totalCycles: number;
 }
 
-export interface ProcessedData {
-  data: {
-    t: number;
-    val: number;
-  }[];
-  label: string;
-  unit: string;
+export interface BaseCycleDataRaw {
+  cycle: number;
+  totalTime: number;
+  power: number;
+  velocityExtension: number;
 }
 
-export interface MotionAnalysisResponse {
-  processed: ProcessedData;
-  sensor: SensorData;
+export interface STSCycleDataRaw extends BaseCycleDataRaw {
+  standUpTime: number;
+  sitDownTime: number;
+  velocityFlexion: number;
+}
+
+export interface TMSTCycleDataRaw extends BaseCycleDataRaw {
+  standUpTime: number;
+  sitDownTime: number;
+  velocityFlexion: number;
+}
+
+export type CycleDataRaw = STSCycleDataRaw | TMSTCycleDataRaw;
+export interface TimeseriesPoint {
+  t: number;
+  val: number;
+}
+
+export interface STSProcessedData {
+  label: string;
+  unit: string;
+  data: TimeseriesPoint[];
+}
+
+export interface TMSTPico {
+  pico: number;
+  t_pico_s: number;
+  vel_bruta_deg_s: number;
+  vel_phoneX_deg_s: number;
+  vel_phoneY_deg_s: number;
+  vel_phoneZ_deg_s: number;
+  vel_calibrada_deg_s: number;
+}
+
+export interface TMSTMetricas {
+  cv_vel: number;
+  cv_tempo: number;
+  n_passos: number;
+  estrategia: string;
+  tempo_dp_s: number;
+  tempo_max_s: number;
+  tempo_min_s: number;
+  slope_deg_s2: number;
+  vel_dp_deg_s: number;
+  tempo_medio_s: number;
+  vel_fim_deg_s: number;
+  vel_ini_deg_s: number;
+  vel_max_deg_s: number;
+  vel_min_deg_s: number;
+  delta_vel_deg_s: number;
+  vel_media_deg_s: number;
+  cadencia_ciclos_min: number;
+}
+
+export interface TMSTProcessedData {
+  label: string;
+  unit: string;
+  data: {
+    picos: TMSTPico[];
+    metricas: TMSTMetricas;
+    timeseries: TimeseriesPoint[];
+  };
+}
+
+export type ProcessedData = STSProcessedData | TMSTProcessedData;
+
+export function isTMSTProcessedData(p: ProcessedData): p is TMSTProcessedData {
+  return !Array.isArray((p as TMSTProcessedData).data);
+}
+
+export function isSTSProcessedData(p: ProcessedData): p is STSProcessedData {
+  return Array.isArray((p as STSProcessedData).data);
+}
+
+export interface STSMotionAnalysisResponse {
+  processed: STSProcessedData;
+  sensor: SensorAnalysisData;
   derived: DerivedData;
-  cycle: CycleDataRaw[];
+  cycle: STSCycleDataRaw[];
+}
+
+export interface TMSTMotionAnalysisResponse {
+  processed: TMSTProcessedData;
+  sensor: SensorAnalysisData;
+  derived: DerivedData;
+  cycles: TMSTCycleDataRaw[];
+}
+
+export type MotionAnalysisResponse =
+  | STSMotionAnalysisResponse
+  | TMSTMotionAnalysisResponse;
+
+export function isTMSTMotionAnalysis(
+  r: MotionAnalysisResponse
+): r is TMSTMotionAnalysisResponse {
+  return "cycles" in r;
 }
 
 export type EvaluationFilters = {

@@ -1,22 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSession } from "next-auth/react";
+import { ApiError } from "./api.type";
+import { mapApiError } from "../api/errorMapper";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export interface ClientServiceOptions extends RequestInit {
   token?: string;
-}
-
-export class ApiError extends Error {
-  status: number;
-  data?: unknown;
-
-  constructor(message: string, status: number, data?: unknown) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.data = data;
-  }
 }
 
 export interface ClientServiceProps {
@@ -65,7 +55,7 @@ export async function clientService<T = unknown>({
     } catch {}
 
     throw new ApiError(
-      (errorData as any)?.message ?? `Erro na requisição (${response.status})`,
+      mapApiError(response.status) ?? (errorData as any)?.message,
       response.status,
       errorData
     );

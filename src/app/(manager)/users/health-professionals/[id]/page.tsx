@@ -14,7 +14,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -119,18 +118,6 @@ export default function Page() {
             onClick={() => router.push("/users/health-professionals")}
           >
             Voltar
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() =>
-              router.push(
-                `/users/health-professionals/${encodeURIComponent(String(strId))}/edit`
-              )
-            }
-            disabled={true}
-          >
-            Editar
           </Button>
         </Stack>
       </Stack>

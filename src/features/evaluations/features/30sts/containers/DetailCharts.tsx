@@ -4,13 +4,26 @@ import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
+import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
+import { isSTSProcessedData } from "@/features/evaluations/types/Evaluation.types";
 
 export default function DetailCharts() {
-  const { detailedData, repetitions , evaluationData} = useThirtySTSContext();
+  const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
+
+  const processed = isSTSProcessedData(detailedData?.processed)
+    ? detailedData.processed
+    : null;
 
   const theme = useTheme();
   const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
+
+  if (
+    processed?.data.length === 0 ||
+    detailedData.derived.indicators.length === 0
+  ) {
+    return <EvaluationNoContent evaluationId={evaluationData.id} />;
+  }
 
   return (
     <Card variant="outlined">
@@ -34,11 +47,11 @@ export default function DetailCharts() {
             />
 
             <GenericChart
-              data={detailedData.processed.data}
+              data={processed?.data}
               xKey="t"
               yKey="val"
-              title={`Gráfico do ${detailedData.processed.label}`}
-              valueFormatter={(v) => `${v} ${detailedData.processed.unit}`}
+              title={`Gráfico do ${processed?.label}`}
+              valueFormatter={(v) => `${v} ${processed?.unit}`}
               timeSeries
               dense
               enableZoom
