@@ -7,6 +7,18 @@ import { userFromAuthorize, userFromClaims } from "@/lib/userAdapter";
 import { API_BASE_URL } from "@/features/auth/services/Routes";
 import { JWT } from "next-auth/jwt";
 
+function getAccessTokenExpires(claims: TokenPayload): number {
+  if (
+    typeof claims.exp === "number" &&
+    typeof claims.iat === "number" &&
+    claims.exp > claims.iat
+  ) {
+    return Date.now() + (claims.exp - claims.iat) * 1000;
+  }
+
+  return Date.now();
+}
+
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
@@ -24,7 +36,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       ...token,
       accessToken: data.access_token,
       refreshToken: data.refresh_token ?? token.refreshToken,
-      accessTokenExpires: Date.now() + (claims.exp - claims.iat) * 1000,
+      accessTokenExpires: getAccessTokenExpires(claims),
       user: appUser ?? token.user,
     };
   } catch (error) {
@@ -84,7 +96,7 @@ export const authOptions: NextAuthOptions = {
             ...appUser,
             accessToken,
             refreshToken,
-            accessTokenExpires: Date.now() + (claims.exp - claims.iat) * 1000,
+            accessTokenExpires: getAccessTokenExpires(claims),
           };
         } catch (error: any) {
           throw new Error(

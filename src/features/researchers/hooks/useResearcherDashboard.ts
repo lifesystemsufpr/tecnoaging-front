@@ -6,13 +6,22 @@ import {
   PercentileEntry,
   Summary,
   DashboardResponse,
+  GenderMode,
 } from "../types";
 
-export function useResearcherDashboard(gender: string) {
+function normalizeGender(gender: GenderMode | string) {
+  if (gender === "male") return "MALE";
+  if (gender === "female") return "FEMALE";
+
+  return "";
+}
+
+export function useResearcherDashboard(gender: GenderMode | string) {
   const api = useHttp();
+  const normalizedGender = normalizeGender(gender);
 
   return useQuery({
-    queryKey: ["researcherDashboard", gender],
+    queryKey: ["researcherDashboard", normalizedGender],
 
     queryFn: async (): Promise<DashboardResponse> => {
       const endpointSummary = API_ROUTES.RESEARCHER_DASHBOARDS.SUMMARY;
@@ -21,31 +30,18 @@ export function useResearcherDashboard(gender: string) {
 
       const endpointAge =
         API_ROUTES.RESEARCHER_DASHBOARDS.AVARAGE_TEST_BY_AGE_GROUP;
-        let genderNormalized = gender;
-
-        if (gender === "all") {
-          genderNormalized = ""
-        }
-
-        if (gender === "male") {
-          genderNormalized = "MALE";
-        }
-
-        if (gender === "female") {
-          genderNormalized = "FEMALE";
-        }
 
       const [summary, monthlyHistory, averageByAgeGroup] = await Promise.all([
         api.get<Summary>(endpointSummary, {
-          query: { gender: genderNormalized },
+          query: { gender: normalizedGender },
         }),
 
         api.get<MonthlyHistoryItem[]>(endpointMonthly, {
-          query: { gender: genderNormalized },
+          query: { gender: normalizedGender },
         }),
 
         api.get<PercentileEntry[]>(endpointAge, {
-          query: { gender: genderNormalized },
+          query: { gender: normalizedGender },
         }),
       ]);
 

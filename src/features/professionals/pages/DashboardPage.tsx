@@ -6,7 +6,7 @@ import PerformanceEvaluations from "../components/PerfomanceEvaluations";
 import { useFetchDashboard } from "../hooks/useFetchDashboard";
 
 export default function ProfessionalDashboardPage() {
-  const { data, isLoading: loading } = useFetchDashboard();
+  const { data, isLoading: loading, error } = useFetchDashboard();
 
   if (loading) {
     return (
@@ -24,6 +24,15 @@ export default function ProfessionalDashboardPage() {
         <div className="col-span-12">
           <div className="h-80 rounded-xl bg-gray-200 w-full" />
         </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="p-6 text-red-500">
+        Ocorreu um erro ao carregar os dados do dashboard. Por favor, tente
+        novamente mais tarde.
       </div>
     );
   }

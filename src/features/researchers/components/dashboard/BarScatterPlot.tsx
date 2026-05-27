@@ -7,9 +7,7 @@ import { useResearcherDashboard } from "../../hooks/useResearcherDashboard";
 
 export default function BarScatterPlot({ labelColor }: BarScatterPlotProps) {
   const { genderMode } = useResearcherDashboardContext();
-  const genderMapper =
-    genderMode === "all" ? "" : genderMode === "male" ? "MALE" : "FEMALE";
-  const { data } = useResearcherDashboard(genderMapper);
+  const { data } = useResearcherDashboard(genderMode);
 
   const option = useBarScatterPlotOptions({
     participantGender: genderMode,
