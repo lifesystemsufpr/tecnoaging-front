@@ -49,11 +49,11 @@ export default function ResearcherTable() {
       field: "email",
       header: "Email",
       render: (_, row) => row.email,
-      sortable: true,
     }),
     createColumn({
       field: "cpf",
       header: "CPF",
+      sortable: true,
       render: (_, row) => formatCPF(row.cpf),
     }),
     createColumn({

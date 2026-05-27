@@ -51,7 +51,6 @@ export default function ProfessionalTable() {
       field: "email",
       header: "Email",
       render: (_, row) => row.email,
-      sortable: true,
     }),
     createColumn({
       field: "cpf",
