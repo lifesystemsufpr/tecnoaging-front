@@ -21,18 +21,31 @@ export function useResearcherDashboard(gender: string) {
 
       const endpointAge =
         API_ROUTES.RESEARCHER_DASHBOARDS.AVARAGE_TEST_BY_AGE_GROUP;
+        let genderNormalized = gender;
+
+        if (gender === "all") {
+          genderNormalized = ""
+        }
+
+        if (gender === "male") {
+          genderNormalized = "MALE";
+        }
+
+        if (gender === "female") {
+          genderNormalized = "FEMALE";
+        }
 
       const [summary, monthlyHistory, averageByAgeGroup] = await Promise.all([
         api.get<Summary>(endpointSummary, {
-          query: { gender },
+          query: { gender: genderNormalized },
         }),
 
         api.get<MonthlyHistoryItem[]>(endpointMonthly, {
-          query: { gender },
+          query: { gender: genderNormalized },
         }),
 
         api.get<PercentileEntry[]>(endpointAge, {
-          query: { gender },
+          query: { gender: genderNormalized },
         }),
       ]);
 

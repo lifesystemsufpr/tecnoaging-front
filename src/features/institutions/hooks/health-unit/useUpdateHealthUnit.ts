@@ -15,7 +15,7 @@ export function useUpdateHealthUnit() {
   const queryKey = ["healthUnits"];
   return useMutation({
     mutationFn: async ({ id, data }: UpdateHealthUnitParams) => {
-      await api.put(API_ROUTES.HEALTH_UNIT_BY_ID(id), { ...data });
+      await api.patch(API_ROUTES.HEALTH_UNIT_BY_ID(id), { ...data });
     },
 
     onSuccess: () => {

@@ -29,7 +29,15 @@ export function ResearcherDashboard() {
         <Typography variant="body">Loading dashboard data...</Typography>
       ) : (
         <Box display="flex" direction="column" gap={12}>
-          <DashboardSummary data={data?.summary} />
+          <DashboardSummary
+            data={
+              data?.summary ?? {
+                totalEvaluations: 0,
+                totalPatients: 0,
+                currentMonthEvaluations: 0,
+              }
+            }
+          />
           <DashboardMonthly data={data?.monthlyHistory} />
           <BarScatterPlot labelColor="black" />
         </Box>

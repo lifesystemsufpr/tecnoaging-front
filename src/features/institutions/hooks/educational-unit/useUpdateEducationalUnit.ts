@@ -15,7 +15,7 @@ export function useUpdateEducationalUnit() {
 
   return useMutation({
     mutationFn: async ({ id, data }: UpdateEducationalUnitParams) => {
-      await api.put(API_ROUTES.INSTITUTION_BY_ID(id), { ...data });
+      await api.patch(API_ROUTES.INSTITUTION_BY_ID(id), { ...data });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
