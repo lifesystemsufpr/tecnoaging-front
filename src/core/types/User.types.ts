@@ -8,7 +8,7 @@ export interface User {
   gender: Gender;
   phone?: string;
   role?: string;
-  password?: string;
+  password?: string | undefined;
   active?: boolean;
   updatedAt?: string;
 }

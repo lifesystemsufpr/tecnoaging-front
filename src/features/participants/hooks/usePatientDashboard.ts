@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ApiError } from "@/core/services/client.service";
+
 import {
   DashboardSeries,
   EvaluationTypeAverage,
@@ -10,6 +10,7 @@ import { useFetchParticipantEvaluationCount } from "./useFetchParticipantEvaluat
 import { useFetchParticipantMonthlyAverage } from "./useFetchParticipantMonthlyAverage";
 import { useFetchParticipantMonthlyEvaluations } from "./useFetchParticipantMonthlyEvaluations";
 import { useFetchParticipantMostPerformedTests } from "./useFetchParticipantMostPerformedTests";
+import { ApiError } from "@/core/services/api.type";
 
 const INITIAL_DATA: PatientDashboardData = {
   totalEvaluations: 0,

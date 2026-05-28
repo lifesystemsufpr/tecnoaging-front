@@ -1,16 +1,5 @@
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Stack,
-  Chip,
-  LinearProgress,
-} from "@mui/material";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import GroupsIcon from "@mui/icons-material/Groups";
-import PersonIcon from "@mui/icons-material/Person";
+import { Box, Card, CardContent, Typography } from "@/core/components/ui";
+import { ArrowUpRight, ArrowDownRight, Users, User } from "lucide-react";
 import { TeamPerformance } from "../types";
 
 interface PerformanceEvaluationsProps {
@@ -23,115 +12,90 @@ export default function PerformanceEvaluations({
   const isAboveAverage = data.individual >= data.teamAverage;
   const diff = data.individual - data.teamAverage;
 
+  const progressValue = Math.min((data.individual / 10) * 100, 100);
+
   return (
     <Card
-      elevation={0}
-      sx={{
-        borderRadius: 4,
-        border: "1px solid",
-        borderColor: "divider",
-        boxShadow: "0 4px 20px 0 rgba(0,0,0,0.05)",
-        width: "100%",
-        "&:hover": { transform: "translateY(-2px)" },
-      }}
+      variant="outlined"
+      className="w-full border shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-transform border-gray-200"
     >
-      <CardContent sx={{ p: 3 }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="flex-start"
-          mb={3}
-        >
-          <Typography variant="subtitle1" fontWeight="700" color="text.primary">
+      <CardContent className="p-6">
+        <Box className="mb-6 flex items-start justify-between">
+          <Typography variant="body" className="font-bold text-foreground">
             Performance
           </Typography>
 
-          <Chip
-            icon={
-              isAboveAverage ? (
-                <TrendingUpIcon fontSize="small" />
-              ) : (
-                <TrendingDownIcon fontSize="small" />
-              )
+          <Box
+            className={
+              `inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold ` +
+              (isAboveAverage
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-rose-200 bg-rose-50 text-rose-700")
             }
-            label={isAboveAverage ? "Acima da média" : "Abaixo da média"}
-            size="small"
-            color={isAboveAverage ? "success" : "error"}
-            variant="outlined"
-            sx={{ fontWeight: "bold", borderRadius: 1.5 }}
-          />
-        </Stack>
+          >
+            {isAboveAverage ? (
+              <ArrowUpRight size={14} />
+            ) : (
+              <ArrowDownRight size={14} />
+            )}
+            {isAboveAverage ? "Acima da média" : "Abaixo da média"}
+          </Box>
+        </Box>
 
-        <Stack spacing={3}>
-          {/* Seu Desempenho (Destaque) */}
+        <Box className="space-y-6">
           <Box>
-            <Box display="flex" alignItems="center" gap={1} mb={0.5}>
-              <PersonIcon sx={{ color: "text.secondary", fontSize: 20 }} />
+            <Box className="mb-1 flex items-center gap-1">
+              <User size={18} className="text-muted-foreground" />
               <Typography
-                variant="body2"
-                color="text.secondary"
-                fontWeight="500"
+                variant="small"
+                className="font-medium text-muted-foreground"
               >
                 Seu Desempenho Individual
               </Typography>
             </Box>
-            <Typography variant="h3" fontWeight="800">
-              {data.individual.toFixed(2)}
+            <Typography variant="h1" className="font-extrabold">
+              {data.individual.toFixed(0)} Testes Aplicados
             </Typography>
-            <LinearProgress
-              variant="determinate"
-              value={Math.min((data.individual / 10) * 100, 100)} // Supondo escala de 0 a 10
-              sx={{ height: 6, borderRadius: 3, mt: 1, bgcolor: "grey.100" }}
-              color={isAboveAverage ? "success" : "warning"}
-            />
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className={`h-full rounded-full ${isAboveAverage ? "bg-emerald-500" : "bg-amber-500"}`}
+                style={{ width: `${progressValue}%` }}
+              />
+            </div>
           </Box>
 
-          {/* Média da Equipe (Comparativo) */}
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              bgcolor: "action.hover",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Box display="flex" alignItems="center" gap={1.5}>
-              <GroupsIcon sx={{ color: "primary.main" }} />
+          <Box className="flex items-center justify-between rounded-xl bg-muted/40 p-4">
+            <Box className="flex items-center gap-3">
+              <Users size={20} className="text-primary" />
               <Box>
                 <Typography
                   variant="caption"
-                  color="text.secondary"
-                  display="block"
-                  sx={{ lineHeight: 1 }}
+                  className="block leading-none text-muted-foreground"
                 >
-                  MÉDIA EQUIPE
+                  MÉDIA DE TESTES APLICADOS PELA EQUIPE
                 </Typography>
-                <Typography variant="h6" fontWeight="700">
+                <Typography variant="h4" className="font-bold">
                   {data.teamAverage.toFixed(2)}
                 </Typography>
               </Box>
             </Box>
 
-            <Box textAlign="right">
+            <Box className="text-right">
               <Typography
                 variant="caption"
-                color="text.secondary"
-                display="block"
+                className="block text-muted-foreground"
               >
                 DIFERENÇA
               </Typography>
               <Typography
-                variant="body2"
-                fontWeight="bold"
-                color={diff >= 0 ? "success.main" : "error.main"}
+                variant="body"
+                className={`font-bold ${diff >= 0 ? "text-emerald-600" : "text-rose-600"}`}
               >
                 {diff >= 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2)}
               </Typography>
             </Box>
           </Box>
-        </Stack>
+        </Box>
       </CardContent>
     </Card>
   );

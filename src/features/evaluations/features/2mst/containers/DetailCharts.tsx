@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Stack, useTheme } from "@mui/material";
+import { Box, Card, CardContent } from "@/core/components/ui";
 import { useTwoMSTContext } from "../context/2MSTContext";
 import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
@@ -13,15 +13,13 @@ export default function DetailCharts() {
     ? detailedData.processed
     : null;
 
-  const theme = useTheme();
-  const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const participantGender = evaluationData?.participant.gender || Gender.FEMALE;
 
   return (
-    <Card variant="outlined">
-      <CardContent>
-        <Stack spacing={4}>
-          <Box sx={{ position: "relative" }}>
+    <Card variant="outlined" className="mb-4 border-gray-100 p-5">
+      <CardContent className="p-0">
+        <Box display="flex" direction="column" gap={16}>
+          <Box position="relative">
             <GenericChart
               data={processed?.data.timeseries}
               xKey="t"
@@ -44,16 +42,16 @@ export default function DetailCharts() {
             participantAge={detailedData!.derived.participantAgeOnEvaluation}
             participantSteps={steps ? steps : 78}
             participantGender={participantGender}
-            labelColor={labelColor}
+            labelColor={"#000"}
           />
 
           <ContinuityChart
             idadePaciente={detailedData!.derived.participantAgeOnEvaluation}
             passosPaciente={steps ? steps : 78}
             participantGender={participantGender}
-            labelColor={labelColor}
+            labelColor={"#000"}
           />
-        </Stack>
+        </Box>
       </CardContent>
     </Card>
   );

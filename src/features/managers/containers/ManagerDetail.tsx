@@ -1,9 +1,9 @@
-import { Divider, Typography } from "@mui/material";
 import { DetailManagerCard } from "../components/DetailManagerCard";
 import { useDetailManager } from "../hooks/useDetailManager";
 import { UserDetailHeader } from "@/core/components/shared/profile/UserDetailHeader";
 import { UserDetailContent } from "@/core/components/shared";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
+import { Separator, Typography } from "@/core/components/ui";
 
 export interface DetailManagerProps {
   managerId: string;
@@ -29,7 +29,7 @@ export function ManagerDetail({ managerId }: DetailManagerProps) {
         updatedAt={data.updatedAt}
       />
 
-      <Divider sx={{ my: 3 }} />
+      <Separator className="my-6" />
 
       <UserDetailContent userData={data} />
 

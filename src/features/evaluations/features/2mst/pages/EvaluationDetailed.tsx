@@ -1,9 +1,8 @@
 "use client";
 
-import { Box, Button, Container } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { ArrowLeft } from "lucide-react";
+import { Box, Button, Typography } from "@/core/components/ui";
 
-import EvaluationSkeleton from "@/components/evaluations/EvaluationSkeleton";
 import EvaluationDetail from "@/features/evaluations/components/EvaluationDetail";
 import Indicators from "../containers/Indicators";
 import { TwoMSTProvider, useTwoMSTContext } from "../context/2MSTContext";
@@ -21,18 +20,19 @@ export function EvaluationDetailed() {
     isDetailedLoading,
   } = useTwoMSTContext();
 
-  if (isEvaluationLoading || isDetailedLoading) return <EvaluationSkeleton />;
+  if (isEvaluationLoading || isDetailedLoading)
+    return <Box py={8}>Carregando avaliação...</Box>;
   if (!evaluationData || !detailedData)
-    return <Container sx={{ py: 2 }}>Avaliação não encontrada.</Container>;
+    return <Box py={8}>Avaliação não encontrada.</Box>;
 
   return (
     <Box>
-      <Box sx={{ mb: 2 }}>
+      <Box mb={8}>
         <Button
           onClick={() => window.history.back()}
-          startIcon={<ArrowBackIcon />}
-          size="small"
-          variant="text"
+          leftIcon={<ArrowLeft size={16} />}
+          size="sm"
+          variant="link"
         >
           Voltar para Avaliações
         </Button>

@@ -1,19 +1,27 @@
 "use client";
 
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { GenericTable } from "@/core/components/layout";
-import { ParticipantFilters } from "../components/ParticipantFilters";
-import { participantColumns } from "../utils/columns";
-import { EvaluationRaw } from "../types/Evaluation.types";
-import { useParticipantEvaluations } from "../hooks/useParticipantEvaluations";
+import {
+  Box,
+  Button,
+  Grid,
+  Table,
+  Typography,
+  createColumn,
+  type FilterState,
+  type TableColumnDef,
+} from "@/core/components/ui";
 import ROUTES from "@/core/config/client.routes";
-import { useFetchHistoryRepetitions } from "../features/30sts/hooks/useFetchHistoryRepetitions";
 import GenericChart from "@/core/components/layout/GenericChart";
+import { ParticipantFilters } from "../components/ParticipantFilters";
+import { EvaluationRaw, EvaluationType } from "../types/Evaluation.types";
+import { useParticipantEvaluations } from "../hooks/useParticipantEvaluations";
+import { useFetchHistoryRepetitions } from "../features/30sts/hooks/useFetchHistoryRepetitions";
 import TestTypeCard from "../components/TestTypeCard";
-import { useState } from "react";
 import { TEST_TYPES } from "../consts/types";
+import { formatDateTime, formatEvaluationName } from "@/core/utils/format";
 
 export default function ParticipantEvaluations({
   participantId,
@@ -25,6 +33,32 @@ export default function ParticipantEvaluations({
   const router = useRouter();
   const [selectedTest, setSelectedTest] = useState<string>("TTSTS");
 
+  const columnsConfig = useMemo<TableColumnDef<EvaluationRaw>[]>(
+    () => [
+      createColumn({
+        field: "type",
+        header: "Tipo",
+        render: (_, row) => formatEvaluationName(row.type as EvaluationType),
+      }),
+      createColumn({
+        field: "profissional_nome",
+        header: "Profissional",
+        render: (_, row) => row.healthProfessional?.fullName ?? "—",
+      }),
+      createColumn({
+        field: "unidade_nome",
+        header: "Unidade",
+        render: (_, row) => row.healthcareUnit?.name ?? "—",
+      }),
+      createColumn({
+        field: "time_init",
+        header: "Inicio",
+        render: (_, row) => formatDateTime(row.time_init),
+      }),
+    ],
+    []
+  );
+
   const {
     patientData,
     evaluations,
@@ -33,6 +67,7 @@ export default function ParticipantEvaluations({
     pagination,
     setPagination,
     handleSearch,
+    handleTypeChange,
   } = useParticipantEvaluations(participantId);
 
   const { data: historyRepetitions } = useFetchHistoryRepetitions({
@@ -50,41 +85,44 @@ export default function ParticipantEvaluations({
   };
 
   return (
-    <Box padding={2}>
+    <Box p={8}>
       {withHeader && (
         <>
-          <Box sx={{ mb: 2 }}>
+          <Box mb={8}>
             <Button
               onClick={() => router.back()}
-              startIcon={<ArrowBackIcon />}
-              size="small"
-              variant="text"
+              leftIcon={<ArrowLeft size={16} />}
+              size="sm"
+              variant="link"
             >
               Voltar
             </Button>
           </Box>
 
-          <Typography variant="body1" component="h1" gutterBottom>
+          <Typography as="h1" variant="body" className="mb-2">
             Avaliações do Paciente: {patientData?.fullName || "Carregando..."}
           </Typography>
         </>
       )}
 
       {/* Cards de tipos de teste */}
-      <Box sx={{ mb: 3 }}>
+      <Box mb={12}>
         <Typography
-          variant="subtitle2"
-          sx={{ mb: 1.5, fontWeight: 600, opacity: 0.7, letterSpacing: 0.5 }}
+          variant="small"
+          className="mb-2 font-semibold opacity-70 tracking-[0.5px]"
         >
           TESTES DISPONÍVEIS
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={8}>
           {TEST_TYPES.map((test) => (
-            <Grid size={{ xs: 6, sm: 3 }} key={test.id}>
+            <Grid item xs={6} sm={3} key={test.id}>
               <TestTypeCard
                 config={test}
                 selected={selectedTest === test.id}
-                onClick={() => setSelectedTest(test.id)}
+                onClick={() => {
+                  setSelectedTest(test.id);
+                  handleTypeChange(test.id);
+                }}
               />
             </Grid>
           ))}
@@ -93,40 +131,81 @@ export default function ParticipantEvaluations({
 
       {!historyRepetitions && <p>Erro ao carregar histórico de repetições</p>}
 
-      {historyRepetitions && historyRepetitions.length > 0 && (
-        <GenericChart
-          data={historyRepetitions}
-          xKey="day"
-          yKey="repetitions"
-          title={`Histórico de Repetições do Paciente`}
-          valueFormatter={(v) => `${v} reps`}
-          seriesType="line"
-        />
-      )}
+      {historyRepetitions &&
+        historyRepetitions.length > 0 &&
+        selectedTest === "TTSTS" && (
+          <GenericChart
+            data={historyRepetitions}
+            xKey="day"
+            yKey="repetitions"
+            title={`Histórico de Repetições do Paciente`}
+            valueFormatter={(v) => `${v} reps`}
+            seriesType="line"
+          />
+        )}
 
       {((evaluations.length !== 0 && !isLoading) ||
         (historyRepetitions && historyRepetitions.length > 0)) && (
-        <Box my={2}>
+        <Box my={8}>
           <ParticipantFilters
             onSearch={({ dateFrom, dateTo }) => handleSearch(dateFrom, dateTo)}
           />
         </Box>
       )}
 
-      <Box my={1}>
+      <Box my={4}>
         {evaluations.length === 0 && !isLoading ? (
-          <Typography>Nenhuma avaliação encontrada.</Typography>
+          <Typography variant="body">Nenhuma avaliação encontrada.</Typography>
         ) : (
-          <GenericTable<EvaluationRaw>
-            columns={participantColumns}
-            rows={evaluations}
-            loading={isLoading}
-            onView={handleOnViewEvaluation}
-            pageSize={pagination.pageSize}
-            setPaginationModel={setPagination}
-            totalRows={totalRows}
-            autoHeight
-          />
+          <Table.Root<EvaluationRaw>
+            columns={columnsConfig}
+            data={evaluations}
+            serverSide={{
+              total: totalRows,
+              page: pagination.page + 1,
+              pageSize: pagination.pageSize,
+              filters: {} as FilterState,
+              sort: {
+                direction: undefined,
+                field: undefined,
+              },
+              onPageChange: (newPage) =>
+                setPagination((prev) => ({
+                  ...prev,
+                  page: Math.max(newPage - 1, 0),
+                })),
+              onPageSizeChange: (newSize) =>
+                setPagination((prev) => ({
+                  ...prev,
+                  pageSize: newSize,
+                  page: 0,
+                })),
+              onFilterChange: () => undefined,
+              onSortChange: () => undefined,
+            }}
+          >
+            <Table.Header showActionsColumn />
+            <Table.Body<EvaluationRaw>
+              emptyMessage="Nenhuma avaliação encontrada"
+              onRowClick={handleOnViewEvaluation}
+              renderActions={(row) => (
+                <Box display="flex" gap={4} justify="center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleOnViewEvaluation(row);
+                    }}
+                    tooltip="Visualizar"
+                  >
+                    Ver
+                  </Button>
+                </Box>
+              )}
+            />
+            <Table.Pagination />
+          </Table.Root>
         )}
       </Box>
     </Box>

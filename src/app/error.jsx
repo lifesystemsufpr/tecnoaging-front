@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import GridShape from "@/components/common/GridShape";
+import GridShape from "@/core/components/layout/GridShape";
 import Image from "next/image";
 import Link from "next/link";
 

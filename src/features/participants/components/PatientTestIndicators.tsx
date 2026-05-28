@@ -1,15 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Assessment, ChevronRight } from "@mui/icons-material";
+import { ClipboardList, ChevronRight } from "lucide-react";
 import {
+  Box,
   Button,
   Card,
   CardContent,
-  Divider,
-  Stack,
   Typography,
-} from "@mui/material";
+} from "@/core/components/ui";
 import { TestSummary } from "../types/patient-dashboard.types";
 
 interface PatientTestIndicatorsProps {
@@ -20,50 +19,38 @@ export function PatientTestIndicators({ tests }: PatientTestIndicatorsProps) {
   const router = useRouter();
 
   return (
-    <Card variant="outlined" sx={{ borderRadius: 3, height: "100%" }}>
-      <CardContent
-        sx={{
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Typography variant="h6" fontWeight={600}>
+    <Card variant="outlined" className="h-full">
+      <CardContent className="flex flex-col h-full">
+        <Box display="flex" justify="space-between" align="center">
+          <Typography variant="h4" className="font-semibold">
             Testes Mais Realizados
           </Typography>
-          <Assessment color="action" />
-        </Stack>
+          <ClipboardList />
+        </Box>
 
-        <Stack spacing={2} my={3} flexGrow={1}>
+        <Box className="my-3 flex-1">
           {tests.map((test, index) => (
-            <Stack key={`${test.name}-${index}`} spacing={2}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Typography variant="body2" color="text.secondary">
+            <Box key={`${test.name}-${index}`} className="mb-3">
+              <Box className="flex justify-between items-center">
+                <Typography variant="small" className="text-muted">
                   {test.fullName || test.name}
                 </Typography>
-                <Typography variant="body2" fontWeight={700}>
+                <Typography variant="small" className="font-bold">
                   {test.count}
                 </Typography>
-              </Stack>
+              </Box>
 
-              {index < tests.length - 1 ? <Divider /> : null}
-            </Stack>
+              {index < tests.length - 1 ? (
+                <div className="border-t my-2" />
+              ) : null}
+            </Box>
           ))}
-        </Stack>
+        </Box>
 
         {false && (
           <Button
-            variant="outlined"
-            endIcon={<ChevronRight />}
+            variant="outline"
+            leftIcon={<ChevronRight />}
             onClick={() => router.push("/evaluations")}
           >
             Ver Relatório de Testes
