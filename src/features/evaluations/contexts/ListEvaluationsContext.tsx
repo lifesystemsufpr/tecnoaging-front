@@ -91,7 +91,7 @@ export function ListEvaluationsProvider({
   const [pageSize, setPageSize] = useState<PageSizeOption>(10);
 
   const requestFilters = useMemo<EvaluationFilters>(() => {
-    const patientName =
+    const participantName =
       appliedFilters.patient?.name?.trim() ||
       appliedFilters.patientQuery.trim() ||
       undefined;
@@ -101,7 +101,7 @@ export function ListEvaluationsProvider({
       undefined;
 
     return {
-      patientName,
+      participantName,
       healthProfessionalName,
       startDate: appliedFilters.dateFrom
         ? (toISODateStart(appliedFilters.dateFrom) ?? undefined)
