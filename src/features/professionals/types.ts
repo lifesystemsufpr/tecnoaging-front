@@ -10,9 +10,9 @@ export interface CurrentMonthByGender {
 }
 
 export interface TeamPerformance {
-  individual: number;
-  teamAverage: number;
-  diference: number;
+  individual: number | null;
+  teamAverage: number | null;
+  diference: number | null;
   hasIndividualData: boolean;
 }
 
@@ -37,5 +37,5 @@ export interface DashboardStats {
 export interface HealthProfessionalRequest {
   user: User;
   email: string;
-  speciality: string; 
+  speciality: string;
 }

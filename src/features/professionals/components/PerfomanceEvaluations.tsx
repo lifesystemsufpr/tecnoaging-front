@@ -54,7 +54,7 @@ export default function PerformanceEvaluations({
               </Typography>
             </Box>
             <Typography variant="h1" className="font-extrabold">
-              {data.individual.toFixed(0)} Testes Aplicados
+              {data.individual?.toFixed(0) || 0} Testes Aplicados
             </Typography>
             <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
@@ -75,7 +75,7 @@ export default function PerformanceEvaluations({
                   MÉDIA DE TESTES APLICADOS PELA EQUIPE
                 </Typography>
                 <Typography variant="h4" className="font-bold">
-                  {data.teamAverage.toFixed(2)}
+                  {data.teamAverage?.toFixed(2) || 0}
                 </Typography>
               </Box>
             </Box>
