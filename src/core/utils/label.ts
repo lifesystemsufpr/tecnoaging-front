@@ -1,4 +1,4 @@
-import { SocioEconomicLevel } from "../enums";
+import { SocioEconomicLevel, SystemRoles } from "@/core/enums";
 import { fmtBRL } from "./format";
 
 const ranges: Record<SocioEconomicLevel, { min?: number; max?: number }> = {
@@ -18,3 +18,25 @@ export const socioLabel = (level: SocioEconomicLevel) => {
   else if (r.max != null) faixa = `até ${fmtBRL(r.max)}`;
   return `${level} (${faixa})`;
 };
+
+export function genderPt(g?: string) {
+  if (g === "MALE") return "Masculino";
+  if (g === "FEMALE") return "Feminino";
+  if (g === "OTHER") return "Outro";
+  return "—";
+}
+
+export function rolePt(r?: SystemRoles | string) {
+  switch (r) {
+    case SystemRoles.MANAGER:
+      return "Administrador";
+    case SystemRoles.HEALTH_PROFESSIONAL:
+      return "Profissional de Saúde";
+    case SystemRoles.PATIENT:
+      return "Paciente";
+    case SystemRoles.RESEARCHER:
+      return "Pesquisador";
+    default:
+      return "—";
+  }
+}

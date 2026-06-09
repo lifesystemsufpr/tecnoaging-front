@@ -1,7 +1,7 @@
-import { Divider, Grid } from "@mui/material";
 import { ManagerProfile } from "../types";
-import { formatDateTime } from "@/core/utils/format";
-import { InfoField } from "@/core/components/layout";
+import { InfoField } from "@/core/components/shared";
+import { Grid, Separator } from "@/core/components/ui";
+import { formatDateTime } from "@/core/utils";
 
 export interface DetailManagerCardProps {
   manager: ManagerProfile;
@@ -12,7 +12,7 @@ export function DetailManagerCard({ manager }: DetailManagerCardProps) {
 
   return (
     <>
-      <Divider sx={{ my: 3 }} />
+      <Separator className="my-6" />
 
       <Grid container spacing={2}>
         <InfoField

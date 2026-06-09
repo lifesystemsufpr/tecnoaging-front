@@ -1,12 +1,23 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchLogin } from "@/services/api-auth";
+import { fetchLogin } from "@/features/auth/services/api-auth";
 import { LoginResponse, TokenPayload } from "@/types/auth.d";
 import { parseJwt } from "@/lib/parseJwt";
 import { userFromAuthorize, userFromClaims } from "@/lib/userAdapter";
-import { API_BASE_URL } from "@/services/Routes";
-
+import { API_BASE_URL } from "@/features/auth/services/Routes";
 import { JWT } from "next-auth/jwt";
+
+function getAccessTokenExpires(claims: TokenPayload): number {
+  if (
+    typeof claims.exp === "number" &&
+    typeof claims.iat === "number" &&
+    claims.exp > claims.iat
+  ) {
+    return Date.now() + (claims.exp - claims.iat) * 1000;
+  }
+
+  return Date.now();
+}
 
 async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
@@ -25,7 +36,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       ...token,
       accessToken: data.access_token,
       refreshToken: data.refresh_token ?? token.refreshToken,
-      accessTokenExpires: Date.now() + (claims.exp - claims.iat) * 1000,
+      accessTokenExpires: getAccessTokenExpires(claims),
       user: appUser ?? token.user,
     };
   } catch (error) {
@@ -50,14 +61,13 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           if (!credentials?.username || !credentials?.password) return null;
-
           const res = await fetchLogin({
             username: credentials.username,
             password: credentials.password,
             remember: credentials.remember == "true",
           });
 
-          if (!res.ok) throw new Error("Credenciais inválidas");
+          if (!res.ok) return null;
 
           const data: LoginResponse = await res.json();
 
@@ -86,11 +96,14 @@ export const authOptions: NextAuthOptions = {
             ...appUser,
             accessToken,
             refreshToken,
-            accessTokenExpires: Date.now() + (claims.exp - claims.iat) * 1000,
+            accessTokenExpires: getAccessTokenExpires(claims),
           };
-        } catch (error) {
-          console.error("Erro na autorização:", error);
-          return null;
+        } catch (error: any) {
+          throw new Error(
+            error?.response?.data?.message ||
+              error?.message ||
+              "Erro ao autenticar"
+          );
         }
       },
     }),
@@ -127,8 +140,6 @@ export const authOptions: NextAuthOptions = {
       ) {
         return token;
       }
-
-      console.log(token);
 
       if (!token.refreshToken) {
         console.warn("Token expirado, mas não há refresh_token para renovar.");

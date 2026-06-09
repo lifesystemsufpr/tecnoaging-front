@@ -1,9 +1,11 @@
-import { Button, Grid, TextField } from "@mui/material";
-import { useCallback, useState } from "react";
+import { Button, Grid, Input, Label, Box } from "@/core/components/ui";
+import { useCallback, useId, useState } from "react";
 
 export function ParticipantFilters({ onSearch }) {
   const [dateFrom, setDateFrom] = useState<string | null>(null);
   const [dateTo, setDateTo] = useState<string | null>(null);
+  const dateFromId = useId();
+  const dateToId = useId();
 
   const handleSearch = useCallback(() => {
     onSearch({ dateFrom, dateTo });
@@ -16,40 +18,40 @@ export function ParticipantFilters({ onSearch }) {
   }, [onSearch]);
 
   return (
-    <Grid container spacing={2} marginBottom={2}>
-      <Grid size={6}>
-        <TextField
-          size="small"
-          label="Data de"
+    <Grid container spacing={8} mb={16}>
+      <Grid item xs={12} md={6}>
+        <Label htmlFor={dateFromId} className="mb-1 block">
+          Data de
+        </Label>
+        <Input
+          id={dateFromId}
           type="date"
-          slotProps={{
-            inputLabel: { shrink: true },
-          }}
+          size="md"
           value={dateFrom ?? ""}
           onChange={(event) => setDateFrom(event.target.value || null)}
-          fullWidth
         />
       </Grid>
-      <Grid size={6}>
-        <TextField
-          size="small"
-          label="Data até"
+      <Grid item xs={12} md={6}>
+        <Label htmlFor={dateToId} className="mb-1 block">
+          Data até
+        </Label>
+        <Input
+          id={dateToId}
           type="date"
-          slotProps={{
-            inputLabel: { shrink: true },
-          }}
+          size="md"
           value={dateTo ?? ""}
           onChange={(event) => setDateTo(event.target.value || null)}
-          fullWidth
         />
       </Grid>
-      <Grid size={12} sx={{ textAlign: "left" }}>
-        <Button variant="contained" onClick={handleSearch} sx={{ mr: 1 }}>
-          Buscar
-        </Button>
-        <Button variant="outlined" onClick={handleReset}>
-          Limpar
-        </Button>
+      <Grid item xs={12}>
+        <Box display="flex" gap={8}>
+          <Button size="sm" onClick={handleSearch}>
+            Buscar
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            Limpar
+          </Button>
+        </Box>
       </Grid>
     </Grid>
   );

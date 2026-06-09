@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Alert, Box, CircularProgress, Grid, Stack } from "@mui/material";
+import { Box, Grid } from "@/core/components/ui";
 import { usePatientDashboard } from "../hooks/usePatientDashboard";
 import { PatientTopInfoCards } from "../components/PatientTopInfoCards";
 import { PatientMonthlyChart } from "../components/PatientMonthlyChart";
@@ -15,18 +15,40 @@ export default function PatientDashboardPage() {
 
   if (isLoading) {
     return (
-      <Stack
-        alignItems="center"
-        justifyContent="center"
-        sx={{ minHeight: 320 }}
+      <Box
+        className="flex items-center justify-center"
+        style={{ minHeight: 320 }}
       >
-        <CircularProgress />
-      </Stack>
+        <svg
+          className="animate-spin h-6 w-6 text-primary"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          ></path>
+        </svg>
+      </Box>
     );
   }
 
   if (error) {
-    return <Alert severity="error">{error}</Alert>;
+    return (
+      <div role="alert" className="bg-red-50 text-red-700 p-3 rounded">
+        {String(error)}
+      </div>
+    );
   }
 
   return (
@@ -41,12 +63,12 @@ export default function PatientDashboardPage() {
         <PatientMonthlyChart data={data.monthlyEvaluations} />
       </Box>
 
-      <Grid container spacing={2} mt={0.5}>
-        <Grid size={{ xs: 12, lg: 6 }}>
+      <Grid container spacing={8} className="mt-2">
+        <Grid item xs={12} lg={6}>
           <PatientTestIndicators tests={data.mostPerformedTests} />
         </Grid>
 
-        <Grid size={{ xs: 12, lg: 6 }}>
+        <Grid item xs={12} lg={6}>
           <PatientRecentEvaluationChart data={data.recentSeries} />
         </Grid>
       </Grid>

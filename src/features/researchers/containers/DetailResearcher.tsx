@@ -1,10 +1,10 @@
-import { Box, Button, Divider, Typography } from "@mui/material";
 import { DetailResearcherCard } from "../components/DetailResearcherCard";
 import { useDetailResearcher } from "../hooks/useDetailResearcher";
 import { UserDetailContent } from "@/core/components/shared/profile/UserDetailContent";
 import { UserDetailHeader } from "@/core/components/shared/profile/UserDetailHeader";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
 import { useEffect } from "react";
+import { Box, Button, Separator, Typography } from "@/core/components/ui";
 
 interface DetailResearcherProps {
   researcherId: string;
@@ -18,10 +18,10 @@ export function DetailResearcher({
   const { data, isLoading, error } = useDetailResearcher({ researcherId });
 
   useEffect(() => {
-    if (data && onDataLoaded) {
+    if (!isLoading && onDataLoaded) {
       onDataLoaded(data);
     }
-  }, [data, onDataLoaded]);
+  }, [isLoading, onDataLoaded]);
 
   if (isLoading) {
     return <ProfileSkeleton />;
@@ -30,10 +30,10 @@ export function DetailResearcher({
   if (error) {
     return (
       <Box p={3} mx="auto">
-        <Typography color="error" gutterBottom>
+        <Typography color="accent">
           Erro ao carregar detalhes do pesquisador.
         </Typography>
-        <Button variant="outlined" onClick={() => window.location.reload()}>
+        <Button variant="outline" onClick={() => window.location.reload()}>
           Tentar novamente
         </Button>
       </Box>
@@ -43,9 +43,7 @@ export function DetailResearcher({
   if (!data) {
     return (
       <Box p={3} mx="auto">
-        <Typography color="text.secondary" gutterBottom>
-          Pesquisador nao encontrado.
-        </Typography>
+        <Typography color="secondary">Pesquisador nao encontrado.</Typography>
       </Box>
     );
   }
@@ -59,7 +57,7 @@ export function DetailResearcher({
         updatedAt={data.updatedAt}
       />
 
-      <Divider sx={{ my: 3 }} />
+      <Separator className="my-6" />
 
       <UserDetailContent userData={data} />
       <DetailResearcherCard data={data} />

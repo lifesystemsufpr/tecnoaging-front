@@ -1,9 +1,11 @@
-import { Divider, Typography } from "@mui/material";
+"use client";
+
+import { useEffect } from "react";
 import { useFetchParticipant } from "../hooks/useFetchParticipant";
 import { DetailParticipantCard } from "../components/DetailParticipantCard";
 import { UserDetailContent, UserDetailHeader } from "@/core/components/shared";
 import ProfileSkeleton from "@/core/components/shared/profile/ProfileSkeleton";
-import { useEffect } from "react";
+import { Separator, Typography } from "@/core/components/ui";
 
 interface ParticipantDetailProps {
   participantId: string;
@@ -15,7 +17,7 @@ export function ParticipantDetail({
   onDataLoaded,
 }: ParticipantDetailProps) {
   const {
-    participantData: data,
+    data,
     isLoading: loading,
     error: err,
   } = useFetchParticipant({
@@ -23,10 +25,10 @@ export function ParticipantDetail({
   });
 
   useEffect(() => {
-    if (data && onDataLoaded) {
+    if (!loading && onDataLoaded) {
       onDataLoaded(data);
     }
-  }, [data, onDataLoaded]);
+  }, [loading, onDataLoaded]);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -49,7 +51,7 @@ export function ParticipantDetail({
         updatedAt={data.updatedAt}
       />
 
-      <Divider sx={{ my: 3 }} />
+      <Separator className="my-6" />
 
       <UserDetailContent userData={data} />
       <DetailParticipantCard data={data} />

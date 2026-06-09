@@ -61,7 +61,7 @@ export const participantService = {
         url.searchParams.append("page", page.toString());
       }
       if (search) {
-        url.searchParams.append("search", search);
+        url.searchParams.append("fullName", search);
       }
 
       const resp: ApiResponse<ParticipantList> = await clientService({

@@ -202,8 +202,8 @@ export function isTMSTMotionAnalysis(
 }
 
 export type EvaluationFilters = {
-  patientCpf?: string | null;
-  patientName?: string | null;
+  participantCpf?: string | null;
+  participantName?: string | null;
   healthProfessionalName?: string | null;
   startDate?: string | null;
   endDate?: string | null;

@@ -1,3 +1,5 @@
+import { User } from "@/core/types";
+
 export interface CurrentMonthByGender {
   timezone: string;
   month: string;
@@ -8,9 +10,9 @@ export interface CurrentMonthByGender {
 }
 
 export interface TeamPerformance {
-  individual: number;
-  teamAverage: number;
-  diference: number;
+  individual: number | null;
+  teamAverage: number | null;
+  diference: number | null;
   hasIndividualData: boolean;
 }
 
@@ -30,4 +32,10 @@ export interface DashboardStats {
   currentMonthByGender: CurrentMonthByGender;
   teamPerformance: TeamPerformance;
   monthlyHistory: MonthlyHistory;
+}
+
+export interface HealthProfessionalRequest {
+  user: User;
+  email: string;
+  speciality: string;
 }

@@ -1,7 +1,4 @@
-import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatReclineNormal";
-import DirectionsWalkIcon from "@mui/icons-material/DirectionsWalk";
-import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
-import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import { Accessibility, Activity, Armchair, Footprints } from "lucide-react";
 import { TestTypeConfig } from "../components/testTypeCard.types";
 
 export const TEST_TYPES: TestTypeConfig[] = [
@@ -9,7 +6,7 @@ export const TEST_TYPES: TestTypeConfig[] = [
     id: "TTSTS",
     label: "30STS",
     description: "30-Second Chair Stand Test",
-    icon: AccessibilityNewIcon,
+    icon: Accessibility,
     active: true,
     color: "#42A5F5",
   },
@@ -17,23 +14,23 @@ export const TEST_TYPES: TestTypeConfig[] = [
     id: "FTSTS",
     label: "5TSTS",
     description: "Five Times Sit-to-Stand Test",
-    icon: AirlineSeatReclineNormalIcon,
+    icon: Armchair,
     active: false,
     color: "#7E57C2",
   },
   {
-    id: "2MST",
+    id: "TMSTS",
     label: "2MST",
     description: "2-Minute Step Test",
-    icon: DirectionsRunIcon,
-    active: false,
+    icon: Activity,
+    active: true,
     color: "#66BB6A",
   },
   {
     id: "TUG",
     label: "TUG",
     description: "Timed Up and Go",
-    icon: DirectionsWalkIcon,
+    icon: Footprints,
     active: false,
     color: "#FFA726",
   },

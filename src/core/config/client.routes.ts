@@ -7,6 +7,25 @@ const ROUTES = {
         `/users/participants/${id}/questionnaires`,
       EVALUATIONS: (id: string) => `/users/participants/${id}/evaluations`,
     },
+    RESEARCHERS: {
+      MAIN: "/users/researchers",
+      DETAIL: (id: string) => `/users/researchers/${id}`,
+    },
+    HEALTH_PROFESSIONALS: {
+      MAIN: "/users/health-professionals",
+      DETAIL: (id: string) => `/users/health-professionals/${id}`,
+    },
+  },
+
+  INSTITUTIONS: {
+    HEALTH_UNITS: {
+      MAIN: "/health-unit",
+      DETAIL: (id: string) => `/health-unit/${id}`,
+    },
+    EDUCATIONAL_UNITS: {
+      MAIN: "/educational-unit",
+      DETAIL: (id: string) => `/educational-unit/${id}`,
+    },
   },
 
   EVALUATIONS: {

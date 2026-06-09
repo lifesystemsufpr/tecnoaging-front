@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Stack, useTheme } from "@mui/material";
+import { Box, Card, CardContent } from "@/core/components/ui";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
@@ -6,6 +6,7 @@ import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
 import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
 import { isSTSProcessedData } from "@/features/evaluations/types/Evaluation.types";
+import Image from "next/image";
 
 export default function DetailCharts() {
   const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
@@ -14,8 +15,6 @@ export default function DetailCharts() {
     ? detailedData.processed
     : null;
 
-  const theme = useTheme();
-  const labelColor = theme.palette.mode === "dark" ? "#fff" : "#000";
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
 
   if (
@@ -26,22 +25,22 @@ export default function DetailCharts() {
   }
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" className="border-gray-100">
       <CardContent>
-        <Stack spacing={4}>
-          <Box sx={{ position: "relative" }}>
-            <Box
-              component="img"
+        <Box display="flex" direction="column" gap={16}>
+          <Box position="relative">
+            <Image
               src="/chart-example.png"
               alt="Gráfico do Processado"
-              sx={{
-                width: 80,
+              width={80}
+              height={80}
+              style={{
                 height: "auto",
                 position: "absolute",
                 top: 40,
                 left: 0,
                 zIndex: 1,
-                borderRadius: "4px",
+                borderRadius: 4,
                 opacity: 0.8,
               }}
             />
@@ -69,16 +68,16 @@ export default function DetailCharts() {
             participantAge={detailedData.derived.participantAgeOnEvaluation}
             participantRepetitions={repetitions ? repetitions : 15}
             participantGender={participantGender}
-            labelColor={labelColor}
+            labelColor={"#000"}
           />
 
           <ContinuityChart
             idadePaciente={detailedData.derived.participantAgeOnEvaluation}
             repeticoesPaciente={repetitions ? repetitions : 15}
             participantGender={participantGender}
-            labelColor={labelColor}
+            labelColor={"#000"}
           />
-        </Stack>
+        </Box>
       </CardContent>
     </Card>
   );

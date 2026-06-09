@@ -28,7 +28,7 @@ export const professionalService = {
         url.searchParams.append("page", page.toString());
       }
       if (search) {
-        url.searchParams.append("search", search);
+        url.searchParams.append("fullName", search);
       }
       const resp: ApiResponse<HealthProfessionalList> = await clientService({
         method: "GET",

@@ -1,10 +1,10 @@
-import { SvgIconComponent } from "@mui/icons-material";
+import { LucideIcon } from "lucide-react";
 
 export interface TestTypeConfig {
   id: string;
   label: string;
   description: string;
-  icon: SvgIconComponent;
+  icon: LucideIcon;
   active: boolean;
   color: string;
 }

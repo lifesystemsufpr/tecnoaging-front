@@ -1,6 +1,11 @@
-import { Breadcrumbs, Button, Link, Stack, Typography } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { ArrowLeft, Pencil } from "lucide-react";
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Link,
+  Typography,
+} from "@/core/components/ui";
 import { useRouter } from "next/navigation";
 
 export interface ProfileNavigationProps {
@@ -15,39 +20,38 @@ export function ProfileNavigation({
   const router = useRouter();
 
   return (
-    <Stack
-      direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      mb={2}
-    >
+    <Box display="flex" justify="space-between" align="center" mb={16}>
       <Breadcrumbs aria-label="breadcrumb">
         <Link
-          component="button"
+          as="button"
+          type="button"
           onClick={() => router.push("/")}
           underline="hover"
           color="inherit"
         >
           Perfil
         </Link>
-        <Typography color="text.primary">{"Detalhes"}</Typography>
+        <Typography className="text-foreground">Detalhes</Typography>
       </Breadcrumbs>
 
-      <Stack direction="row" spacing={1}>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => router.push("/")}>
+      <Box display="flex" gap={8}>
+        <Button
+          leftIcon={<ArrowLeft className="h-4 w-4" />}
+          onClick={() => router.push("/")}
+        >
           Voltar
         </Button>
         {!disableEdit && (
           <Button
-            variant="contained"
-            startIcon={<EditIcon />}
+            variant="default"
+            leftIcon={<Pencil className="h-4 w-4" />}
             onClick={onEdit}
             disabled={disableEdit}
           >
             Editar
           </Button>
         )}
-      </Stack>
-    </Stack>
+      </Box>
+    </Box>
   );
 }
