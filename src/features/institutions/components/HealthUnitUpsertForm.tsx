@@ -162,7 +162,6 @@ export function HealthUnitUpsertForm({
           <Label htmlFor="name">Nome da Unidade</Label>
           <Input
             id="name"
-            mask="name"
             placeholder="Nome da Unidade"
             value={formData.name}
             errorMessage={errors["name"]}

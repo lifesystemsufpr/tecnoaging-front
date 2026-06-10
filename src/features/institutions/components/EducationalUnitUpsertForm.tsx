@@ -126,7 +126,6 @@ export function EducationalUnitUpsertForm({
               });
             }}
             type="text"
-            mask="name"
             size="lg"
             required
           />

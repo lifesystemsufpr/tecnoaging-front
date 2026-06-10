@@ -1,9 +1,9 @@
-import { fullNameSchema } from "@/core/libs/validators";
+import { institutionNameSchema } from "@/core/libs/validators";
 import z from "zod";
 
 export const healthUnitSchema = z.object({
   id: z.string().optional(),
-  name: fullNameSchema,
+  name: institutionNameSchema,
   zipCode: z
     .string()
     .trim()
