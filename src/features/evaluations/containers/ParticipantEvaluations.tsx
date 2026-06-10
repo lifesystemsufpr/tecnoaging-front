@@ -99,8 +99,10 @@ export default function ParticipantEvaluations({
           </Box>
 
           <Typography as="h1" variant="body" className="mb-2">
-            Avaliações do Paciente:
-            {evaluations?.[0]?.participant.fullName || "Carregando..."}
+            Avaliações do Paciente
+            {isLoading
+              ? "Carregando..."
+              : evaluations?.[0]?.participant.fullName || ""}
           </Typography>
         </>
       )}
