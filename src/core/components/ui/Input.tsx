@@ -1,8 +1,8 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { cn, onlyDigits, sanatizeEmail, sanitizeNumberText } from "../../utils";
 import type { LucideIcon } from "lucide-react";
-import { cn } from "@/core/utils/index";
-import { applyMask, onlyDigits, type InputMaskType } from "@/core/utils";
+import { applyMask, type InputMaskType } from "@/core/utils/mask";
 
 const inputWrapperVariants = cva(
   [
@@ -105,32 +105,6 @@ function toYMD(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-function sanitizeNumberText(value: string): string {
-  if (!value) return "";
-
-  const normalized = value.replace(/,/g, ".").replace(/[^0-9.-]/g, "");
-
-  if (!/[0-9]/.test(normalized)) return "";
-
-  const isNegative = normalized.startsWith("-");
-  const unsigned = normalized.replace(/-/g, "");
-
-  const [integerPart = "", ...fractionParts] = unsigned.split(".");
-  const fractionPart = fractionParts.join("");
-  const hasDecimal = normalized.includes(".");
-
-  const trimmedInteger = integerPart.replace(/^0+(?=\d)/, "");
-
-  const signedInteger = isNegative ? `-${trimmedInteger}` : trimmedInteger;
-
-  if (hasDecimal) {
-    if (!trimmedInteger && !fractionPart) return "";
-    return `${signedInteger || (isNegative ? "-" : "")}.${fractionPart}`;
-  }
-
-  return signedInteger;
-}
-
 export interface InputProps
   extends
     Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
@@ -213,14 +187,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (isNumberInput) {
         const numericValue = sanitizeNumberText(e.target.value);
 
+        // Update display — empty string is intentional (user is clearing)
         setNumberDisplay(numericValue);
 
         const syntheticEvent = {
           ...e,
           target: {
             ...e.target,
-            name: e.target.name, // <-- Recupere o name explicitamente
-            id: e.target.id, // <-- Recupere o id explicitamente
             value: numericValue,
           },
         } as React.ChangeEvent<HTMLInputElement>;
@@ -256,8 +229,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ...e,
         target: {
           ...e.target,
-          name: e.target.name,
-          id: e.target.id,
           value: unmask ? rawValue : formatted,
         },
       } as React.ChangeEvent<HTMLInputElement>;
@@ -271,12 +242,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
         const syntheticEvent = {
           ...e,
-          target: {
-            ...e.target,
-            name: e.target.name,
-            id: e.target.id,
-            value: "0",
-          },
+          target: { ...e.target, value: "0" },
         } as unknown as React.ChangeEvent<HTMLInputElement>;
 
         onChange?.(syntheticEvent);

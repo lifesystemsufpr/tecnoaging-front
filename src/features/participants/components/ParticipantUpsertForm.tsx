@@ -20,7 +20,7 @@ import {
   participantNestedUpdateSchema,
   participantStep1Schema,
 } from "@/core/libs/validators/index";
-import { formatCPF, sanatizeCPF, socioLabel } from "@/core/utils";
+import { formatCPF, formatPhone, sanatizeCPF, socioLabel } from "@/core/utils";
 import { toast } from "sonner";
 import { fetchEnderecoViaCEP } from "@/core/utils/api";
 
@@ -59,7 +59,7 @@ export function ParticipantUpsertForm({
     user: {
       fullName: editUser?.fullName ?? "",
       cpf: editUser?.cpf ? formatCPF(editUser.cpf) : "",
-      phone: editUser?.phone ?? "",
+      phone: editUser?.phone ? formatPhone(editUser.phone) : "",
       gender: (editUser?.gender as Gender) ?? Gender.MALE,
       password: undefined,
       active: editUser?.active ?? true,
@@ -275,6 +275,9 @@ export function ParticipantUpsertForm({
             <Label htmlFor="fullName">Nome Completo</Label>
             <Input
               id="fullName"
+              mask="name"
+              max={250}
+              min={4}
               placeholder="Nome Completo"
               value={formData.user.fullName}
               errorMessage={errors["user.fullName"]}
@@ -640,9 +643,13 @@ export function ParticipantUpsertForm({
                 variant="default"
                 color="primary"
                 size="lg"
-                onClick={handleSubmit}
+                disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {isEdit ? "Salvar Alterações" : "Cadastrar Participante"}
+                {createMutation.isPending || updateMutation.isPending
+                  ? "Salvando..."
+                  : isEdit
+                    ? "Salvar Alterações"
+                    : "Cadastrar Participante"}
               </Button>
             </Box>
           </Grid>

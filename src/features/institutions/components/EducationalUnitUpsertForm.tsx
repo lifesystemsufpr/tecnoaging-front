@@ -126,6 +126,7 @@ export function EducationalUnitUpsertForm({
               });
             }}
             type="text"
+            mask="name"
             size="lg"
             required
           />
@@ -138,8 +139,13 @@ export function EducationalUnitUpsertForm({
           color="primary"
           size="lg"
           onClick={handleSubmit}
+          disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {isEdit ? "Salvar Alterações" : "Cadastrar Unidade"}
+          {createMutation.isPending || updateMutation.isPending
+            ? "Salvando..."
+            : isEdit
+              ? "Salvar Alterações"
+              : "Cadastrar Unidade"}
         </Button>
       </Box>
     </Box>

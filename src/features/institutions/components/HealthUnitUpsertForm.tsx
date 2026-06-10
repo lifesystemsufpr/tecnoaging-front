@@ -162,6 +162,7 @@ export function HealthUnitUpsertForm({
           <Label htmlFor="name">Nome da Unidade</Label>
           <Input
             id="name"
+            mask="name"
             placeholder="Nome da Unidade"
             value={formData.name}
             errorMessage={errors["name"]}
@@ -331,8 +332,13 @@ export function HealthUnitUpsertForm({
           color="primary"
           size="lg"
           onClick={handleSubmit}
+          disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {isEdit ? "Salvar Alterações" : "Cadastrar Unidade"}
+          {createMutation.isPending || updateMutation.isPending
+            ? "Salvando..."
+            : isEdit
+              ? "Salvar Alterações"
+              : "Cadastrar Unidade"}
         </Button>
       </Box>
     </Box>
