@@ -60,7 +60,6 @@ export default function ParticipantEvaluations({
   );
 
   const {
-    patientData,
     evaluations,
     isLoading,
     totalRows,
@@ -100,7 +99,8 @@ export default function ParticipantEvaluations({
           </Box>
 
           <Typography as="h1" variant="body" className="mb-2">
-            Avaliações do Paciente: {patientData?.fullName || "Carregando..."}
+            Avaliações do Paciente:
+            {evaluations?.[0]?.participant.fullName || "Carregando..."}
           </Typography>
         </>
       )}
