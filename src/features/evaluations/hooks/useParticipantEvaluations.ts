@@ -1,7 +1,5 @@
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
 import { EvaluationRaw } from "../types/Evaluation.types";
-import { Participant } from "@/core/types";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useHttp } from "@/core/hooks/useHttp";
 import { API_ROUTES } from "@/core/config/api.routes";
@@ -21,19 +19,10 @@ export function useParticipantEvaluations(participantId: string) {
     page: 0,
   });
 
-  const patientQuery = useQuery({
-    queryKey: ["participant", participantId],
-    queryFn: () =>
-      api.get<Participant>(API_ROUTES.PARTICIPANT_BY_ID(participantId)),
-    enabled: !!participantId,
-    staleTime: 10 * 60 * 1000,
-  });
-
   const evaluationsQuery = useQuery({
     queryKey: [
       "participant-evaluations",
       participantId,
-      patientQuery.data?.cpf,
       filters,
       pagination.page,
       pagination.pageSize,
@@ -41,7 +30,7 @@ export function useParticipantEvaluations(participantId: string) {
     queryFn: () =>
       api.get<ApiResponse<EvaluationRaw[]>>(API_ROUTES.EVALUATIONS, {
         query: {
-          patientCpf: patientQuery.data?.cpf,
+          participantId: participantId,
           startDate: filters.startDate || undefined,
           endDate: filters.endDate || undefined,
           type: filters.type || undefined,
@@ -49,7 +38,7 @@ export function useParticipantEvaluations(participantId: string) {
           pageSize: pagination.pageSize,
         },
       }),
-    enabled: !!participantId && !!patientQuery.data?.cpf,
+    enabled: !!participantId,
     placeholderData: keepPreviousData,
     staleTime: 10 * 60 * 1000,
   });
@@ -69,17 +58,14 @@ export function useParticipantEvaluations(participantId: string) {
   };
 
   const refresh = useCallback(() => {
-    patientQuery.refetch();
     evaluationsQuery.refetch();
-  }, [patientQuery, evaluationsQuery]);
+  }, [evaluationsQuery]);
 
   const evaluations = evaluationsQuery.data?.data ?? [];
   const totalRows = evaluationsQuery.data?.meta?.total ?? 0;
-  const isLoading = patientQuery.isLoading || evaluationsQuery.isLoading;
-  const patientData = (patientQuery.data ?? null) as Participant | null;
+  const isLoading = evaluationsQuery.isLoading;
 
   return {
-    patientData,
     evaluations,
     isLoading,
     totalRows,
