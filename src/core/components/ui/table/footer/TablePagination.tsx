@@ -11,7 +11,7 @@ type TablePaginationProps = {
 export function TablePagination({
   colSpan,
   pageSizeOptions = [1, 5, 10, 20, 50],
-  extraColumns = 0,
+  extraColumns = 1,
 }: TablePaginationProps) {
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { pageState, actions, columns, selection } = useTableContext<any>();
