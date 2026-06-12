@@ -22,6 +22,12 @@ import {
 import { formatCPF, formatPhone, sanatizeCPF } from "@/core/utils";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { ApiError } from "@/core/services/http.service";
+import {
+  ApiErrorResponse,
+  extractFieldErrors,
+  ValidationErrorDetails,
+} from "@/core/api";
 
 interface ProfessionalUpsertFormProps {
   editUser?: HealthProfessional | null;
@@ -106,6 +112,16 @@ export function ProfessionalUpsertForm({
             toast.success("Profissional atualizado com sucesso!");
             onSuccess?.();
           },
+
+          onError: (error) => {
+            const apiError = error as ApiError<
+              ApiErrorResponse<ValidationErrorDetails>
+            >;
+            toast.error(apiError.message || "Erro ao atualizar profissional");
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
     } else {
@@ -113,6 +129,16 @@ export function ProfessionalUpsertForm({
         onSuccess: () => {
           toast.success("Profissional cadastrado com sucesso!");
           onSuccess?.();
+        },
+
+        onError: (error) => {
+          const apiError = error as ApiError<
+            ApiErrorResponse<ValidationErrorDetails>
+          >;
+          toast.error(apiError.message || "Erro ao cadastrar profissional");
+          if (apiError.data?.details?.fields) {
+            setErrors(extractFieldErrors(apiError.data));
+          }
         },
       });
     }

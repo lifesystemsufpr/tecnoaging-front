@@ -24,6 +24,7 @@ import { useCreateResearcher } from "../hooks/useCreateResearcher";
 import { formatCPF, sanatizeCPF } from "@/core/utils";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { extractFieldErrors, ValidationApiError } from "@/core/api";
 
 interface ResearcherUpsertFormProps {
   editUser?: Researcher | null;
@@ -106,6 +107,13 @@ export function ResearcherUpsertForm({
             toast.success("Pesquisador atualizado com sucesso!");
             onSuccess?.();
           },
+          onError: (error) => {
+            const apiError = error as ValidationApiError;
+            toast.error(apiError.message || "Erro ao cadastrar profissional");
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
     } else {
@@ -113,6 +121,13 @@ export function ResearcherUpsertForm({
         onSuccess: () => {
           toast.success("Pesquisador criado com sucesso!");
           onSuccess?.();
+        },
+        onError: (error) => {
+          const apiError = error as ValidationApiError;
+          toast.error(apiError.message || "Erro ao cadastrar profissional");
+          if (apiError.data?.details?.fields) {
+            setErrors(extractFieldErrors(apiError.data));
+          }
         },
       });
     }

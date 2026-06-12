@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn, onlyDigits, sanatizeEmail, sanitizeNumberText } from "../../utils";
+import { cn, onlyDigits, sanitizeNumberText } from "../../utils";
 import type { LucideIcon } from "lucide-react";
 import { applyMask, type InputMaskType } from "@/core/utils/mask";
 

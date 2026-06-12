@@ -14,6 +14,7 @@ import {
   Label,
   Typography,
 } from "@/core/components/ui";
+import { extractFieldErrors, ValidationApiError } from "@/core/api";
 
 interface EducationalUnitUpsertFormProps {
   editEducationalUnit?: EducationUnit | null;
@@ -76,6 +77,15 @@ export function EducationalUnitUpsertForm({
             toast.success("Unidade de ensino atualizada com sucesso!");
             onSuccess?.();
           },
+          onError: (error) => {
+            const apiError = error as ValidationApiError;
+            toast.error(
+              apiError.message || "Erro ao atualizar unidade de ensino"
+            );
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
       return;
@@ -85,6 +95,13 @@ export function EducationalUnitUpsertForm({
       onSuccess: () => {
         toast.success("Unidade de ensino criada com sucesso!");
         onSuccess?.();
+      },
+      onError: (error) => {
+        const apiError = error as ValidationApiError;
+        toast.error(apiError.message || "Erro ao criar unidade de ensino");
+        if (apiError.data?.details?.fields) {
+          setErrors(extractFieldErrors(apiError.data));
+        }
       },
     });
   }, [

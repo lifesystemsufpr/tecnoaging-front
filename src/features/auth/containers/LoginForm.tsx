@@ -27,7 +27,7 @@ export default function LoginForm() {
   const router = useRouter();
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.currentTarget;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }, []);
 

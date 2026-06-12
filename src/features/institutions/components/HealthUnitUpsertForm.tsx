@@ -17,6 +17,7 @@ import {
 } from "@/core/components/ui";
 import { fetchEnderecoViaCEP } from "@/core/utils/api";
 import { UF_LIST } from "@/core/enums";
+import { extractFieldErrors, ValidationApiError } from "@/core/api";
 
 interface HealthUnitUpsertFormProps {
   editHealthUnit?: HealthUnit | null;
@@ -94,6 +95,15 @@ export function HealthUnitUpsertForm({
             toast.success("Unidade atualizada com sucesso!");
             onSuccess?.();
           },
+          onError: (error) => {
+            const apiError = error as ValidationApiError;
+            toast.error(
+              apiError.message || "Erro ao atualizar unidade de saúde"
+            );
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
       return;
@@ -103,6 +113,13 @@ export function HealthUnitUpsertForm({
       onSuccess: () => {
         toast.success("Unidade criada com sucesso!");
         onSuccess?.();
+      },
+      onError: (error) => {
+        const apiError = error as ValidationApiError;
+        toast.error(apiError.message || "Erro ao criar unidade de saúde");
+        if (apiError.data?.details?.fields) {
+          setErrors(extractFieldErrors(apiError.data));
+        }
       },
     });
   }, [
