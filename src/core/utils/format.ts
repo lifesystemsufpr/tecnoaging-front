@@ -23,6 +23,17 @@ export const formatData = (dateStr?: string): string => {
   return `${day}/${month}/${year}`;
 };
 
+export function formatName(value: string) {
+  return value
+    .replace(/[^a-zA-ZÀ-ÿ\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trimStart();
+}
+
+export function formatEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
 export function calculateAge(
   bornDate?: string,
   referenceDate?: string

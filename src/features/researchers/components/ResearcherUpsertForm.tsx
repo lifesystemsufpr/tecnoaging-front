@@ -21,8 +21,10 @@ import {
   researcherUpdateSchema,
 } from "@/core/libs/validators/index";
 import { useCreateResearcher } from "../hooks/useCreateResearcher";
-import { sanatizeCPF } from "@/core/utils";
+import { formatCPF, sanatizeCPF } from "@/core/utils";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+import { extractFieldErrors, ValidationApiError } from "@/core/api";
 
 interface ResearcherUpsertFormProps {
   editUser?: Researcher | null;
@@ -33,6 +35,7 @@ export function ResearcherUpsertForm({
   editUser,
   onSuccess,
 }: ResearcherUpsertFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
   const updateMutation = useUpdateResearcher();
   const createMutation = useCreateResearcher();
 
@@ -43,7 +46,7 @@ export function ResearcherUpsertForm({
     institutionId: editUser?.institutionId ?? "",
     user: {
       fullName: editUser?.fullName ?? "",
-      cpf: editUser?.cpf ?? "",
+      cpf: formatCPF(editUser?.cpf ?? ""),
       phone: editUser?.phone ?? "",
       gender: Gender.MALE,
       password: "",
@@ -104,6 +107,13 @@ export function ResearcherUpsertForm({
             toast.success("Pesquisador atualizado com sucesso!");
             onSuccess?.();
           },
+          onError: (error) => {
+            const apiError = error as ValidationApiError;
+            toast.error(apiError.message || "Erro ao cadastrar profissional");
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
     } else {
@@ -111,6 +121,13 @@ export function ResearcherUpsertForm({
         onSuccess: () => {
           toast.success("Pesquisador criado com sucesso!");
           onSuccess?.();
+        },
+        onError: (error) => {
+          const apiError = error as ValidationApiError;
+          toast.error(apiError.message || "Erro ao cadastrar profissional");
+          if (apiError.data?.details?.fields) {
+            setErrors(extractFieldErrors(apiError.data));
+          }
         },
       });
     }
@@ -143,6 +160,7 @@ export function ResearcherUpsertForm({
           <Input
             id="fullName"
             placeholder="Nome Completo"
+            mask="name"
             value={formData.user.fullName}
             errorMessage={errors["user.fullName"]}
             onChange={(e) => {
@@ -181,10 +199,19 @@ export function ResearcherUpsertForm({
           <Input
             id="password"
             placeholder="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             size="lg"
             value={formData.user.password}
             errorMessage={errors["user.password"]}
+            rightElement={
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
+            }
             onChange={(e) => {
               clearError("user.password");
               setFormData({
@@ -237,6 +264,7 @@ export function ResearcherUpsertForm({
             id="email"
             placeholder="E-mail"
             type="email"
+            mask="email"
             size="lg"
             value={formData.email}
             errorMessage={errors["email"]}
@@ -291,8 +319,13 @@ export function ResearcherUpsertForm({
           color="primary"
           size="lg"
           onClick={handleSubmit}
+          disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {isEdit ? "Salvar Alterações" : "Cadastrar Pesquisador"}
+          {createMutation.isPending || updateMutation.isPending
+            ? "Salvando..."
+            : isEdit
+              ? "Salvar Alterações"
+              : "Cadastrar Pesquisador"}
         </Button>
       </Box>
     </Box>

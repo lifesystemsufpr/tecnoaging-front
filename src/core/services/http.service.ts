@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/api.routes";
+import { ApiErrorResponse } from "../api";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -12,11 +13,11 @@ type RequestOptions = {
   accessToken?: string;
 };
 
-export type ApiError = {
+export interface ApiError<TData = unknown> {
   status: number;
-  message: string;
-  data?: unknown;
-};
+  message: string | string[];
+  data?: TData;
+}
 
 const isAbsoluteUrl = (path: string) => path.startsWith("http");
 
@@ -83,11 +84,15 @@ export async function client<T>(
 
   const parsed = rawText ? safeJson(rawText) : null;
 
+  const messageString = Array.isArray(parsed?.message)
+    ? parsed.message[0]
+    : parsed?.message || response.statusText;
+
   if (!response.ok) {
     throw {
       status: response.status,
-      message: parsed?.message || response.statusText || "Erro inesperado",
-      data: parsed ?? rawText,
+      message: messageString,
+      data: parsed,
     } satisfies ApiError;
   }
 

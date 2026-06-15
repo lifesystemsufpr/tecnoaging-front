@@ -19,8 +19,15 @@ import {
   healthProfessionalCreateSchema,
   healthProfessionalUpdateSchema,
 } from "@/core/libs/validators/index";
-import { sanatizeCPF } from "@/core/utils";
+import { formatCPF, formatPhone, sanatizeCPF } from "@/core/utils";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+import { ApiError } from "@/core/services/http.service";
+import {
+  ApiErrorResponse,
+  extractFieldErrors,
+  ValidationErrorDetails,
+} from "@/core/api";
 
 interface ProfessionalUpsertFormProps {
   editUser?: HealthProfessional | null;
@@ -31,6 +38,7 @@ export function ProfessionalUpsertForm({
   editUser,
   onSuccess,
 }: ProfessionalUpsertFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
   const updateMutation = useUpdateProfessional();
   const createMutation = useCreateProfessional();
 
@@ -41,8 +49,8 @@ export function ProfessionalUpsertForm({
     speciality: editUser?.speciality ?? "",
     user: {
       fullName: editUser?.fullName ?? "",
-      cpf: editUser?.cpf ?? "",
-      phone: editUser?.phone ?? "",
+      cpf: formatCPF(editUser?.cpf ?? ""),
+      phone: formatPhone(editUser?.phone ?? ""),
       gender: (editUser?.gender as Gender) ?? Gender.MALE,
       password: "",
       active: editUser?.active ?? true,
@@ -104,6 +112,16 @@ export function ProfessionalUpsertForm({
             toast.success("Profissional atualizado com sucesso!");
             onSuccess?.();
           },
+
+          onError: (error) => {
+            const apiError = error as ApiError<
+              ApiErrorResponse<ValidationErrorDetails>
+            >;
+            toast.error(apiError.message || "Erro ao atualizar profissional");
+            if (apiError.data?.details?.fields) {
+              setErrors(extractFieldErrors(apiError.data));
+            }
+          },
         }
       );
     } else {
@@ -111,6 +129,16 @@ export function ProfessionalUpsertForm({
         onSuccess: () => {
           toast.success("Profissional cadastrado com sucesso!");
           onSuccess?.();
+        },
+
+        onError: (error) => {
+          const apiError = error as ApiError<
+            ApiErrorResponse<ValidationErrorDetails>
+          >;
+          toast.error(apiError.message || "Erro ao cadastrar profissional");
+          if (apiError.data?.details?.fields) {
+            setErrors(extractFieldErrors(apiError.data));
+          }
         },
       });
     }
@@ -143,6 +171,7 @@ export function ProfessionalUpsertForm({
           <Input
             id="fullName"
             placeholder="Nome Completo"
+            mask="name"
             value={formData.user.fullName}
             errorMessage={errors["user.fullName"]}
             onChange={(e) => {
@@ -183,7 +212,16 @@ export function ProfessionalUpsertForm({
           <Input
             id="password"
             placeholder="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
+            rightElement={
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff /> : <Eye />}
+              </Button>
+            }
             size="lg"
             value={formData.user.password}
             errorMessage={errors["user.password"]}
@@ -242,6 +280,7 @@ export function ProfessionalUpsertForm({
             id="email"
             placeholder="E-mail"
             type="email"
+            mask="email"
             size="lg"
             value={formData.email}
             errorMessage={errors["email"]}
@@ -281,8 +320,13 @@ export function ProfessionalUpsertForm({
           color="primary"
           size="lg"
           onClick={handleSubmit}
+          disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {isEdit ? "Salvar Alterações" : "Cadastrar Profissional"}
+          {createMutation.isPending || updateMutation.isPending
+            ? "Salvando..."
+            : isEdit
+              ? "Salvar Alterações"
+              : "Cadastrar Profissional"}
         </Button>
       </Box>
     </Box>

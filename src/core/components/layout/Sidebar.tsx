@@ -20,6 +20,7 @@ export default function SideBar() {
     openSubmenu,
     setOpenSubmenu,
     toggleSubmenu,
+    isMobile,
   } = useSidebar();
   const pathname = usePathname();
 
@@ -32,7 +33,7 @@ export default function SideBar() {
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   const handleMenuItemClick = () => {
-    if (isMobileOpen) {
+    if (isMobile) {
       toggleMobileSidebar();
     }
   };
@@ -153,8 +154,8 @@ export default function SideBar() {
     <aside
       className={`
         fixed top-19 left-0 z-50
-        flex h-full flex-col
-        overflow-hidden
+        flex h-[calc(100vh-4.75rem)] flex-col
+        overflow-y-hidden overflow-x-hidden
         border-r border-blue-700
         bg-blue-600 text-white
         dark:bg-gray-900
@@ -163,17 +164,26 @@ export default function SideBar() {
         duration-300
         ease-out
 
-        ${isExpanded || isHovered || isMobileOpen ? "w-72" : "w-16"}
+        ${isMobile ? "w-72" : isExpanded || isHovered ? "w-72" : "w-16"}
 
         ${
-          isMobileOpen
-            ? "translate-x-0"
-            : "max-lg:-translate-x-full lg:translate-x-0"
+          isMobile
+            ? isMobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+            : "translate-x-0"
         }
       `}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => !isMobile && !isExpanded && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
     >
+      {isMobile && isMobileOpen && (
+        <div
+          className="fixed inset-0  z-[-1] min-h-screen w-screen"
+          onClick={toggleMobileSidebar}
+        />
+      )}
+
       <Box display="flex" direction="column" className="p-3">
         <nav className="mb-6 mt-10">{renderMenuItems(filteredNavItems)}</nav>
       </Box>
