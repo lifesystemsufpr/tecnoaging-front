@@ -134,7 +134,7 @@ export function ParticipantStepPersonalInfo({
           onChange={(e) =>
             onChange(
               "weight",
-              e.target.value ? fmtNumber(Number(e.target.value)) : undefined
+              e.target.value === "" ? undefined : Number(e.target.value)
             )
           }
           required
@@ -157,7 +157,7 @@ export function ParticipantStepPersonalInfo({
           onChange={(e) =>
             onChange(
               "height",
-              e.target.value ? fmtNumber(Number(e.target.value)) : undefined
+              e.target.value === "" ? undefined : Number(e.target.value)
             )
           }
           required
