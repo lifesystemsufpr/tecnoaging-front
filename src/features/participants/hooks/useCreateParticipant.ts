@@ -3,6 +3,7 @@ import { API_ROUTES } from "@/core/config/api.routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Participant } from "@/core/types";
 import { ParticipantNestedFormData } from "@/core/libs/validators";
+import { ValidationApiError } from "@/core/api";
 
 export function useCreateParticipant() {
   const api = useHttp();
@@ -11,7 +12,11 @@ export function useCreateParticipant() {
   const endpoint = API_ROUTES.PARTICIPANTS;
   const queryKey = ["participants"];
 
-  return useMutation({
+  return useMutation<
+    Participant,
+    ValidationApiError,
+    ParticipantNestedFormData
+  >({
     mutationFn: async (data: ParticipantNestedFormData) => {
       const response = await api.post<Participant>(endpoint, { ...data });
       return response;

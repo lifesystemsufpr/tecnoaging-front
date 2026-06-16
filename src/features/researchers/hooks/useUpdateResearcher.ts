@@ -3,6 +3,7 @@ import { API_ROUTES } from "@/core/config/api.routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ResearcherCreateRequest } from "../types";
 import { Researcher } from "@/core/types";
+import { ValidationApiError } from "@/core/api";
 
 type UpdateResearcherPayload = {
   id: string;
@@ -14,7 +15,7 @@ export function useUpdateResearcher() {
   const queryClient = useQueryClient();
   const queryKey = ["researchers"];
 
-  return useMutation({
+  return useMutation<Researcher, ValidationApiError, UpdateResearcherPayload>({
     mutationFn: ({ id, data }: UpdateResearcherPayload) =>
       api.patch<Researcher>(API_ROUTES.RESEARCHER_BY_ID(id), {
         ...data,

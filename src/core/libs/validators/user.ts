@@ -1,5 +1,7 @@
 import { ScholarShip, SocioEconomicLevel, SystemRoles } from "@/core/enums";
 import { z } from "zod";
+import { fullNameSchema } from "./name";
+import { phoneSchema } from "./phone";
 
 const cpfRegex = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$|^\d{11}$/;
 
@@ -9,9 +11,9 @@ const baseRequired = z.object({
     SystemRoles.PATIENT,
     SystemRoles.HEALTH_PROFESSIONAL,
   ]),
-  fullName: z.string().min(1, "Informe o nome"),
-  cpf: z.string().regex(cpfRegex, "CPF inválido"),
-  phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+  fullName: fullNameSchema,
+  cpf: z.string().regex(cpfRegex, "CPF inválido"), // CPF intocado
+  phone: phoneSchema,
   gender: z.enum(["MALE", "FEMALE", "OTHER"], {
     required_error: "Gênero é obrigatório",
   }),
@@ -33,19 +35,19 @@ const baseUpdate = baseRequired.extend({
 
 const researcherCreateFlatSchema = baseCreate.extend({
   role: z.literal(SystemRoles.RESEARCHER),
-  email: z.string().email("Email inválido"),
-  institution: z.string().min(1, "Required"),
-  fieldOfStudy: z.string().optional().nullable(),
+  email: z.string().trim().email("Email inválido"),
+  institution: z.string().trim().min(1, "Required"),
+  fieldOfStudy: z.string().trim().optional().nullable(),
 });
 
 export const researcherCreateSchema = z.object({
-  email: z.string().email("Email inválido"),
-  institutionId: z.string().min(1, "Instituicao obrigatoria"),
-  fieldOfStudy: z.string().optional().nullable(),
+  email: z.string().trim().email("Email inválido"),
+  institutionId: z.string().trim().min(1, "Instituicao obrigatoria"),
+  fieldOfStudy: z.string().trim().optional().nullable(),
   user: z.object({
-    fullName: z.string().min(1, "Informe o nome"),
+    fullName: fullNameSchema,
     cpf: z.string().regex(cpfRegex, "CPF inválido"),
-    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    phone: phoneSchema,
     gender: z.enum(["MALE", "FEMALE", "OTHER"], {
       required_error: "Gênero é obrigatório",
     }),
@@ -58,6 +60,7 @@ export const patientCreateSchema = baseCreate.extend({
   role: z.literal(SystemRoles.PATIENT),
   birthDate: z
     .string()
+    .trim()
     .min(1, "Required")
     .refine((value) => {
       const date = new Date(value);
@@ -75,28 +78,28 @@ export const patientCreateSchema = baseCreate.extend({
     errorMap: () => ({ message: "Required" }),
   }),
 
-  zipCode: z.string().min(1, "Required"),
-  street: z.string().min(1, "Required"),
-  number: z.string().min(1, "Required"),
-  complement: z.string().optional(),
-  city: z.string().min(1, "Required"),
-  state: z.string().min(1, "Required"),
-  neighborhood: z.string().min(1, "Required"),
+  zipCode: z.string().trim().min(1, "Required"),
+  street: z.string().trim().min(1, "Required"),
+  number: z.string().trim().min(1, "Required"),
+  complement: z.string().trim().optional(),
+  city: z.string().trim().min(1, "Required"),
+  state: z.string().trim().min(1, "Required"),
+  neighborhood: z.string().trim().min(1, "Required"),
 });
 
 export const healthProCreateSchema = baseCreate.extend({
   role: z.literal(SystemRoles.HEALTH_PROFESSIONAL),
-  email: z.string().email("Email inválido"),
-  specialization: z.string().min(1, "Required"),
+  email: z.string().trim().email("Email inválido"),
+  specialization: z.string().trim().min(1, "Required"),
 });
 
 export const healthProfessionalCreateSchema = z.object({
-  email: z.string().email("Email inválido"),
-  speciality: z.string().min(1, "Especialidade obrigatória"),
+  email: z.string().trim().email("Email inválido"),
+  speciality: z.string().trim().min(1, "Especialidade obrigatória"),
   user: z.object({
-    fullName: z.string().min(1, "Informe o nome"),
+    fullName: fullNameSchema,
     cpf: z.string().regex(cpfRegex, "CPF inválido"),
-    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    phone: phoneSchema,
     gender: z.enum(["MALE", "FEMALE", "OTHER"], {
       required_error: "Gênero é obrigatório",
     }),
@@ -106,12 +109,12 @@ export const healthProfessionalCreateSchema = z.object({
 });
 
 export const healthProfessionalUpdateSchema = z.object({
-  email: z.string().email("Email inválido"),
-  speciality: z.string().min(1, "Especialidade obrigatória"),
+  email: z.string().trim().email("Email inválido"),
+  speciality: z.string().trim().min(1, "Especialidade obrigatória"),
   user: z.object({
-    fullName: z.string().min(1, "Informe o nome"),
+    fullName: fullNameSchema,
     cpf: z.string().regex(cpfRegex, "CPF inválido"),
-    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    phone: phoneSchema,
     gender: z.enum(["MALE", "FEMALE", "OTHER"], {
       required_error: "Gênero é obrigatório",
     }),
@@ -127,9 +130,9 @@ export const healthProfessionalUpdateSchema = z.object({
 });
 
 const participantUserCreate = z.object({
-  fullName: z.string().min(1, "Informe o nome"),
+  fullName: fullNameSchema,
   cpf: z.string().regex(cpfRegex, "CPF inválido"),
-  phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+  phone: phoneSchema,
   gender: z.enum(["MALE", "FEMALE", "OTHER"], {
     required_error: "Gênero é obrigatório",
   }),
@@ -138,9 +141,9 @@ const participantUserCreate = z.object({
 });
 
 const participantUserUpdate = z.object({
-  fullName: z.string().min(1, "Informe o nome"),
+  fullName: fullNameSchema,
   cpf: z.string().regex(cpfRegex, "CPF inválido"),
-  phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+  phone: phoneSchema,
   gender: z.enum(["MALE", "FEMALE", "OTHER"], {
     required_error: "Gênero é obrigatório",
   }),
@@ -157,17 +160,23 @@ const participantUserUpdate = z.object({
 const participantFields = {
   birthday: z
     .string()
+    .trim()
     .min(1, "Data de nascimento obrigatória")
     .refine((value) => {
       const date = new Date(value);
       const now = new Date();
       return date <= now;
     }, "Data de nascimento inválida"),
-  weight: z
-    .number({ invalid_type_error: "Peso obrigatório" })
+  weight: z.coerce
+    .number({
+      invalid_type_error: "Peso obrigatório",
+    })
     .min(0, "Peso inválido"),
-  height: z
-    .number({ invalid_type_error: "Altura obrigatória" })
+
+  height: z.coerce
+    .number({
+      invalid_type_error: "Altura obrigatória",
+    })
     .min(0, "Altura inválida"),
   scholarship: z.enum(
     Object.keys(ScholarShip) as [keyof typeof ScholarShip, ...string[]],
@@ -176,13 +185,13 @@ const participantFields = {
   socio_economic_level: z.nativeEnum(SocioEconomicLevel, {
     errorMap: () => ({ message: "Nível socioeconômico obrigatório" }),
   }),
-  zipCode: z.string().min(1, "CEP obrigatório"),
-  street: z.string().min(1, "Rua obrigatória"),
-  number: z.string().min(1, "Número obrigatório"),
-  complement: z.string().optional().nullable(),
-  neighborhood: z.string().min(1, "Bairro obrigatório"),
-  city: z.string().min(1, "Cidade obrigatória"),
-  state: z.string().min(1, "UF obrigatória"),
+  zipCode: z.string().trim().min(1, "CEP obrigatório"),
+  street: z.string().trim().min(1, "Rua obrigatória"),
+  number: z.string().trim().min(1, "Número obrigatório"),
+  complement: z.string().trim().optional().nullable(),
+  neighborhood: z.string().trim().min(1, "Bairro obrigatório"),
+  city: z.string().trim().min(1, "Cidade obrigatória"),
+  state: z.string().trim().min(1, "UF obrigatória"),
 };
 
 export const participantStep1Schema = z.object({
@@ -203,13 +212,13 @@ export const participantNestedUpdateSchema = z.object({
 });
 
 export const researcherUpdateSchema = z.object({
-  email: z.string().email("Email inválido"),
-  institutionId: z.string().min(1, "Instituicao obrigatoria"),
-  fieldOfStudy: z.string().optional().nullable(),
+  email: z.string().trim().email("Email inválido"),
+  institutionId: z.string().trim().min(1, "Instituicao obrigatoria"),
+  fieldOfStudy: z.string().trim().optional().nullable(),
   user: z.object({
-    fullName: z.string().min(1, "Informe o nome"),
+    fullName: fullNameSchema,
     cpf: z.string().regex(cpfRegex, "CPF inválido"),
-    phone: z.string().min(10, "Telefone inválido").max(15, "Telefone inválido"),
+    phone: phoneSchema,
     gender: z.enum(["MALE", "FEMALE", "OTHER"], {
       required_error: "Gênero é obrigatório",
     }),
@@ -228,6 +237,7 @@ export const patientUpdateSchema = baseUpdate.extend({
   role: z.literal(SystemRoles.PATIENT),
   birthDate: z
     .string()
+    .trim()
     .min(1, "Required")
     .refine((value) => {
       const date = new Date(value);
@@ -245,19 +255,19 @@ export const patientUpdateSchema = baseUpdate.extend({
     errorMap: () => ({ message: "Required" }),
   }),
 
-  zipCode: z.string().min(1, "Required"),
-  street: z.string().min(1, "Required"),
-  number: z.string().min(1, "Required"),
-  complement: z.string().optional(),
-  city: z.string().min(1, "Required"),
-  state: z.string().min(1, "Required"),
-  neighborhood: z.string().min(1, "Required"),
+  zipCode: z.string().trim().min(1, "Required"),
+  street: z.string().trim().min(1, "Required"),
+  number: z.string().trim().min(1, "Required"),
+  complement: z.string().trim().optional(),
+  city: z.string().trim().min(1, "Required"),
+  state: z.string().trim().min(1, "Required"),
+  neighborhood: z.string().trim().min(1, "Required"),
 });
 
 export const healthProUpdateSchema = baseUpdate.extend({
   role: z.literal(SystemRoles.HEALTH_PROFESSIONAL),
-  email: z.string().email("Email invalido"),
-  specialization: z.string().min(1, "Required"),
+  email: z.string().trim().email("Email invalido"),
+  specialization: z.string().trim().min(1, "Required"),
 });
 
 export const userSchema = z.discriminatedUnion("role", [

@@ -5,6 +5,8 @@ import {
   formatCPF,
   formatCRLV,
   formatCurrency,
+  formatEmail,
+  formatName,
   formatPhone,
   formatPlate,
   formatRenavam,
@@ -21,7 +23,9 @@ export type InputMaskType =
   | "rntrc"
   | "crlv"
   | "cep"
-  | "cnh";
+  | "cnh"
+  | "email"
+  | "name";
 
 export function applyMask(value: string, mask?: InputMaskType) {
   if (!mask) return value;
@@ -47,6 +51,10 @@ export function applyMask(value: string, mask?: InputMaskType) {
       return formatCEP(value);
     case "cnh":
       return formatCNH(value);
+    case "name":
+      return formatName(value);
+    case "email":
+      return formatEmail(value);
     default:
       return value;
   }

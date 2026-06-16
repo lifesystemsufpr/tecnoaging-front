@@ -11,17 +11,23 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { isMobile } = useSidebar();
+  const { isMobile, isExpanded } = useSidebar();
 
-  const layoutStyle = isMobile ? "w-full" : "ml-16 w-[calc(100%-64px)]";
+  const layoutStyle = isMobile
+    ? "w-full ml-0"
+    : isExpanded
+      ? "ml-72 w-[calc(100%-288px)]"
+      : "ml-16 w-[calc(100%-64px)]";
 
   return (
-    <div className="min-h-screen xl:flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      {/* Main Content Area */}
-      <div className={`flex-1 transition-all duration-300 ease-in-out`}>
+
+      <div className="flex-1 flex relative">
         <SideBar />
-        <div className={`${layoutStyle} transition-all duration-300`}>
+        <div
+          className={`flex-1 min-w-0 ${layoutStyle} transition-[margin,width] duration-300 ease-out bg-slate-50`}
+        >
           <main className="mx-auto w-full max-w-screen-2xl p-3 md:p-6">
             {children}
           </main>
