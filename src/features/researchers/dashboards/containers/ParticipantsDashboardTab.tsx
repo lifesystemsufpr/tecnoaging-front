@@ -1,9 +1,10 @@
 "use client";
 
-import { dashboard } from "../mocks/dashboard";
 import ResearcherKPIs from "../components/ResearcherKPIs";
 import ResearcherCharts from "../components/ResearcherCharts";
+import { TabSkeleton } from "../components/TabSkeleton";
 import { Box } from "@/core/components/ui";
+import { useFetchParticipantsDashboard } from "../hooks/useFetchParticipantsDashboard";
 
 interface ParticipantsDashboardTabProps {
   startDate?: string;
@@ -11,15 +12,20 @@ interface ParticipantsDashboardTabProps {
 }
 
 export function ParticipantsDashboardTab({ startDate, endDate }: ParticipantsDashboardTabProps) {
-  const { kpis, charts } = dashboard.data;
+  const { data, isLoading, isError } = useFetchParticipantsDashboard()
 
-  // Em produção, usaríamos os parâmetros startDate e endDate no hook correspondente:
-  // const { data } = useFetchParticipantsDashboard({ startDate, endDate });
+  if (isLoading || !data) {
+    return <TabSkeleton />
+  }
+
+  if (isError) {
+    return <Box>Error</Box>
+  }
 
   return (
     <Box display="flex" direction="column" gap={24}>
-      <ResearcherKPIs data={kpis} />
-      <ResearcherCharts data={charts} />
+      <ResearcherKPIs data={data.kpis} />
+      <ResearcherCharts data={data.charts} />
     </Box>
   );
 }

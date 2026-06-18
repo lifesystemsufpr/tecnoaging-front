@@ -21,7 +21,7 @@ interface UbsEntry {
 interface ChartsData {
   ageDistribution: ChartEntry[];
   educationLevel: ChartEntry[];
-  participantsPerUbs: UbsEntry[];
+  participantPerUbs: UbsEntry[];
 }
 
 interface ResearcherChartsProps {
@@ -30,6 +30,8 @@ interface ResearcherChartsProps {
 
 
 function AgeDistributionChart({ data }: { data: ChartEntry[] }) {
+  if (!data) return null;
+
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -109,6 +111,8 @@ function AgeDistributionChart({ data }: { data: ChartEntry[] }) {
 // Sub-component: Education Level – Barras Horizontais
 // ────────────────────────────────────────────────────────────────
 function EducationLevelChart({ data }: { data: ChartEntry[] }) {
+  if (!data) return null;
+
   const options: ApexOptions = {
     chart: {
       type: "bar",
@@ -198,6 +202,8 @@ function EducationLevelChart({ data }: { data: ChartEntry[] }) {
 // Sub-component: Participants per UBS – Gráfico de Setores (Donut)
 // ────────────────────────────────────────────────────────────────
 function ParticipantsPerUbsChart({ data }: { data: UbsEntry[] }) {
+  if (!data) return null;
+
   const options: ApexOptions = {
     chart: {
       type: "donut",
@@ -308,7 +314,7 @@ export default function ResearcherCharts({ data }: ResearcherChartsProps) {
     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
       <AgeDistributionChart data={data.ageDistribution} />
       <EducationLevelChart data={data.educationLevel} />
-      <ParticipantsPerUbsChart data={data.participantsPerUbs} />
+      <ParticipantsPerUbsChart data={data.participantPerUbs} />
     </div>
   );
 }

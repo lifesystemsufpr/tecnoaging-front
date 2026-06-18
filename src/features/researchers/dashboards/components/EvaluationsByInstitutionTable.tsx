@@ -7,6 +7,8 @@ interface EvaluationsByInstitutionTableProps {
 }
 
 export function EvaluationsByInstitutionTable({ data }: EvaluationsByInstitutionTableProps) {
+    if (!data) return null;
+
     const maxValue = Math.max(...data.map((d) => d.evaluations));
 
     return (

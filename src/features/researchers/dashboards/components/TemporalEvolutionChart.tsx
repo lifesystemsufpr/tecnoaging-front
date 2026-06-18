@@ -9,6 +9,8 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export function TemporalEvolutionChart({ data }: { data: TemporalEvolution[] }) {
+    if (!data) return null;
+
     const options: ApexOptions = {
         chart: {
             type: "line",

@@ -23,14 +23,14 @@ export default function ResearcherKPIs({ data }: ResearcherKPIsProps) {
               <Users2 size={24} className="text-blue-600 dark:text-blue-400" />
             </Box>
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total de Participantes
+              Total de Participantes +60
             </p>
           </Box>
           <Typography className="text-3xl font-bold text-gray-800 dark:text-white">
             {totalParticipants.toLocaleString("pt-BR")}
           </Typography>
           <Typography className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-            Total cadastrados no sistema
+            Total cadastrados no sistema com mais de 60 anos
           </Typography>
         </Card.Root>
       </Grid>

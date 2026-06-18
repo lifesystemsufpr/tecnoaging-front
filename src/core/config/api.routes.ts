@@ -25,8 +25,8 @@ const normalizeBaseUrl = (url?: string) => {
 
 export const API_BASE_URL = normalizeBaseUrl(
   process.env.NEXT_PUBLIC_API_BASE_URL ??
-    process.env.API_BASE_URL ??
-    FALLBACK_API_BASE_URL
+  process.env.API_BASE_URL ??
+  FALLBACK_API_BASE_URL
 );
 
 export const API_ROUTES = {
@@ -94,5 +94,6 @@ export const API_ROUTES = {
     SUMMARY: `${API_BASE_URL}/dashboard/advanced/summary`,
     MONTHLY_HISTORY: `${API_BASE_URL}/dashboard/advanced/monthly-history`,
     AVARAGE_TEST_BY_AGE_GROUP: `${API_BASE_URL}/dashboard/advanced/average-test-by-age-group`,
+    POPULATION: `${API_BASE_URL}/researcher/population`
   },
 } as const;

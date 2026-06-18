@@ -16,13 +16,6 @@ export type ChartItem = {
     value: number;
 };
 
-export interface ApiResponse<T> {
-    data: T;
-    meta?: {
-        generatedAt: string;
-        cached: boolean;
-    };
-}
 
 // ============================================================================
 // 2. DASHBOARD DE POPULAÇÃO (POPULATION DASHBOARD)
@@ -49,7 +42,7 @@ export interface PopulationKpis {
 export interface PopulationCharts {
     ageDistribution: ChartItem[];
     educationLevel: ChartItem[];
-    participantsPerUbs: ParticipantByUbs[];
+    participantPerUbs: ParticipantByUbs[];
 }
 
 export interface PopulationDashboardData {
@@ -105,5 +98,5 @@ export interface EvaluationDashboardData {
 }
 
 
-export type PopulationDashboardResponse = ApiResponse<PopulationDashboardData>;
-export type EvaluationDashboardResponse = ApiResponse<EvaluationDashboardData>;
+export type PopulationDashboardResponse = PopulationDashboardData;
+export type EvaluationDashboardResponse = EvaluationDashboardData;

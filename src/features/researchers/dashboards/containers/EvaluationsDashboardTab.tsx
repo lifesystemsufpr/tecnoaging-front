@@ -1,7 +1,8 @@
 "use client";
 
-import { Box } from "@/core/components/ui";
-import { dasboardEvaluation } from "../mocks/dashboard";
+import { Box, Typography } from "@/core/components/ui";
+import { TabSkeleton } from "../components/TabSkeleton";
+import { useFetchEvaluationDashboard } from "../hooks/useFetchEvaluationDashboard";
 import { EvaluationsByInstitutionTable } from "../components/EvaluationsByInstitutionTable";
 import { TemporalEvolutionChart } from "../components/TemporalEvolutionChart";
 import { EvaluationsByTestTypeChart } from "../components/EvaluationsByTestTypeChart";
@@ -13,10 +14,19 @@ interface EvaluationsDashboardTabProps {
 }
 
 export function EvaluationsDashboardTab({ startDate, endDate }: EvaluationsDashboardTabProps) {
-  const { kpis, charts } = dasboardEvaluation.data;
+  const { data, isLoading, isError } = useFetchEvaluationDashboard();
 
-  // Em produção, usaríamos os parâmetros startDate e endDate no hook correspondente:
-  // const { data } = useFetchEvaluationDashboard({ startDate, endDate });
+  if (isLoading || !data) {
+    return <TabSkeleton />;
+  }
+
+  if (isError) {
+    return <Box>
+      <Typography>
+        Erro ao carregar dados do painel.</Typography></Box>;
+  }
+
+  const { kpis, charts } = data;
 
   return (
     <Box display="flex" direction="column" gap={24}>
