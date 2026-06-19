@@ -1,4 +1,4 @@
-import { Box, Card, CardContent } from "@/core/components/ui";
+import { Box, Card, CardContent, Typography } from "@/core/components/ui";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
@@ -57,26 +57,32 @@ export default function DetailCharts() {
             />
           </Box>
 
-          {!repetitions && (
-            <p>
-              Nao informado no endpoint o total de repeticoes | Repeticoes
-              padrao 15
-            </p>
+          {repetitions == undefined ? (
+            <Typography
+              variant="body"
+              color="secondary"
+              className="text-center"
+            >
+              Não informado o total de repetições, contate a equipe responsável
+              para reprocessar os dados com essa informação.
+            </Typography>
+          ) : (
+            <>
+              <BarScatterPlot
+                participantAge={detailedData.derived.participantAgeOnEvaluation}
+                participantRepetitions={repetitions}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+
+              <ContinuityChart
+                idadePaciente={detailedData.derived.participantAgeOnEvaluation}
+                repeticoesPaciente={repetitions}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+            </>
           )}
-
-          <BarScatterPlot
-            participantAge={detailedData.derived.participantAgeOnEvaluation}
-            participantRepetitions={repetitions ? repetitions : 15}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
-
-          <ContinuityChart
-            idadePaciente={detailedData.derived.participantAgeOnEvaluation}
-            repeticoesPaciente={repetitions ? repetitions : 15}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
         </Box>
       </CardContent>
     </Card>

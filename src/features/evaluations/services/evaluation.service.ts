@@ -12,8 +12,8 @@ import { buildQueryString } from "@/core/utils/api";
 export const evaluationService = {
   async list(filters?: EvaluationFilters): Promise<ApiResponse<Evaluation[]>> {
     const query = buildQueryString({
-      participantCpf: filters?.patientCpf,
-      participantName: filters?.patientName,
+      participantCpf: filters?.participantCpf,
+      participantName: filters?.participantName,
       healthProfessionalName: filters?.healthProfessionalName,
       startDate: filters?.startDate,
       endDate: filters?.endDate,
