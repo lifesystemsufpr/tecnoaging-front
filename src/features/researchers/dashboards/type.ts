@@ -2,101 +2,98 @@
 // 1. TIPOS COMPARTILHADOS (SHARED)
 // ============================================================================
 export type MetricWithPercentage = {
-    absolute: number;
-    percentage: number;
+  absolute: number;
+  percentage: number;
 };
 
 export type AverageWithDeviation = {
-    average: number;
-    standardDeviation: number;
+  average: number;
+  standardDeviation: number;
 };
 
 export type ChartItem = {
-    label: string;
-    value: number;
+  label: string;
+  value: number;
 };
-
 
 // ============================================================================
 // 2. DASHBOARD DE POPULAÇÃO (POPULATION DASHBOARD)
 // ============================================================================
 
 export type GenderDistribution = {
-    male: MetricWithPercentage;
-    female: MetricWithPercentage;
+  male: MetricWithPercentage;
+  female: MetricWithPercentage;
 };
 
 export type ParticipantByUbs = {
-    ubs: string;
-    absolute: number;
-    percentage: number;
+  ubs: string;
+  absolute: number;
+  percentage: number;
 };
 
 export interface PopulationKpis {
-    totalParticipants: number;
-    age: AverageWithDeviation;
-    activeParticipants: MetricWithPercentage;
-    genderDistribution: GenderDistribution;
+  totalParticipants: number;
+  age: AverageWithDeviation;
+  activeParticipants: MetricWithPercentage;
+  genderDistribution: GenderDistribution;
 }
 
 export interface PopulationCharts {
-    ageDistribution: ChartItem[];
-    educationLevel: ChartItem[];
-    participantPerUbs: ParticipantByUbs[];
+  ageDistribution: ChartItem[];
+  educationLevel: ChartItem[];
+  participantPerUbs: ParticipantByUbs[];
 }
 
 export interface PopulationDashboardData {
-    kpis: PopulationKpis;
-    charts: PopulationCharts;
+  kpis: PopulationKpis;
+  charts: PopulationCharts;
 }
-
 
 // ============================================================================
 // 3. DASHBOARD DE AVALIAÇÕES (EVALUATION DASHBOARD)
 // ============================================================================
 export type TotalEvaluations = {
-    absolute: number;
-    percentageSystem: number;
+  absolute: number;
+  percentageSystem: number;
 };
 
 export type EvaluatedParticipants = {
-    absolute: number;
-    percentageTotal: number;
+  absolute: number;
+  percentageTotal: number;
 };
 
 export interface EvaluationKpis {
-    totalEvaluations: TotalEvaluations;
-    evaluatedParticipants: EvaluatedParticipants;
-    evaluationsPerParticipant: AverageWithDeviation;
+  totalEvaluations: TotalEvaluations;
+  evaluatedParticipants: EvaluatedParticipants;
+  evaluationsPerParticipant: AverageWithDeviation;
 }
 
-export type EvaluationsByTestType = {
-    label: string;
-    percentage: number;
-    absolute: number;
+export type EvaluationsByTypeTest = {
+  label: string;
+  percentage: number;
+  absolute: number;
 };
 
-export type TemporalEvolution = {
-    period: string;
-    value: number;
+export type TemporalEvaluation = {
+  period: string;
+  value: number;
 };
 
 export type EvaluationsByInstitution = {
-    institution: string;
-    evaluations: number;
+  institution: string;
+  evaluations: number;
 };
 
 export interface EvaluationCharts {
-    evaluationsByTestType: EvaluationsByTestType[];
-    temporalEvolution: TemporalEvolution[];
-    evaluationsByInstitution: EvaluationsByInstitution[];
+  evaluationsByTypeTest: EvaluationsByTypeTest[];
+  temporalEvaluation: TemporalEvaluation[];
+  evaluationsByInstitution: EvaluationsByInstitution[];
 }
 
 export interface EvaluationDashboardData {
-    kpis: EvaluationKpis;
-    charts: EvaluationCharts;
+  kpis: EvaluationKpis;
+  charts: EvaluationCharts;
 }
-
 
 export type PopulationDashboardResponse = PopulationDashboardData;
 export type EvaluationDashboardResponse = EvaluationDashboardData;

@@ -11,15 +11,21 @@ interface ParticipantsDashboardTabProps {
   endDate?: string;
 }
 
-export function ParticipantsDashboardTab({ startDate, endDate }: ParticipantsDashboardTabProps) {
-  const { data, isLoading, isError } = useFetchParticipantsDashboard()
+export function ParticipantsDashboardTab({
+  startDate,
+  endDate,
+}: ParticipantsDashboardTabProps) {
+  const { data, isLoading, isError } = useFetchParticipantsDashboard({
+    endDate,
+    startDate,
+  });
 
   if (isLoading || !data) {
-    return <TabSkeleton />
+    return <TabSkeleton />;
   }
 
   if (isError) {
-    return <Box>Error</Box>
+    return <Box>Error</Box>;
   }
 
   return (
