@@ -94,5 +94,7 @@ export const API_ROUTES = {
     SUMMARY: `${API_BASE_URL}/dashboard/advanced/summary`,
     MONTHLY_HISTORY: `${API_BASE_URL}/dashboard/advanced/monthly-history`,
     AVARAGE_TEST_BY_AGE_GROUP: `${API_BASE_URL}/dashboard/advanced/average-test-by-age-group`,
+    POPULATION: `${API_BASE_URL}/researcher/population`,
+    EVALUATION: `${API_BASE_URL}/researcher/evaluations`,
   },
 } as const;

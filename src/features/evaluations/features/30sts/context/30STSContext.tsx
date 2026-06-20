@@ -33,7 +33,7 @@ export function ThirtySTSProvider({
   const { data: detailedData, isLoading: isDetailedLoading } =
     useFetchEvaluationDetailed({ id });
 
-  const repetitions = useMemo(() => {
+  const repetitions: number | undefined = useMemo(() => {
     return detailedData?.derived.indicators.find(
       (indicator) => indicator.name === "Repetitions"
     )?.value;
