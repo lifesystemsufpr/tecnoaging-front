@@ -31,6 +31,8 @@ export function TwoMSTProvider({ children, id }: TwoMSTContextProviderProps) {
     useFetchEvaluationDetailed({ id });
 
   const steps = useMemo(() => {
+    if (!detailedData?.derived.indicators) return undefined;
+
     return detailedData?.derived.indicators.find(
       (indicator) => indicator.name === "Repetitions"
     )?.value;

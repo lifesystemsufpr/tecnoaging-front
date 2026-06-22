@@ -41,9 +41,10 @@ export function EvaluationDetailed() {
       {/* Informações da Avaliação */}
       <EvaluationDetail evaluationDetails={evaluationData} />
 
-      {detailedData.derived.indicators.length > 0 && (
-        <Indicators indicators={detailedData.derived.indicators} />
-      )}
+      {detailedData?.derived.indicators &&
+        detailedData.derived.indicators.length > 0 && (
+          <Indicators indicators={detailedData.derived.indicators} />
+        )}
 
       {/* Gráficos */}
       <DetailCharts />

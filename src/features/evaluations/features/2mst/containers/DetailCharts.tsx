@@ -16,7 +16,7 @@ export default function DetailCharts() {
 
   const participantGender = evaluationData?.participant.gender || Gender.FEMALE;
 
-  if (detailedData?.derived.indicators.length === 0) {
+  if (detailedData?.derived.indicators?.length === 0) {
     return <EvaluationNoContent evaluationId={evaluationData?.id} />;
   }
 

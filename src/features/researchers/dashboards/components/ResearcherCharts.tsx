@@ -28,7 +28,6 @@ interface ResearcherChartsProps {
   data: ChartsData;
 }
 
-
 function AgeDistributionChart({ data }: { data: ChartEntry[] }) {
   if (!data) return null;
 
@@ -247,8 +246,7 @@ function ParticipantsPerUbsChart({ data }: { data: UbsEntry[] }) {
               fontFamily: "Outfit",
               fontWeight: "700",
               color: "#111827",
-              formatter: (val) =>
-                Number(val).toLocaleString("pt-BR"),
+              formatter: (val) => Number(val).toLocaleString("pt-BR"),
             },
           },
         },
