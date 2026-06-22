@@ -1,6 +1,6 @@
 "use client";
 
-import { Users2, UserCheck, Activity, VenusAndMars } from "lucide-react";
+import { Users2, UserCheck, Activity, Venus, Mars } from "lucide-react";
 import Card from "@/core/components/layout/Card";
 import { Box, Grid, Typography } from "@/core/components/ui";
 import { PopulationKpis } from "../type";
@@ -93,10 +93,11 @@ export default function ResearcherKPIs({ data }: ResearcherKPIsProps) {
       <Grid item xs={12} sm={6} md={6} lg={3}>
         <Card.Root>
           <Box display="flex" align="center" gap={14} mb={8}>
-            <Box className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-900/30">
-              <VenusAndMars
-                size={24}
-                className="text-rose-600 dark:text-rose-400"
+            <Box className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-900/30 px-4">
+              <Venus size={12} className="text-rose-600 dark:text-rose-400" />
+              <Mars
+                size={12}
+                className="text-blue-600 dark:text-blue-400 ml-1"
               />
             </Box>
             <Typography className="text-sm font-medium text-gray-500 dark:text-gray-400">
