@@ -109,13 +109,26 @@ export interface STSCycleDataRaw extends BaseCycleDataRaw {
   velocityFlexion: number;
 }
 
-export interface TMSTCycleDataRaw extends BaseCycleDataRaw {
+export interface ChairStandCycle {
+  cycle: number;
+  totalTime: number;
   standUpTime: number;
   sitDownTime: number;
+  frequency: number;
+  transitionStandUp: number;
+  transitionSitDown: number;
+  velocityFlexionStandUp: number;
+  velocityExtension: number;
   velocityFlexion: number;
+  velocityExtensionSitDown: number;
+  peak1Time: number;
+  peak2Time: number;
+  peak1Value: number;
+  peak2Value: number;
+  power: number;
 }
 
-export type CycleDataRaw = STSCycleDataRaw | TMSTCycleDataRaw;
+export type CycleDataRaw = STSCycleDataRaw | ChairStandCycle;
 export interface TimeseriesPoint {
   t: number;
   val: number;
@@ -188,7 +201,7 @@ export interface TMSTMotionAnalysisResponse {
   processed: TMSTProcessedData;
   sensor: SensorAnalysisData;
   derived: DerivedData;
-  cycles: TMSTCycleDataRaw[];
+  cycles: ChairStandCycle[];
 }
 
 export type MotionAnalysisResponse =
