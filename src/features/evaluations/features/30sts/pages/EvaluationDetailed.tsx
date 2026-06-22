@@ -45,7 +45,10 @@ export function EvaluationDetailed() {
       <EvaluationDetail evaluationDetails={evaluationData} />
 
       {detailedData.derived.indicators.length > 0 && (
-        <Indicators indicators={detailedData.derived.indicators} />
+        <Indicators
+          indicators={detailedData.derived.indicators}
+          overallClassification={detailedData.derived.overallClassification}
+        />
       )}
 
       {/* Gráficos */}

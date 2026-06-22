@@ -5,7 +5,11 @@ import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
 import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
-import { isSTSProcessedData } from "@/features/evaluations/types/Evaluation.types";
+import {
+  isSTSProcessedData,
+  isTMSTMotionAnalysis,
+} from "@/features/evaluations/types/Evaluation.types";
+import ChairStandCyclesChart from "../components/ChairStandCyclesChart";
 import Image from "next/image";
 
 export default function DetailCharts() {
@@ -14,6 +18,11 @@ export default function DetailCharts() {
   const processed = isSTSProcessedData(detailedData?.processed)
     ? detailedData.processed
     : null;
+
+  const tmstCycles =
+    detailedData && isTMSTMotionAnalysis(detailedData)
+      ? detailedData.cycles
+      : null;
 
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
 
@@ -82,6 +91,9 @@ export default function DetailCharts() {
                 labelColor={"#000"}
               />
             </>
+          )}
+          {tmstCycles && tmstCycles.length > 0 && (
+            <ChairStandCyclesChart cycles={tmstCycles} />
           )}
         </Box>
       </CardContent>
