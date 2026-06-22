@@ -17,7 +17,7 @@ export default function ResearcherKPIs({ data }: ResearcherKPIsProps) {
     <Grid container spacing={20} className="w-full">
       {/* Total de Participantes */}
       <Grid item xs={12} sm={6} md={6} lg={3}>
-        <Card.Root >
+        <Card.Root>
           <Box display="flex" align="center" gap={14} mb={8}>
             <Box className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/30">
               <Users2 size={24} className="text-blue-600 dark:text-blue-400" />
@@ -35,9 +35,9 @@ export default function ResearcherKPIs({ data }: ResearcherKPIsProps) {
         </Card.Root>
       </Grid>
 
-      {/* Participantes Ativos */}
+      {/* Participantes Avaliados */}
       <Grid item xs={12} sm={6} md={6} lg={3}>
-        <Card.Root >
+        <Card.Root>
           <Box display="flex" align="center" gap={14} mb={8}>
             <Box className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
               <UserCheck
@@ -46,7 +46,7 @@ export default function ResearcherKPIs({ data }: ResearcherKPIsProps) {
               />
             </Box>
             <Typography className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Participantes Ativos
+              Participantes Avaliados
             </Typography>
           </Box>
           <Typography className="text-3xl font-bold text-gray-800 dark:text-white">
