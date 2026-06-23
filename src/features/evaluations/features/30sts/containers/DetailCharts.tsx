@@ -5,31 +5,17 @@ import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
 import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
-import {
-  isSTSProcessedData,
-  isTMSTMotionAnalysis,
-} from "@/features/evaluations/types/Evaluation.types";
 import ChairStandCyclesChart from "../components/ChairStandCyclesChart";
 import Image from "next/image";
 
 export default function DetailCharts() {
   const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
 
-  const processed = isSTSProcessedData(detailedData?.processed)
-    ? detailedData.processed
-    : null;
-
-  const tmstCycles =
-    detailedData && isTMSTMotionAnalysis(detailedData)
-      ? detailedData.cycles
-      : null;
-
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
+  const processed = detailedData?.processed;
+  const cycles = detailedData.cycle || [];
 
-  if (
-    processed?.data.length === 0 ||
-    detailedData.derived.indicators.length === 0
-  ) {
+  if (processed?.data.length === 0 || cycles.length === 0) {
     return <EvaluationNoContent evaluationId={evaluationData.id} />;
   }
 
@@ -92,9 +78,7 @@ export default function DetailCharts() {
               />
             </>
           )}
-          {tmstCycles && tmstCycles.length > 0 && (
-            <ChairStandCyclesChart cycles={tmstCycles} />
-          )}
+          {cycles.length > 0 && <ChairStandCyclesChart cycles={cycles} />}
         </Box>
       </CardContent>
     </Card>

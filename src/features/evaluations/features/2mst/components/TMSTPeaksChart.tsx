@@ -13,11 +13,31 @@ interface MetricMeta {
 
 const METRICS: Record<MetricKey, MetricMeta> = {
   time: { label: "Tempo", unit: "s", description: "Instante do pico (s)" },
-  rawVel: { label: "Vel. Bruta", unit: "°/s", description: "Velocidade bruta (deg/s)" },
-  phoneXVel: { label: "Vel. Phone X", unit: "°/s", description: "Velocidade eixo X do telefone" },
-  phoneYVel: { label: "Vel. Phone Y", unit: "°/s", description: "Velocidade eixo Y do telefone" },
-  phoneZVel: { label: "Vel. Phone Z", unit: "°/s", description: "Velocidade eixo Z do telefone" },
-  calibratedVel: { label: "Vel. Calibrada", unit: "°/s", description: "Velocidade calibrada (deg/s)" },
+  rawVel: {
+    label: "Vel. Bruta",
+    unit: "°/s",
+    description: "Velocidade bruta (deg/s)",
+  },
+  phoneXVel: {
+    label: "Vel. Phone X",
+    unit: "°/s",
+    description: "Velocidade eixo X do telefone",
+  },
+  phoneYVel: {
+    label: "Vel. Phone Y",
+    unit: "°/s",
+    description: "Velocidade eixo Y do telefone",
+  },
+  phoneZVel: {
+    label: "Vel. Phone Z",
+    unit: "°/s",
+    description: "Velocidade eixo Z do telefone",
+  },
+  calibratedVel: {
+    label: "Vel. Calibrada",
+    unit: "°/s",
+    description: "Velocidade calibrada (deg/s)",
+  },
 };
 
 const METRIC_KEYS = Object.keys(METRICS) as MetricKey[];
@@ -35,9 +55,8 @@ export default function TMSTPeaksChart({
   peaks,
   labelColor = "#374151",
 }: TMSTPeaksChartProps) {
-  const [selectedMetric, setSelectedMetric] = React.useState<MetricKey>(
-    "calibratedVel"
-  );
+  const [selectedMetric, setSelectedMetric] =
+    React.useState<MetricKey>("calibratedVel");
 
   const meta = METRICS[selectedMetric];
 
@@ -124,53 +143,32 @@ export default function TMSTPeaksChart({
                 i === maxIdx
                   ? "#10B981"
                   : i === minIdx
-                  ? "#EF4444"
-                  : {
-                      type: "linear",
-                      x: 0,
-                      y: 0,
-                      x2: 0,
-                      y2: 1,
-                      colorStops: [
-                        { offset: 0, color: "#6366F1" },
-                        { offset: 1, color: "#818CF8" },
-                      ],
-                    },
+                    ? "#EF4444"
+                    : {
+                        type: "linear",
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                          { offset: 0, color: "#6366F1" },
+                          { offset: 1, color: "#818CF8" },
+                        ],
+                      },
               borderRadius: [4, 4, 0, 0],
             },
           })),
           barMaxWidth: 48,
           markPoint: {
             symbolSize: 45,
-            data: [
-              {
-                type: "max",
-                name: "Máx",
-                label: {
-                  fontSize: 15,
-                  color: "#fff",
-                  formatter: (p: { value: number }) => p.value.toFixed(2),
-                },
-                itemStyle: { color: "#10B981" },
-              },
-              {
-                type: "min",
-                name: "Mín",
-                label: {
-                  fontSize: 15,
-                  color: "#fff",
-                  formatter: (p: { value: number }) => p.value.toFixed(2),
-                },
-                itemStyle: { color: "#EF4444" },
-              },
-            ],
           },
           markLine: {
             silent: true,
             lineStyle: { color: "#F59E0B", type: "dashed", width: 1.5 },
             label: {
               position: "end",
-              formatter: (p: { value: number }) => `Média: ${p.value.toFixed(2)} ${meta.unit}`,
+              formatter: (p: { value: number }) =>
+                `Média: ${p.value.toFixed(2)} ${meta.unit}`,
               color: "#F59E0B",
               fontSize: 11,
             },
@@ -312,9 +310,10 @@ export default function TMSTPeaksChart({
           marginTop: -4,
         }}
       >
-        {peaks.length} pico{peaks.length !== 1 ? "s" : ""} detectado{peaks.length !== 1 ? "s" : ""} · Passe o mouse sobre uma barra para ver todos os detalhes
+        {peaks.length} pico{peaks.length !== 1 ? "s" : ""} detectado
+        {peaks.length !== 1 ? "s" : ""} · Passe o mouse sobre uma barra para ver
+        todos os detalhes
       </div>
     </div>
   );
 }
-

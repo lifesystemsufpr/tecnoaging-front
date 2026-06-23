@@ -2,7 +2,6 @@ import { useFetchEvaluation } from "@/features/evaluations/hooks/useFetchEvaluat
 import { useFetchEvaluationDetailed } from "@/features/evaluations/hooks/useFetchEvaluationDetailed";
 import {
   Evaluation,
-  MotionAnalysisResponse,
   STSMotionAnalysisResponse,
 } from "@/features/evaluations/types/Evaluation.types";
 import { createContext, useContext, useMemo } from "react";
@@ -11,7 +10,7 @@ interface ThirtySTSContextValue {
   id: string;
   repetitions?: number;
   evaluationData?: Evaluation;
-  detailedData?: MotionAnalysisResponse;
+  detailedData?: STSMotionAnalysisResponse;
   isEvaluationLoading?: boolean;
   isDetailedLoading?: boolean;
 }

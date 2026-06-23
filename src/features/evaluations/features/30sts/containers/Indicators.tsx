@@ -1,6 +1,6 @@
-import IndicatorsCard from "@/features/evaluations/components/IndicatorsCard";
 import { Indicator } from "@/features/evaluations/types/Evaluation.types";
 import { Box, Card, CardContent, Grid, Typography } from "@/core/components/ui";
+import IndicatorsCard from "../components/IndicatorsCard";
 interface IndicatorProps {
   indicators: Indicator[];
   overallClassification?: string;

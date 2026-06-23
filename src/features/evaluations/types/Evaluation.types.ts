@@ -182,7 +182,9 @@ export interface TMSTProcessedData {
 
 export type ProcessedData = STSProcessedData | TMSTProcessedData;
 
-export function isTMSTProcessedData(p: IProcessedTMSTData): p is IProcessedTMSTData {
+export function isTMSTProcessedData(
+  p: IProcessedTMSTData
+): p is IProcessedTMSTData {
   return !Array.isArray((p as IProcessedTMSTData).data);
 }
 
@@ -194,7 +196,7 @@ export interface STSMotionAnalysisResponse {
   processed: STSProcessedData;
   sensor: SensorAnalysisData;
   derived: DerivedData;
-  cycle: STSCycleDataRaw[];
+  cycle: ChairStandCycle[];
 }
 
 export interface ITMSTMetrics {

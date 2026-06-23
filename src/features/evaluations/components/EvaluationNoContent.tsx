@@ -42,7 +42,7 @@ export default function EvaluationNoContent({
   };
 
   return (
-    <Card variant="outlined" className="mb-2">
+    <Card variant="outlined" className="mb-2 border-gray-100 p-5">
       <CardContent>
         <Typography variant="h4" className="mb-4 text-center">
           Nenhum dado disponível

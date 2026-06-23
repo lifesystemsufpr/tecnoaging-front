@@ -1,16 +1,17 @@
 import { Card, CardContent, Typography } from "@/core/components/ui";
-import {
-  translateIndicatorName,
-  translateIndicatorValue,
-} from "../features/30sts/utils/en-pt";
+import { Indicator } from "@/features/evaluations/types/Evaluation.types";
+import { translateIndicatorName } from "../utils/en-pt";
 
 export default function IndicatorsCard({
   indicator,
 }: {
-  indicator: { name: string; value: string | number };
+  indicator: Indicator;
 }) {
-  const { name, value } = indicator;
+  const { name, value, unit } = indicator;
+
   if (!name || !value) return null;
+
+  const normalizedValue = value.toFixed(2).replace(".", ",");
 
   return (
     <Card variant="outlined" className="border-gray-100 p-5">
@@ -19,8 +20,7 @@ export default function IndicatorsCard({
           {translateIndicatorName(name)}
         </Typography>
         <Typography variant="body" className="font-semibold">
-          {/*{normalizedValue} {unit}*/}
-          {translateIndicatorValue(value)}
+          {normalizedValue} {unit}
         </Typography>
       </CardContent>
     </Card>

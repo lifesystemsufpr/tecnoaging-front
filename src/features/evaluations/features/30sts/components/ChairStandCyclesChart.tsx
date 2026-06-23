@@ -212,28 +212,6 @@ export default function ChairStandCyclesChart({
           barMaxWidth: 48,
           markPoint: {
             symbolSize: 45,
-            data: [
-              {
-                type: "max",
-                name: "Máx",
-                label: {
-                  fontSize: 15,
-                  color: "#fff",
-                  formatter: (p: { value: number }) => p.value.toFixed(2),
-                },
-                itemStyle: { color: "#10B981" },
-              },
-              {
-                type: "min",
-                name: "Mín",
-                label: {
-                  fontSize: 15,
-                  color: "#fff",
-                  formatter: (p: { value: number }) => p.value.toFixed(2),
-                },
-                itemStyle: { color: "#EF4444" },
-              },
-            ],
           },
           markLine: {
             silent: true,
