@@ -28,7 +28,7 @@ export function TwoMSTProvider({ children, id }: TwoMSTContextProviderProps) {
   const { data: evaluationData, isLoading: isEvaluationLoading } =
     useFetchEvaluation({ id });
   const { data: detailedData, isLoading: isDetailedLoading } =
-    useFetchEvaluationDetailed({ id });
+    useFetchEvaluationDetailed<TMSTMotionAnalysisResponse>({ id });
 
   const steps = useMemo(() => {
     console.log(detailedData)

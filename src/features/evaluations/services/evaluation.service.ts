@@ -5,7 +5,6 @@ import {
   Evaluation,
   EvaluationFilters,
   RepetitionHistory,
-  TMSTMotionAnalysisResponse,
 } from "../types/Evaluation.types";
 import { buildQueryString } from "@/core/utils/api";
 
@@ -35,8 +34,8 @@ export const evaluationService = {
     });
   },
 
-  async getDetailed(id: string): Promise<TMSTMotionAnalysisResponse> {
-    return clientService<TMSTMotionAnalysisResponse>({
+  async getDetailed<T>(id: string): Promise<T> {
+    return clientService<T>({
       endpoint: API_ROUTES.EVALUATION_DETAILED_BY_ID(id),
       method: "GET",
     });

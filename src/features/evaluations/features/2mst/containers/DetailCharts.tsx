@@ -6,6 +6,7 @@ import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
 import { isTMSTProcessedData } from "@/features/evaluations/types/Evaluation.types";
 import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
+import TMSTPeaksChart from "@/features/evaluations/features/2mst/components/TMSTPeaksChart";
 
 export default function DetailCharts() {
   const { detailedData, steps, evaluationData } = useTwoMSTContext();
@@ -21,7 +22,7 @@ export default function DetailCharts() {
 
   const participantGender = evaluationData?.participant.gender || Gender.FEMALE;
 
-  if (detailedData?.derived.metrics?.length === 0) {
+  if (Object.keys(detailedData?.derived?.metrics).length === 0) {
     return <EvaluationNoContent evaluationId={evaluationData?.id} />;
   }
 
@@ -66,6 +67,8 @@ export default function DetailCharts() {
                 participantGender={participantGender}
                 labelColor={"#000"}
               />
+              
+              <TMSTPeaksChart peaks={detailedData!.peaks} />
             </>
           )}
         </Box>

@@ -3,6 +3,7 @@ import { useFetchEvaluationDetailed } from "@/features/evaluations/hooks/useFetc
 import {
   Evaluation,
   MotionAnalysisResponse,
+  STSMotionAnalysisResponse,
 } from "@/features/evaluations/types/Evaluation.types";
 import { createContext, useContext, useMemo } from "react";
 
@@ -31,7 +32,7 @@ export function ThirtySTSProvider({
   const { data: evaluationData, isLoading: isEvaluationLoading } =
     useFetchEvaluation({ id });
   const { data: detailedData, isLoading: isDetailedLoading } =
-    useFetchEvaluationDetailed({ id });
+    useFetchEvaluationDetailed<STSMotionAnalysisResponse>({ id });
 
   const repetitions: number | undefined = useMemo(() => {
     return detailedData?.derived.indicators.find(
