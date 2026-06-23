@@ -15,7 +15,10 @@ export default function DetailCharts() {
   const processed = detailedData?.processed;
   const cycles = detailedData.cycle || [];
 
-  if (processed?.data.length === 0 || cycles.length === 0) {
+  if (
+    processed?.data.length === 0 ||
+    detailedData.derived.indicators.length === 0
+  ) {
     return <EvaluationNoContent evaluationId={evaluationData.id} />;
   }
 
