@@ -1,6 +1,6 @@
 import {
   Evaluation,
-  MotionAnalysisResponse,
+  TMSTMotionAnalysisResponse,
 } from "@/features/evaluations/types/Evaluation.types";
 import { createContext, useContext, useMemo } from "react";
 import { useFetchEvaluation } from "@/features/evaluations/hooks/useFetchEvaluation";
@@ -10,7 +10,7 @@ interface TwoMSTContextValue {
   id: string;
   steps?: number;
   evaluationData?: Evaluation;
-  detailedData?: MotionAnalysisResponse;
+  detailedData?: TMSTMotionAnalysisResponse;
   isEvaluationLoading?: boolean;
   isDetailedLoading?: boolean;
 }
@@ -31,9 +31,10 @@ export function TwoMSTProvider({ children, id }: TwoMSTContextProviderProps) {
     useFetchEvaluationDetailed({ id });
 
   const steps = useMemo(() => {
+    console.log(detailedData)
     if (!detailedData?.derived.metrics) return undefined;
 
-    return detailedData?.derived.metrics['nSteps'];
+    return detailedData?.derived.metrics["nSteps"];
   }, [detailedData]);
 
   return (

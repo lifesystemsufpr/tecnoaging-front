@@ -182,8 +182,8 @@ export interface TMSTProcessedData {
 
 export type ProcessedData = STSProcessedData | TMSTProcessedData;
 
-export function isTMSTProcessedData(p: ProcessedData): p is TMSTProcessedData {
-  return !Array.isArray((p as TMSTProcessedData).data);
+export function isTMSTProcessedData(p: IProcessedTMSTData): p is IProcessedTMSTData {
+  return !Array.isArray((p as IProcessedTMSTData).data);
 }
 
 export function isSTSProcessedData(p: ProcessedData): p is STSProcessedData {
@@ -220,7 +220,7 @@ export interface ITMSTMetrics {
 export interface IDerivedTMSTData {
   participantAgeOnEvaluation: number;
   overallClassification: string;
-  metrics: ITMSTMetrics[];
+  metrics: ITMSTMetrics;
 }
 
 export interface IPeaksData {
