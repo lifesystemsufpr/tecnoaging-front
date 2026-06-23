@@ -1,26 +1,21 @@
-import { Box, Card, CardContent } from "@/core/components/ui";
+import { Box, Card, CardContent, Typography } from "@/core/components/ui";
 import { useThirtySTSContext } from "../context/30STSContext";
 import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
 import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
-import { isSTSProcessedData } from "@/features/evaluations/types/Evaluation.types";
+import ChairStandCyclesChart from "../components/ChairStandCyclesChart";
 import Image from "next/image";
 
 export default function DetailCharts() {
   const { detailedData, repetitions, evaluationData } = useThirtySTSContext();
 
-  const processed = isSTSProcessedData(detailedData?.processed)
-    ? detailedData.processed
-    : null;
-
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
+  const processed = detailedData?.processed;
+  const cycles = detailedData.cycles || [];
 
-  if (
-    processed?.data.length === 0 ||
-    detailedData.derived.indicators.length === 0
-  ) {
+  if (processed?.data.length === 0 || cycles.length === 0) {
     return <EvaluationNoContent evaluationId={evaluationData.id} />;
   }
 
@@ -57,26 +52,33 @@ export default function DetailCharts() {
             />
           </Box>
 
-          {!repetitions && (
-            <p>
-              Nao informado no endpoint o total de repeticoes | Repeticoes
-              padrao 15
-            </p>
+          {repetitions == undefined ? (
+            <Typography
+              variant="body"
+              color="secondary"
+              className="text-center"
+            >
+              Não informado o total de repetições, contate a equipe responsável
+              para reprocessar os dados com essa informação.
+            </Typography>
+          ) : (
+            <>
+              <BarScatterPlot
+                participantAge={detailedData.derived.participantAgeOnEvaluation}
+                participantRepetitions={repetitions}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+
+              <ContinuityChart
+                idadePaciente={detailedData.derived.participantAgeOnEvaluation}
+                repeticoesPaciente={repetitions}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+            </>
           )}
-
-          <BarScatterPlot
-            participantAge={detailedData.derived.participantAgeOnEvaluation}
-            participantRepetitions={repetitions ? repetitions : 15}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
-
-          <ContinuityChart
-            idadePaciente={detailedData.derived.participantAgeOnEvaluation}
-            repeticoesPaciente={repetitions ? repetitions : 15}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
+          {cycles.length > 0 && <ChairStandCyclesChart cycles={cycles} />}
         </Box>
       </CardContent>
     </Card>

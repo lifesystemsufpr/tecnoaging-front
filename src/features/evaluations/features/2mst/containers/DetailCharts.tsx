@@ -4,16 +4,26 @@ import ContinuityChart from "../components/ContinuityChart";
 import BarScatterPlot from "../components/BarScatterPlot";
 import GenericChart from "@/core/components/layout/GenericChart";
 import { Gender } from "@/core/enums";
-import { isTMSTProcessedData } from "@/features/evaluations/types/Evaluation.types";
+import EvaluationNoContent from "@/features/evaluations/components/EvaluationNoContent";
+import TMSTPeaksChart from "@/features/evaluations/features/2mst/components/TMSTPeaksChart";
 
 export default function DetailCharts() {
   const { detailedData, steps, evaluationData } = useTwoMSTContext();
 
-  const processed = isTMSTProcessedData(detailedData?.processed)
-    ? detailedData.processed
+  const data = detailedData?.processed?.data
+    ? Object.values(detailedData.processed.data).map((item) => {
+        return {
+          t: item.t,
+          val: item.val,
+        };
+      })
     : null;
 
   const participantGender = evaluationData?.participant.gender || Gender.FEMALE;
+
+  if (Object.keys(detailedData?.processed?.data).length === 0) {
+    return <EvaluationNoContent evaluationId={evaluationData?.id} />;
+  }
 
   return (
     <Card variant="outlined" className="mb-4 border-gray-100 p-5">
@@ -21,36 +31,45 @@ export default function DetailCharts() {
         <Box display="flex" direction="column" gap={16}>
           <Box position="relative">
             <GenericChart
-              data={processed?.data.timeseries}
+              data={data}
               xKey="t"
               yKey="val"
-              title={`Gráfico do ${processed?.unit || "Valor"}`}
-              valueFormatter={(v) => `${v} ${processed?.unit}`}
+              title={`Gráfico ${detailedData?.processed?.label ? `da ${detailedData.processed.label}` : "do Valor"}`}
+              valueFormatter={(v) =>
+                `${v} ${detailedData?.processed?.unit ?? ""}`
+              }
               timeSeries
               dense
               enableZoom
             />
           </Box>
 
-          {!steps && (
+          {!steps ? (
             <p>
-              Não informado no endpoint o total de passos | Passos padrão 78
+              Não informado o total de passos, contate a equipe responsável para
+              reprocessar os dados com essa informação.
             </p>
+          ) : (
+            <>
+              <BarScatterPlot
+                participantAge={
+                  detailedData!.derived.participantAgeOnEvaluation
+                }
+                participantSteps={steps ? steps : 78}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+
+              <ContinuityChart
+                idadePaciente={detailedData!.derived.participantAgeOnEvaluation}
+                passosPaciente={steps ? steps : 78}
+                participantGender={participantGender}
+                labelColor={"#000"}
+              />
+
+              <TMSTPeaksChart peaks={detailedData!.peaks} />
+            </>
           )}
-
-          <BarScatterPlot
-            participantAge={detailedData!.derived.participantAgeOnEvaluation}
-            participantSteps={steps ? steps : 78}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
-
-          <ContinuityChart
-            idadePaciente={detailedData!.derived.participantAgeOnEvaluation}
-            passosPaciente={steps ? steps : 78}
-            participantGender={participantGender}
-            labelColor={"#000"}
-          />
         </Box>
       </CardContent>
     </Card>

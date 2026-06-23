@@ -10,13 +10,13 @@ import {
 
 // Mapeamento de faixa etária para idade central (para eixo contínuo)
 const AGE_GROUP_CENTER: Record<AgeGroup, number> = {
-  "60-64": 62,
-  "65-69": 67,
-  "70-74": 72,
-  "75-79": 77,
-  "80-84": 82,
-  "85-89": 87,
-  "≥90": 92,
+  "60-64": 60,
+  "65-69": 65,
+  "70-74": 70,
+  "75-79": 75,
+  "80-84": 80,
+  "85-89": 85,
+  "≥90": 90,
 };
 
 export default function ContinuityChart({
@@ -31,20 +31,24 @@ export default function ContinuityChart({
   labelColor: string;
 }) {
   const option = React.useMemo(() => {
-    // Dados das linhas de percentis (P25, P50, P75)
-    const p25Data = AGE_GROUPS.map((ag) => [
+    const percentileAgeGroups = AGE_GROUPS.filter(
+      (ag) => ag !== "60-64" && ag !== "65-69"
+    );
+
+    const p25Data = percentileAgeGroups.map((ag) => [
       AGE_GROUP_CENTER[ag],
-      getPercentileValue(participantGender, ag, 25) ?? 0,
-    ]);
-    const p50Data = AGE_GROUPS.map((ag) => [
-      AGE_GROUP_CENTER[ag],
-      getPercentileValue(participantGender, ag, 50) ?? 0,
-    ]);
-    const p75Data = AGE_GROUPS.map((ag) => [
-      AGE_GROUP_CENTER[ag],
-      getPercentileValue(participantGender, ag, 75) ?? 0,
+      getPercentileValue(participantGender, ag, 25)!,
     ]);
 
+    const p50Data = percentileAgeGroups.map((ag) => [
+      AGE_GROUP_CENTER[ag],
+      getPercentileValue(participantGender, ag, 50)!,
+    ]);
+
+    const p75Data = percentileAgeGroups.map((ag) => [
+      AGE_GROUP_CENTER[ag],
+      getPercentileValue(participantGender, ag, 75)!,
+    ]);
     return {
       title: {
         text: `Comparativo de passos por idade`,

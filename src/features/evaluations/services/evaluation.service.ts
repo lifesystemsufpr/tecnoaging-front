@@ -4,7 +4,6 @@ import { ApiResponse } from "@/core/services/api.type";
 import {
   Evaluation,
   EvaluationFilters,
-  MotionAnalysisResponse as EvaluationDetailedResponse,
   RepetitionHistory,
 } from "../types/Evaluation.types";
 import { buildQueryString } from "@/core/utils/api";
@@ -12,8 +11,8 @@ import { buildQueryString } from "@/core/utils/api";
 export const evaluationService = {
   async list(filters?: EvaluationFilters): Promise<ApiResponse<Evaluation[]>> {
     const query = buildQueryString({
-      participantCpf: filters?.patientCpf,
-      participantName: filters?.patientName,
+      participantCpf: filters?.participantCpf,
+      participantName: filters?.participantName,
       healthProfessionalName: filters?.healthProfessionalName,
       startDate: filters?.startDate,
       endDate: filters?.endDate,
@@ -35,8 +34,8 @@ export const evaluationService = {
     });
   },
 
-  async getDetailed(id: string): Promise<EvaluationDetailedResponse> {
-    return clientService<EvaluationDetailedResponse>({
+  async getDetailed<T>(id: string): Promise<T> {
+    return clientService<T>({
       endpoint: API_ROUTES.EVALUATION_DETAILED_BY_ID(id),
       method: "GET",
     });

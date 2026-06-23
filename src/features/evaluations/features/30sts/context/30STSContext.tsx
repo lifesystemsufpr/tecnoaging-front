@@ -2,7 +2,7 @@ import { useFetchEvaluation } from "@/features/evaluations/hooks/useFetchEvaluat
 import { useFetchEvaluationDetailed } from "@/features/evaluations/hooks/useFetchEvaluationDetailed";
 import {
   Evaluation,
-  MotionAnalysisResponse,
+  STSMotionAnalysisResponse,
 } from "@/features/evaluations/types/Evaluation.types";
 import { createContext, useContext, useMemo } from "react";
 
@@ -10,7 +10,7 @@ interface ThirtySTSContextValue {
   id: string;
   repetitions?: number;
   evaluationData?: Evaluation;
-  detailedData?: MotionAnalysisResponse;
+  detailedData?: STSMotionAnalysisResponse;
   isEvaluationLoading?: boolean;
   isDetailedLoading?: boolean;
 }
@@ -31,9 +31,9 @@ export function ThirtySTSProvider({
   const { data: evaluationData, isLoading: isEvaluationLoading } =
     useFetchEvaluation({ id });
   const { data: detailedData, isLoading: isDetailedLoading } =
-    useFetchEvaluationDetailed({ id });
+    useFetchEvaluationDetailed<STSMotionAnalysisResponse>({ id });
 
-  const repetitions = useMemo(() => {
+  const repetitions: number | undefined = useMemo(() => {
     return detailedData?.derived.indicators.find(
       (indicator) => indicator.name === "Repetitions"
     )?.value;

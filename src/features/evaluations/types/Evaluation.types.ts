@@ -109,13 +109,26 @@ export interface STSCycleDataRaw extends BaseCycleDataRaw {
   velocityFlexion: number;
 }
 
-export interface TMSTCycleDataRaw extends BaseCycleDataRaw {
+export interface ChairStandCycle {
+  cycle: number;
+  totalTime: number;
   standUpTime: number;
   sitDownTime: number;
+  frequency: number;
+  transitionStandUp: number;
+  transitionSitDown: number;
+  velocityFlexionStandUp: number;
+  velocityExtension: number;
   velocityFlexion: number;
+  velocityExtensionSitDown: number;
+  peak1Time: number;
+  peak2Time: number;
+  peak1Value: number;
+  peak2Value: number;
+  power: number;
 }
 
-export type CycleDataRaw = STSCycleDataRaw | TMSTCycleDataRaw;
+export type CycleDataRaw = STSCycleDataRaw | ChairStandCycle;
 export interface TimeseriesPoint {
   t: number;
   val: number;
@@ -169,8 +182,10 @@ export interface TMSTProcessedData {
 
 export type ProcessedData = STSProcessedData | TMSTProcessedData;
 
-export function isTMSTProcessedData(p: ProcessedData): p is TMSTProcessedData {
-  return !Array.isArray((p as TMSTProcessedData).data);
+export function isTMSTProcessedData(
+  p: IProcessedTMSTData
+): p is IProcessedTMSTData {
+  return !Array.isArray((p as IProcessedTMSTData).data);
 }
 
 export function isSTSProcessedData(p: ProcessedData): p is STSProcessedData {
@@ -181,14 +196,61 @@ export interface STSMotionAnalysisResponse {
   processed: STSProcessedData;
   sensor: SensorAnalysisData;
   derived: DerivedData;
-  cycle: STSCycleDataRaw[];
+  cycles: ChairStandCycle[];
+}
+
+export interface ITMSTMetrics {
+  nSteps: number;
+  strategy: string;
+  cadence: number;
+  velInitial: number;
+  velFinal: number;
+  deltaVel: number;
+  slope: number;
+  velMean: number;
+  velStd: number;
+  cvVel: number;
+  velMax: number;
+  velMin: number;
+  timeMean: number;
+  timeStd: number;
+  cvTime: number;
+  timeMax: number;
+  timeMin: number;
+}
+
+export interface IDerivedTMSTData {
+  participantAgeOnEvaluation: number;
+  overallClassification: string;
+  metrics: ITMSTMetrics;
+}
+
+export interface IPeaksData {
+  peak: number;
+  time: number;
+  rawVel: number;
+  phoneXVel: number;
+  phoneYVel: number;
+  phoneZVel: number;
+  calibratedVel: number;
+}
+
+export interface IProcessedTMSTDataItem {
+  t: number;
+  val: number;
+}
+
+export interface IProcessedTMSTData {
+  data: IProcessedTMSTDataItem;
+  label: string;
+  unit: string;
 }
 
 export interface TMSTMotionAnalysisResponse {
-  processed: TMSTProcessedData;
+  processed: IProcessedTMSTData;
   sensor: SensorAnalysisData;
-  derived: DerivedData;
-  cycles: TMSTCycleDataRaw[];
+  derived: IDerivedTMSTData;
+  peaks: IPeaksData[];
 }
 
 export type MotionAnalysisResponse =
