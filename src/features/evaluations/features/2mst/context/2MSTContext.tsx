@@ -1,6 +1,6 @@
 import {
   Evaluation,
-  MotionAnalysisResponse,
+  TMSTMotionAnalysisResponse,
 } from "@/features/evaluations/types/Evaluation.types";
 import { createContext, useContext, useMemo } from "react";
 import { useFetchEvaluation } from "@/features/evaluations/hooks/useFetchEvaluation";
@@ -10,7 +10,7 @@ interface TwoMSTContextValue {
   id: string;
   steps?: number;
   evaluationData?: Evaluation;
-  detailedData?: MotionAnalysisResponse;
+  detailedData?: TMSTMotionAnalysisResponse;
   isEvaluationLoading?: boolean;
   isDetailedLoading?: boolean;
 }
@@ -28,14 +28,13 @@ export function TwoMSTProvider({ children, id }: TwoMSTContextProviderProps) {
   const { data: evaluationData, isLoading: isEvaluationLoading } =
     useFetchEvaluation({ id });
   const { data: detailedData, isLoading: isDetailedLoading } =
-    useFetchEvaluationDetailed({ id });
+    useFetchEvaluationDetailed<TMSTMotionAnalysisResponse>({ id });
 
   const steps = useMemo(() => {
-    if (!detailedData?.derived.indicators) return undefined;
+    console.log(detailedData)
+    if (!detailedData?.derived.metrics) return undefined;
 
-    return detailedData?.derived.indicators.find(
-      (indicator) => indicator.name === "Repetitions"
-    )?.value;
+    return detailedData?.derived.metrics["nSteps"];
   }, [detailedData]);
 
   return (

@@ -4,7 +4,6 @@ import { ApiResponse } from "@/core/services/api.type";
 import {
   Evaluation,
   EvaluationFilters,
-  MotionAnalysisResponse as EvaluationDetailedResponse,
   RepetitionHistory,
 } from "../types/Evaluation.types";
 import { buildQueryString } from "@/core/utils/api";
@@ -35,8 +34,8 @@ export const evaluationService = {
     });
   },
 
-  async getDetailed(id: string): Promise<EvaluationDetailedResponse> {
-    return clientService<EvaluationDetailedResponse>({
+  async getDetailed<T>(id: string): Promise<T> {
+    return clientService<T>({
       endpoint: API_ROUTES.EVALUATION_DETAILED_BY_ID(id),
       method: "GET",
     });

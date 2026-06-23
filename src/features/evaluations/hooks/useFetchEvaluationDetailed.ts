@@ -5,13 +5,13 @@ interface useFetchEvaluationDetailedProps {
   id: string;
 }
 
-export function useFetchEvaluationDetailed({
+export function useFetchEvaluationDetailed<T>({
   id,
 }: useFetchEvaluationDetailedProps) {
   return useQuery({
     queryKey: ["evaluationDetailed", id],
     queryFn: async () => {
-      return evaluationService.getDetailed(id);
+      return evaluationService.getDetailed<T>(id);
     },
     staleTime: 10 * 60 * 1000,
     enabled: !!id,

@@ -1,15 +1,16 @@
-import { Indicator } from "@/features/evaluations/types/Evaluation.types";
 import { Card, CardContent, Typography } from "@/core/components/ui";
-import { translateIndicatorName } from "../features/30sts/utils/en-pt";
+import {
+  translateIndicatorName,
+  translateIndicatorValue,
+} from "../features/30sts/utils/en-pt";
 
 export default function IndicatorsCard({
   indicator,
 }: {
-  indicator: Indicator;
+  indicator: { name: string, value: string | number };
 }) {
-  const { name, value, unit } = indicator;
-  const normalizedValue =
-    name === "Repetitions" ? Math.round(value) : value.toFixed(2);
+  const { name, value } = indicator;
+  if (!name || !value) return null;
 
   return (
     <Card variant="outlined" className="border-gray-100 p-5">
@@ -18,7 +19,8 @@ export default function IndicatorsCard({
           {translateIndicatorName(name)}
         </Typography>
         <Typography variant="body" className="font-semibold">
-          {normalizedValue} {unit}
+          {/*{normalizedValue} {unit}*/}
+          {translateIndicatorValue(value)}
         </Typography>
       </CardContent>
     </Card>
