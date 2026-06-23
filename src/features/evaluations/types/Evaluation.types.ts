@@ -196,7 +196,7 @@ export interface STSMotionAnalysisResponse {
   processed: STSProcessedData;
   sensor: SensorAnalysisData;
   derived: DerivedData;
-  cycle: ChairStandCycle[];
+  cycles: ChairStandCycle[];
 }
 
 export interface ITMSTMetrics {

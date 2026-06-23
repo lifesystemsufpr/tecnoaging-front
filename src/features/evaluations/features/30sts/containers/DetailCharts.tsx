@@ -13,12 +13,9 @@ export default function DetailCharts() {
 
   const participantGender = evaluationData.participant.gender || Gender.FEMALE;
   const processed = detailedData?.processed;
-  const cycles = detailedData.cycle || [];
+  const cycles = detailedData.cycles || [];
 
-  if (
-    processed?.data.length === 0 ||
-    detailedData.derived.indicators.length === 0
-  ) {
+  if (processed?.data.length === 0 || cycles.length === 0) {
     return <EvaluationNoContent evaluationId={evaluationData.id} />;
   }
 
