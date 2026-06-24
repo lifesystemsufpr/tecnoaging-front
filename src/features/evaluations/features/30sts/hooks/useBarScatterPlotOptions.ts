@@ -111,9 +111,9 @@ export function useBarScatterPlotOptions({
     return {
       title: {
         text: `Diagrama de caixa (${genderLabel})`,
-        subtext: "(Número de levantadas completas em 30 segundos)",
+        subtext: "Número de levantadas completas em 30 segundos",
         left: "left",
-        textStyle: { color: labelColor, fontSize: 16 },
+        textStyle: { color: "#1c55f2", fontSize: 16 },
         subtextStyle: { color: labelColor, fontSize: 12 },
       },
       tooltip: {

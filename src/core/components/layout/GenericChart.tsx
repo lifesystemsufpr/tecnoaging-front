@@ -7,6 +7,7 @@ type GenericChartProps<T> = {
   xKey: keyof T;
   yKey: keyof T;
 
+  titleColor?: string;
   title?: string;
   labelColor?: string;
   seriesType?: "bar" | "line";
@@ -27,6 +28,7 @@ export default function GenericChart<T>({
   xKey,
   yKey,
   title,
+  titleColor = "#1c55f2",
   labelColor = "#000",
   seriesType = "line",
 
@@ -63,7 +65,7 @@ export default function GenericChart<T>({
     title: {
       text: title,
       left: "left",
-      textStyle: { color: labelColor },
+      textStyle: { color: titleColor, fontSize: 16, fontWeight: "bold" },
     },
 
     tooltip: {

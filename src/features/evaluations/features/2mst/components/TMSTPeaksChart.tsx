@@ -73,7 +73,7 @@ export default function TMSTPeaksChart({
         text: `Picos do 2MST — ${meta.label}`,
         subtext: meta.description,
         left: "left",
-        textStyle: { color: labelColor, fontSize: 14, fontWeight: "bold" },
+        textStyle: { color: "#1c55f2", fontSize: 16, fontWeight: "bold" },
         subtextStyle: { color: "#9CA3AF", fontSize: 12 },
       },
       tooltip: {

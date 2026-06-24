@@ -8,12 +8,12 @@ import {
   type InputProps,
 } from "@/core/components/ui";
 import { useDebouncedValue } from "@/core/hooks/useDebouncedValue";
-import { Institution } from "../types";
-import { useListInstitutions } from "../hooks/useListInstutions";
+import { EducationUnit } from "../types";
 import type { UseAutocompleteProps } from "@/core/components/ui/autocomplete/useAutocomplete";
+import { useListEducationalUnits } from "../hooks/educational-unit/useListEducationalUnits";
 
 interface InstitutionAutocompleteProps extends Omit<
-  UseAutocompleteProps<Institution>,
+  UseAutocompleteProps<EducationUnit>,
   "options" | "loading"
 > {
   label?: string;
@@ -25,7 +25,7 @@ interface InstitutionAutocompleteProps extends Omit<
   menuClassName?: string;
   optionClassName?: string;
   renderOption?: (
-    option: Institution,
+    option: EducationUnit,
     state: { active: boolean }
   ) => React.ReactNode;
   pageSize?: number;
@@ -79,23 +79,23 @@ export function InstitutionAutocomplete({
   );
   const search = debouncedSearch?.trim() || undefined;
 
-  const query = useListInstitutions({
+  const query = useListEducationalUnits({
     page: 1,
     pageSize,
-    search,
-    active,
-    orderBy,
-    sortOrder,
-    enabled: enabled && !disabled,
+    filters: {
+      title: search,
+    },
+    sortField: orderBy,
+    sortDirection: sortOrder,
   });
 
   const options = React.useMemo(() => query.data?.data ?? [], [query.data]);
 
   const resolveLabel =
-    getOptionLabel ?? ((option: Institution) => option.title ?? "");
+    getOptionLabel ?? ((option: EducationUnit) => option.title ?? "");
   const resolveEquality =
     isOptionEqualToValue ??
-    ((a: Institution, b: Institution) => a?.id === b?.id);
+    ((a: EducationUnit, b: EducationUnit) => a?.id === b?.id);
 
   const resolvedValue = React.useMemo(() => {
     if (hookProps.value !== undefined) return hookProps.value ?? null;
@@ -119,6 +119,7 @@ export function InstitutionAutocomplete({
       <Autocomplete
         {...hookProps}
         options={options}
+        placement="top"
         loading={query.isLoading || query.isFetching}
         value={resolvedValue}
         inputValue={resolvedInputValue}

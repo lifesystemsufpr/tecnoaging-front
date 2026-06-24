@@ -9,14 +9,17 @@ export default function IndicatorsCard({
 }) {
   const { name, value, unit } = indicator;
 
-  if (!name || !value) return null;
+  if (!name) return null;
 
-  const normalizedValue = value.toFixed(2).replace(".", ",");
+  const isRepetitionIndicator = name === "Repetitions";
+  const normalizedValue = !isRepetitionIndicator
+    ? value.toFixed(2).replace(".", ",")
+    : value;
 
   return (
     <Card variant="outlined" className="border-gray-100 p-5">
       <CardContent className="p-0">
-        <Typography variant="body" className="mb-1">
+        <Typography variant="body" className="mb-2">
           {translateIndicatorName(name)}
         </Typography>
         <Typography variant="body" className="font-semibold">

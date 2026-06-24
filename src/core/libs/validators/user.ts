@@ -171,13 +171,13 @@ const participantFields = {
     .number({
       invalid_type_error: "Peso obrigatório",
     })
-    .min(0, "Peso inválido"),
+    .min(20, "Peso inválido (mínimo: 20 kg)"),
 
   height: z.coerce
     .number({
       invalid_type_error: "Altura obrigatória",
     })
-    .min(0, "Altura inválida"),
+    .min(100, "Altura inválida (mínimo: 100 cm)"),
   scholarship: z.enum(
     Object.keys(ScholarShip) as [keyof typeof ScholarShip, ...string[]],
     { errorMap: () => ({ message: "Escolaridade obrigatória" }) }

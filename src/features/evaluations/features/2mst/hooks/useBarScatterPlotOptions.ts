@@ -113,7 +113,7 @@ export function useBarScatterPlotOptions({
         text: `Diagrama de caixa (${genderLabel})`,
         subtext: "(Número de passos em 2 minutos)",
         left: "left",
-        textStyle: { color: labelColor, fontSize: 16 },
+        textStyle: { color: "#1c55f2", fontSize: 16 },
         subtextStyle: { color: labelColor, fontSize: 12 },
       },
       tooltip: {

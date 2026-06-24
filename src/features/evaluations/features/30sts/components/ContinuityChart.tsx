@@ -54,7 +54,7 @@ export default function ContinuityChart({
       title: {
         text: `Comparativo de repetição por idade`,
         left: "left",
-        textStyle: { color: labelColor },
+        textStyle: { color: "#1c55f2", fontSize: 16 },
       },
       tooltip: {
         trigger: "axis",
