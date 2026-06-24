@@ -28,11 +28,11 @@ export interface PercentileEntry {
 const FEMALE_PERCENTILES: PercentileEntry[] = [
   {
     percentile: 95,
-    values: { "60-64": 25, "65-69": 24, "70-74": 22, "75-79": 20, "80-84": 19 },
+    values: { "70-74": 25, "75-79": 24, "80-84": 22, "85-89": 20, "≥90": 19 },
   },
   {
     percentile: 90,
-    values: { "60-64": 22, "65-69": 22, "70-74": 20, "75-79": 18, "80-84": 18 },
+    values: { "70-74": 22, "75-79": 22, "80-84": 20, "85-89": 18, "≥90": 18 },
   },
   {
     percentile: 85,
@@ -183,7 +183,6 @@ const MALE_PERCENTILES: PercentileEntry[] = [
     values: { "70-74": 11, "75-79": 10, "80-84": 10, "85-89": 9, "≥90": 7 },
   },
 ];
-
 /**
  * Retorna a tabela de percentis conforme o sexo.
  */
