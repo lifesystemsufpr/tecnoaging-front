@@ -67,14 +67,14 @@ export default function DetailCharts() {
                 participantAge={detailedData.derived.participantAgeOnEvaluation}
                 participantRepetitions={repetitions}
                 participantGender={participantGender}
-                labelColor={"#000"}
+                labelColor={"#161650"}
               />
 
               <ContinuityChart
                 idadePaciente={detailedData.derived.participantAgeOnEvaluation}
                 repeticoesPaciente={repetitions}
                 participantGender={participantGender}
-                labelColor={"#000"}
+                labelColor={"#161650"}
               />
             </>
           )}

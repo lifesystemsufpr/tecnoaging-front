@@ -53,7 +53,7 @@ export default function ContinuityChart({
       title: {
         text: `Comparativo de passos por idade`,
         left: "left",
-        textStyle: { color: labelColor },
+        textStyle: { color: "#1c55f2", fontSize: 16, fontWeight: "bold" },
       },
       tooltip: {
         trigger: "axis",

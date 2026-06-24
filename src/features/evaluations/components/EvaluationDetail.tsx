@@ -13,7 +13,7 @@ export default function EvaluationDetail({
   return (
     <Card variant="outlined" className="mb-4 border-gray-100 p-5">
       <CardContent className="p-0">
-        <Typography variant="h4" className="mb-4">
+        <Typography variant="h4" className="mb-4" color="primary">
           Informações da Avaliação
         </Typography>
 

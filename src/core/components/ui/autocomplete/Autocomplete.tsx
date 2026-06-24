@@ -11,6 +11,8 @@ interface AutocompleteProps<T> extends UseAutocompleteProps<T> {
   menuClassName?: string;
   optionClassName?: string;
   className?: string;
+  // 1. Nova prop para definir o posicionamento
+  placement?: "top" | "bottom";
 }
 
 export function Autocomplete<T>({
@@ -21,6 +23,8 @@ export function Autocomplete<T>({
   menuClassName,
   optionClassName,
   className,
+  // 2. Definimos um valor padrão para manter compatibilidade com usos anteriores
+  placement = "bottom",
   ...hookProps
 }: AutocompleteProps<T>) {
   const {
@@ -64,8 +68,12 @@ export function Autocomplete<T>({
 
       <div
         className={cn(
-          "absolute left-0 right-0 z-50 mt-1 origin-top rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-xl",
+          "absolute left-0 right-0 z-50 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-xl",
           "transition-all duration-150 ease-out",
+          // 3. Classes condicionais baseadas na prop placement
+          placement === "top"
+            ? "bottom-full mb-1 origin-bottom"
+            : "top-full mt-1 origin-top",
           open
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-95 opacity-0",
