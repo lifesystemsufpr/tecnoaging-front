@@ -30,5 +30,5 @@ export function translateIndicatorName(name: string): string {
 }
 
 export function translateIndicatorValue(value: string | number) {
-  return Dicionary[value] || value;
+  return Dicionary[value] || value || 0;
 }
