@@ -3,7 +3,7 @@ export const Dicionary = {
   Power: "Potência",
   "Total Energy": "Energia Total",
   nSteps: "Número de Passos",
-  strategy: "Classificação",
+  strategy: "Estratégia",
   cadence: "Cadência",
   velInitial: "Velocidade Inicial",
   velFinal: "Velocidade Final",
@@ -19,8 +19,9 @@ export const Dicionary = {
   cvTime: "Coeficiente de Variação do Tempo",
   timeMax: "Tempo Máximo",
   timeMin: "Tempo Mínimo",
-  ascending: "Acima da Média",
-  descending: "Abaixo da Média",
+  ascending: "Ascendente",
+  descending: "Descendente",
+  undefined: "Não definido",
   "Total Time": "Tempo Total",
 };
 
