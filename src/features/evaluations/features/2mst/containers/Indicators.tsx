@@ -7,19 +7,19 @@ interface IndicatorProps {
 }
 
 export default function Indicators({ metrics: indicators }: IndicatorProps) {
-  const indicatorsLength = Object.keys(indicators).length;
-  if (indicatorsLength === 0) return null;
+  const validIndicators = Object.entries(indicators).filter(
+    ([name, value]) =>
+      name && value !== null && value !== undefined && value !== ""
+  );
 
-  const span = Math.max(1, Math.floor(12 / (indicatorsLength / 5)));
+  if (validIndicators.length === 0) return null;
 
   return (
     <Box mb={16}>
       <Grid container spacing={8}>
-        {Object.keys(indicators).map((indicator, index) => (
-          <Grid item xs={12} md={span} key={index}>
-            <IndicatorsCard
-              indicator={{ name: indicator, value: indicators[indicator] }}
-            />
+        {validIndicators.map(([name, value]) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={name}>
+            <IndicatorsCard indicator={{ name, value }} />
           </Grid>
         ))}
       </Grid>

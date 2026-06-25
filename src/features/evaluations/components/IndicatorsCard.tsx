@@ -11,6 +11,8 @@ export default function IndicatorsCard({
 }) {
   const { name, value } = indicator;
 
+  if (!name || !value) return null;
+
   return (
     <Card variant="outlined" className="border-gray-100 p-5">
       <CardContent className="p-0">
