@@ -10,7 +10,6 @@ export default function IndicatorsCard({
   indicator: { name: string; value: string | number };
 }) {
   const { name, value } = indicator;
-  if (!name || !value) return null;
 
   return (
     <Card variant="outlined" className="border-gray-100 p-5">
