@@ -1,3 +1,4 @@
+import { SystemRoles } from "@/core/enums";
 import { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
@@ -8,7 +9,7 @@ declare module "next-auth" {
       id: string;
       username: string;
       cpf?: string;
-      role?: string;
+      role?: SystemRoles;
     } & DefaultSession["user"];
   }
 

@@ -41,7 +41,10 @@ export function EvaluationsDashboardTab({
       <EvaluationKPIs data={kpis} />
 
       <Box className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-        <EvaluationsByTypeTestChart data={charts.evaluationsByTypeTest} />
+        <EvaluationsByTypeTestChart
+          key={startDate + endDate}
+          data={charts.evaluationsByTypeTest}
+        />
         <TemporalEvolutionChart data={charts.temporalEvaluation} />
         <EvaluationsByInstitutionTable data={charts.evaluationsByInstitution} />
       </Box>

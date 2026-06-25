@@ -17,8 +17,11 @@ import { Participant } from "@/core/types";
 import { formatCPF, formatPhoneBR } from "@/core/utils";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/core/config/client.routes";
+import { useSession } from "next-auth/react";
+import { SystemRoles } from "@/core/enums";
 
 export default function ParticipantTable() {
+  const { data: user } = useSession();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [filters, setFilters] = useState<FilterState>({});
@@ -67,6 +70,8 @@ export default function ParticipantTable() {
     return <div>Carregando participantes...</div>;
   }
 
+  const actionVisible = user?.user.role !== SystemRoles.RESEARCHER;
+
   return (
     <Box>
       <Table.Root<Participant>
@@ -97,38 +102,43 @@ export default function ParticipantTable() {
           },
         }}
       >
-        <Table.Header showActionsColumn />
+        <Table.Header showActionsColumn={actionVisible} />
         <Table.Body<Participant>
           emptyMessage="Nenhum participante encontrado"
           onRowClick={(row) =>
             router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(row.id))
           }
-          renderActions={(row) => (
-            <Box display="flex" gap={4} justify="center">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  openEditModal(row);
-                }}
-                tooltip="Editar"
-              >
-                <PencilIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                tooltip="Excluir"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  openDeleteDialog(row);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </Box>
-          )}
+          renderActions={
+            actionVisible
+              ? (row) => (
+                  <Box display="flex" gap={4} justify="center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openEditModal(row);
+                      }}
+                      tooltip="Editar"
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      tooltip="Excluir"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        openDeleteDialog(row);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </Box>
+                )
+              : undefined
+          }
         />
         <Table.Pagination />
       </Table.Root>
