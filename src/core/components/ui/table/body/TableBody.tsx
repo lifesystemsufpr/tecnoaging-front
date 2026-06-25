@@ -6,12 +6,14 @@ type TableBodyProps<T> = {
   emptyMessage?: string;
   renderActions?: (row: T) => React.ReactNode;
   onRowClick?: (row: T) => void;
+  rowClassName?: (row: T) => string;
 };
 
 export function TableBody<T>({
   emptyMessage = "Nenhum registro encontrado",
   renderActions,
   onRowClick,
+  rowClassName,
 }: TableBodyProps<T>) {
   const { visibleData, columns, selection, getRowId } = useTableContext<T>();
 
@@ -42,6 +44,7 @@ export function TableBody<T>({
           rowIndex={index}
           renderActions={renderActions}
           onClick={onRowClick}
+          className={rowClassName?.(row)}
         />
       ))}
     </tbody>
