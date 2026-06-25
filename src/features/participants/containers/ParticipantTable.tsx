@@ -64,6 +64,11 @@ export default function ParticipantTable() {
       header: "Estado (UF)",
       render: (_, row) => row.state ?? "—",
     }),
+    createColumn({
+      field: "active",
+      header: "Status",
+      render: (_, row) => (row.active ? "Ativado" : "Desativado"),
+    }),
   ];
 
   if (isLoading) {
@@ -105,37 +110,48 @@ export default function ParticipantTable() {
         <Table.Header showActionsColumn={actionVisible} />
         <Table.Body<Participant>
           emptyMessage="Nenhum participante encontrado"
+          rowClassName={(row) =>
+            row.active
+              ? "cursor-pointer"
+              : "bg-gray-200 hover:bg-gray-200 cursor-not-allowed"
+          }
           onRowClick={(row) =>
-            router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(row.id))
+            row.active
+              ? router.push(ROUTES.USERS.PARTICIPANTS.DETAIL(row.id))
+              : undefined
           }
           renderActions={
             actionVisible
               ? (row) => (
-                  <Box display="flex" gap={4} justify="center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        openEditModal(row);
-                      }}
-                      tooltip="Editar"
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
+                  <>
+                    {row.active && (
+                      <Box display="flex" gap={4} justify="center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openEditModal(row);
+                          }}
+                          tooltip="Editar"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                        </Button>
 
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      tooltip="Excluir"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        openDeleteDialog(row);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Box>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          tooltip="Excluir"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            openDeleteDialog(row);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </Box>
+                    )}
+                  </>
                 )
               : undefined
           }
