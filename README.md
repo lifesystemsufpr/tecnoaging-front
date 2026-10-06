@@ -1,5 +1,29 @@
 # Documentação do Projeto: Equilibrium
 
+## Deploy com Docker
+
+O frontend Next.js é publicado como imagem standalone no GHCR e exposto somente em `127.0.0.1:8082` na VPS. O gateway do `lifesystems-infra` encaminha `tecnoaging.com.br` e `www.tecnoaging.com.br` para esse container e mantém `/backend` reservado ao backend TecnoAging.
+
+O workflow `.github/workflows/deploy.yaml` usa o GitHub Environment `prod` para a branch `chore/prod` e `dev` para a branch `dev`.
+
+Configure em cada GitHub Environment:
+
+- secret `ENV_PROD_FILE`, baseado em `.env.prod.example`;
+- secrets `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_SSH_PORT` e `VPS_APP_PATH`;
+- secrets `GHCR_USER` e `GHCR_PAT`, com permissão para baixar a imagem privada;
+- variável `NEXT_PUBLIC_API_BASE_URL`, normalmente `/backend`.
+
+O valor de `NEXT_PUBLIC_API_BASE_URL` é incorporado ao bundle durante o build. No `ENV_PROD_FILE`, use uma URL absoluta em `API_BASE_URL` para as chamadas executadas pelo servidor Next.js.
+
+Prepare uma vez o diretório configurado em `VPS_APP_PATH`:
+
+```sh
+sudo mkdir -p /opt/tecnoaging-front
+sudo chown "$USER":"$USER" /opt/tecnoaging-front
+```
+
+Depois do deploy, atualize o `lifesystems-infra` e valide o domínio, `/healthz` e `/backend/status`.
+
 ## 1. Visão Geral do Projeto
 
 Aplicação web feita com tecnologias atuais, o qual é projetada para a gestão e análise de avaliações funcionais de pacientes. O sistema é voltado para a área da saúde, com foco na prevenção de quedas e no acompanhamento de pacientes idosos por profissionais de saúde e pesquisadores.

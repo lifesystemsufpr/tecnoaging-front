@@ -5,4 +5,9 @@ npm-debug.log*
 yarn-error.log*
 pnpm-lock.yaml # se você não usa pnpm, remova
 .git
+.github
 .DS_Store
+.env
+.env.*
+env.production.example
+docker-compose*.yml
